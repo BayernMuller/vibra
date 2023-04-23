@@ -16,5 +16,11 @@ int main(int argc, char* argv[])
     std::cout << "Bit per sample: " << wav.GetBitPerSample() << std::endl;
     std::cout << "Data size: " << wav.GetDataSize() << std::endl;
     std::cout << "File size: " << wav.GetFileSize() << std::endl;
+
+
+    Raw16bitPCM raw_pcm;
+    wav.GetLowQualityPCM(raw_pcm);
+    std::cout << "Raw PCM size: " << raw_pcm.size() << std::endl;
+    wav.SaveWavFile(argv[1] + std::string("_changed.wav"), raw_pcm, 44100, 16, 1);
     return 0;
 }
