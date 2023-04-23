@@ -21,6 +21,6 @@ int main(int argc, char* argv[])
     Raw16bitPCM raw_pcm;
     wav.GetLowQualityPCM(raw_pcm);
     std::cout << "Raw PCM size: " << raw_pcm.size() << std::endl;
-    wav.SaveWavFile(argv[1] + std::string("_changed.wav"), raw_pcm, 44100, 16, 1);
+    wav.SaveWavFile(argv[1] + std::string("_changed.wav"), raw_pcm, 16000, 16, 1);
     return 0;
 }

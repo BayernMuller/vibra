@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <cmath>
 
 #define GETINTX(T, cp, i)  (*(T *)((unsigned char *)(cp) + (i)))
 #define SETINTX(T, cp, i, val)  do {                    \
@@ -106,21 +107,27 @@ void Wav::GetLowQualityPCM(Raw16bitPCM& raw_pcm)
     raw_pcm.resize(new_sample_count);
 
     Sample sample = 0;
-    double colleted_sample = 0;
-    for (std::uint32_t i = 0, j = 0; i < mDataSize; i += width, j++)
+    for (std::uint32_t i = 0, j = 0; i < mDataSize; i += (width * mChannel), j++)
     {
-        Sample sample = (GETSAMPLE32(width, raw_data, i) >> new_sample_width);
-        colleted_sample += sample;
-        
-        // if it's multi channel, collect sample and divide it by channel count (average)
-        if ((j && j % mChannel == 0) || mChannel == 1) 
+        double colleted_sample = 0;    
+        for (std::uint32_t k = 0; k < mChannel; k++)
         {
-            raw_pcm[j / mChannel] = colleted_sample / mChannel;
-            colleted_sample = 0.0;
+            sample = GETSAMPLE32(width, raw_data, i + (width * k)) >> new_sample_width;
+            colleted_sample += sample;
         }
+        raw_pcm[j] = colleted_sample / mChannel;
     }
 
-    
+    // downsample
+    // TODO: combine with above loop
+    double downsample_ratio = mSampleRate / (double)new_sample_rate;
+    std::uint32_t downsampled_sample_count = new_sample_count / downsample_ratio;
+    Raw16bitPCM downsampled_pcm(downsampled_sample_count);
+    for (std::uint32_t i = 0; i < downsampled_sample_count; i++)
+    {
+        downsampled_pcm[i] = raw_pcm[i * downsample_ratio];
+    }
+    raw_pcm = std::move(downsampled_pcm);
 }
 
 void Wav::readWavFile(const std::string& wav_file_path)
