@@ -1,3 +1,5 @@
+all: wav_test.out ring_buffer_test.out
+
 ring_buffer_test.out : ring_buffer.o ring_buffer_test.o
 	g++ -o ring_buffer_test.out ring_buffer.o ring_buffer_test.o
 
