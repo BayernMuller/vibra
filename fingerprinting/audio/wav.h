@@ -1,6 +1,8 @@
+#ifndef WAV_H
+#define WAV_H
+
 #include <string>
 #include <vector>
-
 
 using Sample = std::int16_t;
 using Raw16bitPCM = std::vector<Sample>;
@@ -36,3 +38,5 @@ private:
     std::uint32_t mFileSize;
     std::shared_ptr<std::uint8_t> mData;
 };
+
+#endif // WAV_H

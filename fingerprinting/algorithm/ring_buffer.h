@@ -1,3 +1,6 @@
+#ifndef RING_BUFFER_H
+#define RING_BUFFER_H
+
 #include <vector>
 
 template <typename T>
@@ -46,3 +49,5 @@ void RingBuffer<T>::Append(const T& value)
     mPosition = (mPosition + 1) % mSize;
     mNumWritten++;
 }
+
+#endif // RING_BUFFER_H
