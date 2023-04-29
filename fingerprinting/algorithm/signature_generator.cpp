@@ -1,6 +1,7 @@
 #include "signature_generator.h"
 #include "../utils/array.h"
 #include "../utils/hanning.h"
+#include "../utils/debug.h"
 
 #include <algorithm>
 #include <numeric>
@@ -32,8 +33,13 @@ Signature SignatureGenerator::GetNextSignature()
         mNextSignature.NumberOfSamples() / mNextSignature.SampleRate() < MAX_TIME_SECONDS ||
         mNextSignature.SumOfPeaksLength() < MAX_PEAKS)
     {
+        Raw16bitPCM input(mInputPendingProcessing.begin() + mSampleProcessed,
+            mInputPendingProcessing.begin() + mSampleProcessed + 128);
+        __PRINT__(input.size());
+        
         mNextSignature.AddNumberOfSamples(128);
-        // doFFT
+        
+        doFFT(input);
         // doPeakSpreadingAndRecoginzation
         mSampleProcessed += 128;
         
@@ -55,8 +61,12 @@ void SignatureGenerator::doFFT(const Raw16bitPCM& input)
 
     FFT::RealArray excerpt_from_ring_buffer;
 
+    __PRINT__(mRingBufferOfSamples.Position());
+
     std::copy(mRingBufferOfSamples.begin() + mRingBufferOfSamples.Position(), mRingBufferOfSamples.end(),
         excerpt_from_ring_buffer.begin());
+
+    __PRINT__("copying from the beginning");
 
     std::copy(mRingBufferOfSamples.begin(), mRingBufferOfSamples.begin() + mRingBufferOfSamples.Position(),
         excerpt_from_ring_buffer.end());
