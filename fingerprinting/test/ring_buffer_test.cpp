@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../algorithm/ring_buffer.h"
+#include "../utils/ring_buffer.h"
 
 int main(int argc, char* argv[])
 {
