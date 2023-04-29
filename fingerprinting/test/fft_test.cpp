@@ -1,5 +1,5 @@
 #include "../utils/fft.h"
-#include "../utils/calculation.h"
+#include "../utils/array.h"
 #include <iostream>
 #include <iomanip>
 
@@ -27,19 +27,19 @@ int main()
     print("real", real);
     print("imag", imag);
 
-    calculate::square(real);
-    calculate::square(imag);
+    array::square(real);
+    array::square(imag);
 
     print("real^2", real);
     print("imag^2", imag);
 
-    auto result = calculate::add(real, imag);
+    auto result = array::add(real, imag);
     print("real^2 + imag^2", result);
 
-    result = calculate::devide(result, 1 << 17);
+    result = array::devide(result, 1 << 17);
     print("(real^2 + imag^2) / (1 << 17)", result);
 
-    calculate::max(result, 0.0000000001);
+    array::max(result, 0.0000000001);
     print("max((real^2 + imag^2) / (1 << 17), 0.0000000001)", result);
     return 0;
 }

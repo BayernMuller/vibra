@@ -1,7 +1,7 @@
-#ifndef CALCULATION_H
-#define CALCULATION_H
+#ifndef ARRAY_H
+#define ARRAY_H
 
-namespace calculate
+namespace array
 {
     template <typename Iterable>
     Iterable &square(Iterable &input)
@@ -26,15 +26,13 @@ namespace calculate
     }
 
     template <typename Iterable>
-    Iterable devide(const Iterable &lhs, const int rhs)
+    Iterable& devide(Iterable &lhs, const int rhs)
     {
-        Iterable result;
-        result.resize(lhs.size());
         for (std::size_t i = 0; i < lhs.size(); ++i)
         {
-            result[i] = lhs[i] / rhs;
+            lhs[i] = lhs[i] / rhs;
         }
-        return result;
+        return lhs;
     }
 
     template <typename Iterable, typename T, int N>
@@ -56,6 +54,6 @@ namespace calculate
         }
         return lhs;
     }
-} // namespace calculate
+} 
 
-#endif // CALCULATION_H
+#endif // ARRAY_H
