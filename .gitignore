@@ -1,3 +1,15 @@
+# ignore everything
+*
+
+# Unignore all files with extensions
+!*.*
+
+# Unignore all directories
+!*/
+
+# Unignore makefile
+!Makefile
+
 *.o
 *.out
 .vscode/

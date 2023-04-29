@@ -1,5 +1,5 @@
 #include "signature_generator.h"
-#include "../utils/calculation.h"
+#include "../utils/array.h"
 #include "../utils/hanning.h"
 
 #include <algorithm>
@@ -10,8 +10,8 @@ SignatureGenerator::SignatureGenerator()
     , mSampleProcessed(0)
     , mNextSignature(16000, 0)
     , mRingBufferOfSamples(2048, 0)
-    , mFFTOutputs(256, std::vector<double>(1025, 0.0))
-    , mSpreadFFTsOutput(256, std::vector<double>(1025, 0.0))
+    , mFFTOutputs(256, FFT::RealArray(1025, 0.0))
+    , mSpreadFFTsOutput(256, FFT::RealArray(1025, 0.0))
 {
 }
 
@@ -36,9 +36,10 @@ Signature SignatureGenerator::GetNextSignature()
         // doFFT
         // doPeakSpreadingAndRecoginzation
         mSampleProcessed += 128;
+        
+        break; // TODO: remove this break
     }
-
-    
+    return mNextSignature;
 }
 
 
@@ -90,6 +91,6 @@ void SignatureGenerator::prepareInput()
 {
     mNextSignature.Reset(16000, 0);
     mRingBufferOfSamples = RingBuffer<std::uint16_t>(2048, 0);
-    mFFTOutputs = RingBuffer<std::vector<double>>(256, std::vector<double>(1025, 0.0));
-    mSpreadFFTsOutput = RingBuffer<std::vector<double>>(256, std::vector<double>(1025, 0.0));
+    mFFTOutputs = RingBuffer<FFT::RealArray>(256, FFT::RealArray(1025, 0.0));
+    mSpreadFFTsOutput = RingBuffer<FFT::RealArray>(256, FFT::RealArray(1025, 0.0));
 }
