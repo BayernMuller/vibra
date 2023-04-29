@@ -1,4 +1,7 @@
 #include "signature_generator.h"
+#include "../utils/calculation.h"
+#include "../utils/hanning.h"
+
 #include <algorithm>
 #include <numeric>
 
@@ -49,7 +52,7 @@ void SignatureGenerator::doFFT(const Raw16bitPCM& input)
     mRingBufferOfSamples.Position() %= 2048;
     mRingBufferOfSamples.NumWritten() += input.size();
 
-    Raw16bitPCM excerpt_from_ring_buffer;
+    FFT::RealArray excerpt_from_ring_buffer;
 
     std::copy(mRingBufferOfSamples.begin() + mRingBufferOfSamples.Position(), mRingBufferOfSamples.end(),
         excerpt_from_ring_buffer.begin());
@@ -57,8 +60,22 @@ void SignatureGenerator::doFFT(const Raw16bitPCM& input)
     std::copy(mRingBufferOfSamples.begin(), mRingBufferOfSamples.begin() + mRingBufferOfSamples.Position(),
         excerpt_from_ring_buffer.end());
 
+    array::multiply(excerpt_from_ring_buffer, HANNIG_MATRIX);
 
+    FFT::RealArray real;
+    FFT::RealArray imag;
+    FFT::RFFT(excerpt_from_ring_buffer, real, imag);
 
+    // do max((real^2 + imag^2) / (1 << 17), 0.0000000001)
+    array::square(real);
+    array::square(imag);
+    
+    auto fft_results = array::add(real, imag);
+
+    array::devide(fft_results, 1 << 17);
+    array::max(fft_results, 1e-10);
+
+    mFFTOutputs.Append(fft_results);
 }
 
 void SignatureGenerator::doPeakSpreadingAndRecoginzation()
