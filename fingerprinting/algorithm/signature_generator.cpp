@@ -31,8 +31,8 @@ Signature SignatureGenerator::GetNextSignature()
     }
 
     while (mInputPendingProcessing.size() - mSampleProcessed >= 128 &&
-        mNextSignature.NumberOfSamples() / mNextSignature.SampleRate() < mMaxTimeSeconds ||
-        mNextSignature.SumOfPeaksLength() < MAX_PEAKS)
+        ((double)mNextSignature.NumberOfSamples() / mNextSignature.SampleRate() < mMaxTimeSeconds ||
+        mNextSignature.SumOfPeaksLength() < MAX_PEAKS))
     {
         Raw16bitPCM input(mInputPendingProcessing.begin() + mSampleProcessed,
             mInputPendingProcessing.begin() + mSampleProcessed + 128);
@@ -51,7 +51,6 @@ Signature SignatureGenerator::GetNextSignature()
 
 void SignatureGenerator::doFFT(const Raw16bitPCM& input)
 {
-    std::cout << "doFFT" << std::endl;
     std::copy(input.begin(), input.end(),
         mRingBufferOfSamples.begin() + mRingBufferOfSamples.Position());
 
@@ -78,7 +77,6 @@ void SignatureGenerator::doFFT(const Raw16bitPCM& input)
     array::square(imag);
     
     auto fft_results = array::add(real, imag);
-
     array::devide(fft_results, 1 << 17);
     array::max(fft_results, 1e-10);
 
@@ -97,22 +95,21 @@ void SignatureGenerator::doPeakSpreadingAndRecoginzation()
 
 void SignatureGenerator::doPeakSpreading()
 {
-    auto origin_last_fft = mFFTOutputs[mFFTOutputs.Position() - 1];
-    auto spread_last_fft = origin_last_fft;
-
-    for (auto i = 0u; i < 1025; ++i)
+    auto spread_last_fft = mFFTOutputs[mFFTOutputs.Position() - 1];
+    
+    for (auto position = 0u; position < 1025; ++position)
     {
-        if (i < 1023)
+        if (position < 1023)
         {
-            spread_last_fft[i] = *std::max_element(spread_last_fft.begin() + i,
-                spread_last_fft.begin() + i + 3);
+            spread_last_fft[position] = *std::max_element(spread_last_fft.begin() + position,
+                spread_last_fft.begin() + position + 3);
         }
             
-        auto max_value = spread_last_fft[i];
+        auto max_value = spread_last_fft[position];
         for (auto former_fft_num : {-1, -3, -6})
         {
-            auto former_fft_ouput = mSpreadFFTsOutput[(mSpreadFFTsOutput.Position() + former_fft_num) % mSpreadFFTsOutput.Size()];
-            former_fft_ouput[i] = max_value = std::max(max_value, former_fft_ouput[i]);
+            auto& former_fft_ouput = mSpreadFFTsOutput[(mSpreadFFTsOutput.Position() + former_fft_num) % mSpreadFFTsOutput.Size()];
+            former_fft_ouput[position] = max_value = std::max(max_value, former_fft_ouput[position]);
         }
     }
     mSpreadFFTsOutput.Append(spread_last_fft);
@@ -120,7 +117,6 @@ void SignatureGenerator::doPeakSpreading()
 
 void SignatureGenerator::doPeakRecognition()
 {
-    std::cout << "doPeakRecognition" << std::endl;
     const auto& fft_minus_46 = mFFTOutputs[(mFFTOutputs.Position() - 46) % mFFTOutputs.Size()];
     const auto& fft_minus_49 = mSpreadFFTsOutput[(mSpreadFFTsOutput.Position() - 49) % mSpreadFFTsOutput.Size()];
 
@@ -150,13 +146,13 @@ void SignatureGenerator::doPeakRecognition()
                 {
                     auto fft_number = mSpreadFFTsOutput.NumWritten() - 46;
                     auto peak_magnitude = std::log(std::max(1.0l / 64, fft_minus_46[bin_position])) * 1477.3 + 6144;
-                    auto peak_magnitude_before = std::log(std::max(1.0l / 64, fft_minus_49[bin_position - 1])) * 1477.3 + 6144;
-                    auto peak_magnitude_after = std::log(std::max(1.0l / 64, fft_minus_49[bin_position + 1])) * 1477.3 + 6144;
+                    auto peak_magnitude_before = std::log(std::max(1.0l / 64, fft_minus_46[bin_position - 1])) * 1477.3 + 6144;
+                    auto peak_magnitude_after = std::log(std::max(1.0l / 64, fft_minus_46[bin_position + 1])) * 1477.3 + 6144;
 
                     auto peak_variation_1 = peak_magnitude * 2 - peak_magnitude_before - peak_magnitude_after;
                     auto peak_variation_2 = (peak_magnitude_after - peak_magnitude_before) * 32 / peak_variation_1;
 
-                    auto corrected_peak_frequency_bin = bin_position * 64.0 / peak_variation_2;
+                    auto corrected_peak_frequency_bin = bin_position * 64.0 + peak_variation_2;
                     auto frequency_hz = corrected_peak_frequency_bin * (16000.0l / 2. / 1024. / 64.);
 
                     auto band = FrequancyBand();
