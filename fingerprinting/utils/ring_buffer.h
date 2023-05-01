@@ -15,7 +15,7 @@ public:
     std::uint32_t& NumWritten() { return mNumWritten; }
     std::uint32_t& Position() { return mPosition; }
 
-    T& operator[](std::size_t index) { return std::vector<T>::operator[](index); }
+    T& operator[](std::int32_t index);
     
     typename std::vector<T>::iterator begin() { return std::vector<T>::begin(); }
     typename std::vector<T>::iterator end() { return std::vector<T>::end(); }
@@ -24,6 +24,17 @@ private:
     std::uint32_t mNumWritten;
     std::uint32_t mPosition;
 };
+
+template<typename T>
+T& RingBuffer<T>::operator[](std::int32_t index)
+{
+    if (index < 0)
+    {
+        index = std::vector<T>::size() + index;
+        // support negative index
+    }
+    return std::vector<T>::operator[](index);
+}
 
 template <typename T>
 RingBuffer<T>::RingBuffer(std::size_t size, T&& defaultValue)
