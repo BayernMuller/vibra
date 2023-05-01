@@ -95,9 +95,6 @@ void Wav::GetLowQualityPCM(Raw16bitPCM& raw_pcm)
 {
     // clear raw_pcm
     raw_pcm.clear();
-    
-    std::uint32_t new_sample_width = 16;
-    std::uint32_t new_sample_rate = 16000;
 
     void* raw_data = mData.get();
     std::uint32_t width = mBitPerSample / 8;
@@ -112,7 +109,7 @@ void Wav::GetLowQualityPCM(Raw16bitPCM& raw_pcm)
         double colleted_sample = 0;    
         for (std::uint32_t k = 0; k < mChannel; k++)
         {
-            sample = GETSAMPLE32(width, raw_data, i + (width * k)) >> new_sample_width;
+            sample = GETSAMPLE32(width, raw_data, i + (width * k)) >> LOW_QUALITY_SAMPLE_WIDTH;
             colleted_sample += sample;
         }
         raw_pcm[j] = colleted_sample / mChannel;
@@ -120,7 +117,7 @@ void Wav::GetLowQualityPCM(Raw16bitPCM& raw_pcm)
 
     // downsample
     // TODO: combine with above loop
-    double downsample_ratio = mSampleRate / (double)new_sample_rate;
+    double downsample_ratio = mSampleRate / (double)LOW_QUALITY_SAMPLE_RATE;
     std::uint32_t downsampled_sample_count = new_sample_count / downsample_ratio;
     Raw16bitPCM downsampled_pcm(downsampled_sample_count);
     for (std::uint32_t i = 0; i < downsampled_sample_count; i++)

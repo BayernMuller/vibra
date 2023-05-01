@@ -1,8 +1,10 @@
 #include <iostream>
 #include "../fingerprinting/audio/wav.h"
 #include "../fingerprinting/algorithm/signature_generator.h"
+#include "../fingerprinting/utils/array.h"
 
 using namespace std;
+using namespace array;
 
 int main(int argc, char* argv[])
 {
@@ -13,15 +15,17 @@ int main(int argc, char* argv[])
     }
 
     Wav wav(argv[1]);
-    cout << "Sample rate: " << wav.GetSampleRate() << endl;
-    cout << "Num channels: " << wav.GetChannel() << endl;
-    cout << "Num bit per sample: " << wav.GetBitPerSample() << endl;
     
     Raw16bitPCM pcm;
     wav.GetLowQualityPCM(pcm);
-    cout << "Num samples: " << pcm.size() << endl;
 
     SignatureGenerator generator;
     generator.FeedInput(pcm);
+
+    generator.SetMaxTimeSeconds(12);
+    auto duaration = pcm.size() / LOW_QUALITY_SAMPLE_RATE;
+    if (duaration > 12 * 3)
+        generator.AddSampleProcessed(LOW_QUALITY_SAMPLE_RATE * ((int)duaration / 2) - 6);
+
     Signature signature = generator.GetNextSignature();
 }

@@ -1,5 +1,6 @@
 #ifndef ARRAY_H
 #define ARRAY_H
+#include <iostream>
 
 namespace array
 {
@@ -53,6 +54,18 @@ namespace array
             i = i > rhs ? i : rhs;
         }
         return lhs;
+    }
+
+    template <typename Iterable>
+    void print(Iterable &input, int limit = -1)
+    {
+        for (const auto &i : input)
+        {
+            std::cout << i << ", ";
+            if (limit > 0 && --limit == 0)
+                break;
+        }
+        std::cout << std::endl;
     }
 } 
 

@@ -7,7 +7,6 @@
 #include "../audio/wav.h"
 #include "../utils/fft.h"
 
-constexpr auto MAX_TIME_SECONDS = 3.1;
 constexpr auto MAX_PEAKS = 255u;
 
 class SignatureGenerator
@@ -16,6 +15,12 @@ public:
     SignatureGenerator();
     void FeedInput(const Raw16bitPCM& input);
     Signature GetNextSignature();
+
+    inline void AddSampleProcessed(std::uint32_t sampleProcessed)
+    { mSampleProcessed += sampleProcessed;}
+
+    inline void SetMaxTimeSeconds(double maxTimeSeconds)
+    { mMaxTimeSeconds = maxTimeSeconds; }
 
 private:
     void doFFT(const Raw16bitPCM& input);
@@ -27,9 +32,10 @@ private:
 private:
     Raw16bitPCM mInputPendingProcessing;
     std::uint32_t mSampleProcessed;
+    double mMaxTimeSeconds;
 
     Signature mNextSignature;
-    RingBuffer<std::uint16_t> mRingBufferOfSamples;
+    RingBuffer<std::int16_t> mRingBufferOfSamples;
     RingBuffer<FFT::RealArray> mFFTOutputs;
     RingBuffer<FFT::RealArray> mSpreadFFTsOutput;    
 };

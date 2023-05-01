@@ -7,6 +7,8 @@
 using Sample = std::int16_t;
 using Raw16bitPCM = std::vector<Sample>;
 
+constexpr std::uint32_t LOW_QUALITY_SAMPLE_RATE = 16000;
+constexpr std::uint32_t LOW_QUALITY_SAMPLE_WIDTH = 16;
 class Wav
 {
 public:
