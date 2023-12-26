@@ -27,7 +27,7 @@ Signature SignatureGenerator::GetNextSignature()
 {
     if (mInputPendingProcessing.size() - mSampleProcessed < 128)
     {
-        // failed.
+        std::cout << "Not enough input data" << std::endl;
     }
 
     while (mInputPendingProcessing.size() - mSampleProcessed >= 128 &&
@@ -37,17 +37,24 @@ Signature SignatureGenerator::GetNextSignature()
         Raw16bitPCM input(mInputPendingProcessing.begin() + mSampleProcessed,
             mInputPendingProcessing.begin() + mSampleProcessed + 128);
         
-        mNextSignature.AddNumberOfSamples(128);
-        
-        doFFT(input);
-        doPeakSpreadingAndRecoginzation();
-
+        processInput(input);
         mSampleProcessed += 128;
+
     }
     return mNextSignature;
 }
 
+void SignatureGenerator::processInput(const Raw16bitPCM& input)
+{
+    mNextSignature.AddNumberOfSamples(input.size());
+    for (std::size_t chunk = 0; chunk < input.size(); chunk += 128)
+    {
+        Raw16bitPCM chunk_input(input.begin() + chunk, input.begin() + chunk + 128);
 
+        doFFT(chunk_input);
+        doPeakSpreadingAndRecoginzation();
+    }
+}
 
 void SignatureGenerator::doFFT(const Raw16bitPCM& input)
 {
@@ -73,14 +80,18 @@ void SignatureGenerator::doFFT(const Raw16bitPCM& input)
     FFT::RFFT(excerpt_from_ring_buffer, real, imag);
 
     // do max((real^2 + imag^2) / (1 << 17), 0.0000000001)
-    array::square(real);
-    array::square(imag);
-    
-    auto fft_results = array::add(real, imag);
-    array::devide(fft_results, 1 << 17);
-    array::max(fft_results, 1e-10);
 
-    mFFTOutputs.Append(fft_results);
+    for (int i = 0; i < 1025; ++i)
+    {
+        real[i] *= real[i];
+        imag[i] *= imag[i];
+
+        real[i] += imag[i];
+        real[i] /= (1 << 17);
+        real[i] = real[i] < 0.0000000001 ? 0.0000000001 : real[i];
+    }
+
+    mFFTOutputs.Append(real);
 }
 
 void SignatureGenerator::doPeakSpreadingAndRecoginzation()

@@ -7,7 +7,7 @@ def hanning_generator():
         print("{:.15f},".format(i))
         
 def test_fft():
-    input = np.array([1, 255, 1, 255, 1, 255, 1, 255])
+    input = np.array([1,2,3,4,5,6,7,8,9,10,0])
     fft_results = np.fft.rfft(input)
     print('input:', input)
     print('real:', fft_results.real)
@@ -20,3 +20,5 @@ def test_fft():
     print('(real^2 + imag^2) / (1 << 17)', (np.square(fft_results.real) + np.square(fft_results.imag)) / (1 << 17))
     print('max((real^2 + imag^2) / (1 << 17), 1e-10)', np.maximum((np.square(fft_results.real) + np.square(fft_results.imag)) / (1 << 17), 1e-10))
 
+
+test_fft()

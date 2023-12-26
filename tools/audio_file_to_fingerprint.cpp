@@ -6,6 +6,25 @@
 using namespace std;
 using namespace array;
 
+std::string ToString(FrequancyBand band)
+{
+    switch (band)
+    {
+    case FrequancyBand::_0_150:
+        return "0_150";
+    case FrequancyBand::_250_520:
+        return "250_520";
+    case FrequancyBand::_520_1450:
+        return "520_1450";
+    case FrequancyBand::_1450_3500:
+        return "1450_3500";
+    case FrequancyBand::_3500_5500:
+        return "3500_5500";
+    default:
+        return "Unknown";
+    }
+}
+
 int main(int argc, char* argv[])
 {
     if (argc != 2)
@@ -16,8 +35,10 @@ int main(int argc, char* argv[])
 
     Wav wav(argv[1]);
     
+    cout << "Start Convert to Low Quality PCM" << endl;
     Raw16bitPCM pcm;
     wav.GetLowQualityPCM(pcm);
+    cout << "End Convert to Low Quality PCM" << endl;
 
     SignatureGenerator generator;
     generator.FeedInput(pcm);
@@ -28,4 +49,15 @@ int main(int argc, char* argv[])
         generator.AddSampleProcessed(LOW_QUALITY_SAMPLE_RATE * ((int)duaration / 2) - 6);
 
     Signature signature = generator.GetNextSignature();
+    cout << signature.NumberOfSamples() << endl;
+    cout << signature.SampleRate() << endl;
+    auto peaks = signature.FrequancyBandToPeaks();
+    for (auto& peak : peaks)
+    {
+        cout << "Band: " << ToString(peak.first) << endl;
+        for (auto& p : peak.second)
+        {
+            cout << "    Peak: " << p.GetFrequencyHz() << " " << p.GetAmplitudePCM() << " " << p.GetSeconds() << endl;
+        }
+    }
 }

@@ -23,6 +23,7 @@ public:
     { mMaxTimeSeconds = maxTimeSeconds; }
 
 private:
+    void processInput(const Raw16bitPCM& input);
     void doFFT(const Raw16bitPCM& input);
     void doPeakSpreadingAndRecoginzation();
     void doPeakSpreading();

@@ -1,6 +1,6 @@
 CXX = g++
 CXXFLAGS = -std=c++11 -Wall -Wextra -pedantic -O2
-LDFLAGS = -lm
+LDFLAGS = -lm -lfftw3
 
 AUDIO_FILE_TO_FINGERPRINT_SOURCES = audio_file_to_fingerprint.cpp \
                                     ../fingerprinting/algorithm/signature_generator.cpp \

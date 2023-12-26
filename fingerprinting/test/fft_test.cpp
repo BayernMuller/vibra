@@ -18,7 +18,7 @@ void print(const char* name, const Iterable& input)
 
 int main()
 {
-    FFT::RealArray input{1, 255, 1, 255, 1, 255, 1, 255};
+    FFT::RealArray input{1,2,3,4,5,6,7,8,9,10,0};
     FFT::RealArray real;
     FFT::RealArray imag;
     FFT::RFFT(input, real, imag);
