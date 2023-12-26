@@ -27,7 +27,7 @@ Signature SignatureGenerator::GetNextSignature()
 {
     if (mInputPendingProcessing.size() - mSampleProcessed < 128)
     {
-        std::cout << "Not enough input data" << std::endl;
+        throw std::runtime_error("Not enough input to generate signature");
     }
 
     while (mInputPendingProcessing.size() - mSampleProcessed >= 128 &&
@@ -41,7 +41,15 @@ Signature SignatureGenerator::GetNextSignature()
         mSampleProcessed += 128;
 
     }
-    return mNextSignature;
+
+    Signature result = std::move(mNextSignature);
+    
+    mNextSignature = Signature(16000, 0);
+    mRingBufferOfSamples = RingBuffer<std::int16_t>(2048, 0);
+    mFFTOutputs = RingBuffer<FFT::RealArray>(256, FFT::RealArray(1025, 0.0));
+    mSpreadFFTsOutput = RingBuffer<FFT::RealArray>(256, FFT::RealArray(1025, 0.0));
+
+    return result; // RVO
 }
 
 void SignatureGenerator::processInput(const Raw16bitPCM& input)

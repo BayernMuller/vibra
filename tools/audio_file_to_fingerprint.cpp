@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include "../fingerprinting/audio/wav.h"
 #include "../fingerprinting/algorithm/signature_generator.h"
 #include "../fingerprinting/utils/array.h"
@@ -35,10 +36,8 @@ int main(int argc, char* argv[])
 
     Wav wav(argv[1]);
     
-    cout << "Start Convert to Low Quality PCM" << endl;
     Raw16bitPCM pcm;
     wav.GetLowQualityPCM(pcm);
-    cout << "End Convert to Low Quality PCM" << endl;
 
     SignatureGenerator generator;
     generator.FeedInput(pcm);
@@ -49,15 +48,7 @@ int main(int argc, char* argv[])
         generator.AddSampleProcessed(LOW_QUALITY_SAMPLE_RATE * ((int)duaration / 2) - 6);
 
     Signature signature = generator.GetNextSignature();
-    cout << signature.NumberOfSamples() << endl;
-    cout << signature.SampleRate() << endl;
-    auto peaks = signature.FrequancyBandToPeaks();
-    for (auto& peak : peaks)
-    {
-        cout << "Band: " << ToString(peak.first) << endl;
-        for (auto& p : peak.second)
-        {
-            cout << "    Peak: " << p.GetFrequencyHz() << " " << p.GetAmplitudePCM() << " " << p.GetSeconds() << endl;
-        }
-    }
+    string base64Uri;
+    signature.GetBase64Uri(base64Uri);
+    cout << base64Uri;
 }

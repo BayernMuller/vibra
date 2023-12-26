@@ -18,6 +18,9 @@ public:
     FrequancyPeak(std::uint32_t fft_pass_number, std::uint32_t peak_magnitude, std::uint32_t corrected_peak_frequency_bin, std::uint32_t sample_rate);
     ~FrequancyPeak();
 
+    inline std::uint32_t GetFFTPassNumber() const { return mFFTPassNumber; }
+    inline std::uint32_t GetPeakMagnitude() const { return mPeakMagnitude; }
+    inline std::uint32_t GetCorrectedPeakFrequencyBin() const { return mCorrectedPeakFrequencyBin; }
     double GetFrequencyHz() const;
     double GetAmplitudePCM() const;
     double GetSeconds() const;
