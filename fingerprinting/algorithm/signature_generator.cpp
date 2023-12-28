@@ -1,7 +1,6 @@
 #include "signature_generator.h"
 #include "../utils/array.h"
 #include "../utils/hanning.h"
-#include "../utils/debug.h"
 
 #include <algorithm>
 #include <numeric>
@@ -195,7 +194,8 @@ void SignatureGenerator::doPeakRecognition()
                     }
 
                     band_to_sound_peaks[band].push_back(
-                        FrequancyPeak(fft_number, int(peak_magnitude), int(corrected_peak_frequency_bin), LOW_QUALITY_SAMPLE_RATE));
+                        FrequancyPeak(fft_number, int(peak_magnitude), int(corrected_peak_frequency_bin), LOW_QUALITY_SAMPLE_RATE)
+                    );
                 }
             }
         }

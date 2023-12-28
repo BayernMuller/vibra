@@ -20,5 +20,5 @@ def test_fft():
     print('(real^2 + imag^2) / (1 << 17)', (np.square(fft_results.real) + np.square(fft_results.imag)) / (1 << 17))
     print('max((real^2 + imag^2) / (1 << 17), 1e-10)', np.maximum((np.square(fft_results.real) + np.square(fft_results.imag)) / (1 << 17), 1e-10))
 
-
-test_fft()
+if __name__ == '__main__':
+    test_fft()

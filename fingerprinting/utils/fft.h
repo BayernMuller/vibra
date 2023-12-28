@@ -31,7 +31,7 @@ bool FFT::RFFT(const Iterable& input, RealArray& real, RealArray& imag)
     out = fftw_alloc_complex(N/2 + 1);
 
     // Copy and convert the input data to double
-    std::transform(input.begin(), input.end(), in, [](std::int16_t val) -> double {
+    std::transform(input.begin(), input.end(), in, [](const typename Iterable::value_type& val) {
         return static_cast<double>(val);
     });
 

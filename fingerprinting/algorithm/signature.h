@@ -7,8 +7,8 @@
 #include <sstream>
 #include "frequency.h"
 
-
-#ifdef VCPlusPlus
+// Prevent Structure Padding
+#ifdef _MSC_VER
     #pragma pack(push, 1)
 #endif
 struct RawSignatureHeader {
@@ -22,7 +22,7 @@ struct RawSignatureHeader {
     uint32_t number_samples_plus_divided_sample_rate;
     uint32_t fixed_value;
 } 
-#ifdef VCPlusPlus
+#ifdef _MSC_VER
     #pragma pack(pop)
 #else
     __attribute__((packed)); 
@@ -52,7 +52,6 @@ private:
         }
         return stream;
     }
-
 
 private:
     std::uint32_t mSampleRate;

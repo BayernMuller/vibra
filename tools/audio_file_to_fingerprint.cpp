@@ -7,25 +7,6 @@
 using namespace std;
 using namespace array;
 
-std::string ToString(FrequancyBand band)
-{
-    switch (band)
-    {
-    case FrequancyBand::_0_150:
-        return "0_150";
-    case FrequancyBand::_250_520:
-        return "250_520";
-    case FrequancyBand::_520_1450:
-        return "520_1450";
-    case FrequancyBand::_1450_3500:
-        return "1450_3500";
-    case FrequancyBand::_3500_5500:
-        return "3500_5500";
-    default:
-        return "Unknown";
-    }
-}
-
 int main(int argc, char* argv[])
 {
     if (argc != 2)
