@@ -1,17 +1,8 @@
-# songrec-cpp
----
+# vibra
+
 
 ## What is this?
-* C++ version of https://github.com/marin-m/SongRec
-* A shazam client that converts wav to fingerprint
+* A C++ shazam client that recognizes songs from a wav file
 
 ## How to use?
-```bash
-# clone this repo
-cd songrec-cpp
-mkdir build
-cd build
-cmake ..
-make
-```
 
