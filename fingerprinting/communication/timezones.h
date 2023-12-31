@@ -1,7 +1,7 @@
 #ifndef __TIMEZONES_H__
 #define __TIMEZONES_H__
 
-static constexpr char *EUROPE_TIMEZONES[] = {
+static constexpr const char* EUROPE_TIMEZONES[] = {
     "Europe/Amsterdam",
     "Europe/Andorra",
     "Europe/Astrakhan",

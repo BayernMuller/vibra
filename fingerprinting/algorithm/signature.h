@@ -40,7 +40,7 @@ public:
     inline std::uint32_t NumberOfSamples() const { return mNumberOfSamples; }
     inline std::map<FrequancyBand, std::list<FrequancyPeak>>& FrequancyBandToPeaks() { return mFrequancyBandToPeaks; }
     std::uint32_t SumOfPeaksLength() const;
-    bool GetBase64Uri(std::string& base64Uri) const;
+    std::string GetBase64Uri() const;
 
 private:
     template <typename T>

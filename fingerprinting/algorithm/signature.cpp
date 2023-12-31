@@ -27,7 +27,7 @@ std::uint32_t Signature::SumOfPeaksLength() const
     return sum;
 }
 
-bool Signature::GetBase64Uri(std::string& base64Uri) const
+std::string Signature::GetBase64Uri() const
 {
     RawSignatureHeader header;
     header.magic1 = 0xcafe2580;
@@ -84,10 +84,10 @@ bool Signature::GetBase64Uri(std::string& base64Uri) const
     header_buf.seekp(0);
     header_buf.write(reinterpret_cast<const char*>(&header), sizeof(header));
     
-    base64Uri.clear();
+    std::string base64Uri;
     base64Uri += "data:audio/vnd.shazam.sig;base64,";
     base64Uri += base64::encode(header_buf.str().c_str(), header_buf.str().size());
-    return true;
+    return base64Uri;
 }
 
 Signature::~Signature()

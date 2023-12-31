@@ -28,9 +28,8 @@ int main(int argc, char* argv[])
         generator.AddSampleProcessed(LOW_QUALITY_SAMPLE_RATE * ((int)duaration / 2) - 6);
 
     Signature signature = generator.GetNextSignature();
-    string base64Uri;
-    signature.GetBase64Uri(base64Uri);
+    string base64Uri = signature.GetBase64Uri();
     
-
-    Shazam::RequestMetadata(signature);
+    auto res = Shazam::RequestMetadata(signature);
+    cout << res << endl;
 }
