@@ -15,3 +15,6 @@
 .vscode/
 __pycache__/
 build/
+
+# Unignore LICENSE
+!LICENSE
