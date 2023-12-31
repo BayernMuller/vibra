@@ -21,6 +21,7 @@ add_executable(vibra
     fingerprinting/algorithm/signature_generator.cpp
     fingerprinting/audio/wav.cpp
     fingerprinting/communication/shazam.cpp
+    cli/cli.cpp
 )
 
 find_library(FFTW3_LIBRARY NAMES fftw3)
