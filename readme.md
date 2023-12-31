@@ -48,7 +48,10 @@ $ jq .track.title result.json
 "Stairway To Heaven"
 $ jq .track.subtitle result.json
 "Led Zeppelin"
-& jq .track.share.href result.json
+$ jq .track.share.href result.json
 "https://www.shazam.com/track/5933917/stairway-to-heaven"
 ```
 * You can see more metadata in the result json.
+
+### License
+* vibra is licensed under the GPLv3 license. See [LICENSE](LICENSE) for more details.
