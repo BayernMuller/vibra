@@ -14,7 +14,7 @@
 ##### Requirements
 
 * vibra uses CMake for building. You need to install [CMake](https://cmake.org/) to build vibra.
-* vibra utilizes C++14 features. You need to install gcc-5 or a higher version.
+* vibra utilizes C++11 features.
 * vibra depends on the following libraries:
     * [libcurl](https://curl.se/libcurl/): To send HTTP requests to the Shazam API.
     * [libfftw3](http://www.fftw.org/): To calculate the Fast Fourier Transform.
