@@ -3,6 +3,7 @@
 #include <vector>
 #include <cmath>
 #include <fftw3.h>
+#include <algorithm>
 
 class FFT
 {

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <memory.h>
 
 #define GETINTX(T, cp, i)  (*(T *)((unsigned char *)(cp) + (i)))
 #define SETINTX(T, cp, i, val)  do {                    \
@@ -145,11 +146,11 @@ void Wav::readWavFile(const std::string& wav_file_path)
 
     // Read RIFF 
     char* riff_header = data;
-    assert(strncmp(riff_header, "RIFF", 4) == 0);
+    assert(::strncmp(riff_header, "RIFF", 4) == 0);
     
     // Read WAVE
     char* wave_header = data + 8;
-    assert(strncmp(wave_header, "WAVE", 4) == 0);
+    assert(::strncmp(wave_header, "WAVE", 4) == 0);
 
     // Read Audio Format
     mAudioFormat = *(std::uint16_t*)(data + 20);
@@ -175,7 +176,7 @@ void Wav::readWavFile(const std::string& wav_file_path)
         {
             mDataSize = subchunk_size;
             mData = std::shared_ptr<std::uint8_t>(new std::uint8_t[mDataSize]);
-            memcpy(mData.get(), data + pos + 8, mDataSize);
+            ::memcpy(mData.get(), data + pos + 8, mDataSize);
             
             delete[] data;
 

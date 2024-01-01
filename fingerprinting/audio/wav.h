@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 using Sample = std::int16_t;
 using Raw16bitPCM = std::vector<Sample>;

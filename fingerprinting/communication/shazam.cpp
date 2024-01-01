@@ -6,6 +6,7 @@
 #include <random>
 #include <sstream>
 #include <curl/curl.h>
+#include <algorithm>
 
 static const char* SHAZAM_ENDPOINT = "https://amp.shazam.com/discovery/v5/fr/FR/android/-/tag/";    
 
