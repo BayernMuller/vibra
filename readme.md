@@ -66,7 +66,31 @@ $ jq .track.share.href result.json
 * You can use [sox](http://sox.sourceforge.net/) or [ffmpeg](https://ffmpeg.org/) to print raw PCM data from **microphone**.
 
 ```bash
-
+$ sox -d -t raw -b 16 -e signed-integer -r 16000 -c 1 - 2>/dev/null | ./vibra recognize-song-from-raw-pcm 5 > result.json
+$ jq .track.title result.json
+"Bound 2"
+$ jq .track.subtitle result.json
+"Kanye West"
+$ jq .track.sections[1].text result.json
+[
+  "B-B-B-Bound to fall in love",
+  "Bound to fall in love",
+  "(Uh-huh, honey)",
+  "",
+  "All them other niggas lame, and you know it now",
+  "When a real nigga hold you down, you supposed to drown",
+  "",
+  "Bound (bound) to fall in love",
+  "B-B-B-Bound (bound) to fall in love",
+  "(Uh-huh, honey)",
+  "",
+  "What you doing in the club on a Thursday?",
+  "She say she only here for her girl birthday",
+  "They ordered champagne but still look thirsty",
+  "Rock Forever 21 but just turned 30",
+  "I know I got a bad reputation",
+  "Walk-around-always-mad reputation",
+...
 ```
 
 
