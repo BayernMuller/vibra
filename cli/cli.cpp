@@ -2,7 +2,7 @@
 #include "cli.h"
 #include "../fingerprinting/audio/wav.h"
 #include "../fingerprinting/algorithm/signature_generator.h"
-#include "../fingerprinting/communication/shazam.h"
+#include "../communication/shazam.h"
 
 CLIMain::CLIMain(int argc, char** argv)
 {

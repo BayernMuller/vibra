@@ -24,7 +24,7 @@ add_executable(vibra
     fingerprinting/algorithm/frequency.cpp
     fingerprinting/algorithm/signature_generator.cpp
     fingerprinting/audio/wav.cpp
-    fingerprinting/communication/shazam.cpp
+    communication/shazam.cpp
     cli/cli.cpp
 )
 
