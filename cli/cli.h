@@ -6,6 +6,13 @@
 #include <functional>
 #include "../fingerprinting/algorithm/signature.h"
 
+struct Action
+{
+    std::string description;
+    std::string param;
+    std::function<std::string(std::string)> func;
+};
+
 class CLIMain 
 {
 public:
@@ -14,23 +21,49 @@ public:
     void Run();
 
 private:
-    void help();
-    std::string fingerprintingByFile(std::string filepath);
-    std::string fingerprintingByMicrophone(std::string microphone) { return ""; } // TODO: implement
-    std::string recognizeSongByFile(std::string filepath);
-    std::string recognizeSongByFingerprint(std::string fingerprint) { return ""; } // TODO: implement
-    std::string recognizeSongByMicrophone(std::string microphone) { return ""; } // TODO: implement
+    std::string fingerprintFromWavFile(std::string filepath);
+    std::string recognizeSongFromWavFile(std::string filepath);
 
-    Signature GetSignatureFromFile(std::string filepath);
+    std::string fingerprintFromRawPCM(std::string chunk_seconds);
+    std::string recognizeSongFromRawPCM(std::string chunk_seconds);
+    void help();
+
+private:
+    Signature getSignatureFromWavFile(std::string filepath);
+    Signature getSignatureFromRawPCM(int chunk_seconds);
+
 private:
     std::string m_action;
     std::string m_param;
-    std::map<std::string, std::function<std::string(std::string)>> m_commands{
-        {"fingerprinting-by-file", std::bind(&CLIMain::fingerprintingByFile, this, std::placeholders::_1)},
-        {"recognize-song-by-file", std::bind(&CLIMain::recognizeSongByFile, this, std::placeholders::_1)},
-        //{"fingerprinting-by-mic", std::bind(&CLIMain::fingerprintingByMicrophone, this, std::placeholders::_1)},
-        //{"recognize-song-by-fingerprint", std::bind(&CLIMain::recognizeSongByFingerprint, this, std::placeholders::_1)},
-        //{"recognize-song-by-microphone", std::bind(&CLIMain::recognizeSongByMicrophone, this, std::placeholders::_1)}
+    std::map<std::string, Action> m_commands{
+        {"fingerprint-from-wav-file", 
+            {
+                "Generate fingerprint from wav file",
+                "wav_file_path",
+                std::bind(&CLIMain::fingerprintFromWavFile, this, std::placeholders::_1)
+            }
+        },
+        {"recognize-song-from-wav-file", 
+            {
+                "Recognize song from wav file",
+                "wav_file_path",
+                std::bind(&CLIMain::recognizeSongFromWavFile, this, std::placeholders::_1)
+            }
+        },
+        {"fingerprint-from-raw-pcm", 
+            {
+                "Generate fingerprint from raw PCM (s16le, mono, 16kHz) via stdin.",
+                "audio_chunk_seconds",
+                std::bind(&CLIMain::fingerprintFromRawPCM, this, std::placeholders::_1)
+            }
+        },
+        {"recognize-song-from-raw-pcm", 
+            {
+                "Recognize song from raw PCM (s16le, mono, 16kHz) via stdin.",
+                "audio_chunk_seconds",
+                std::bind(&CLIMain::recognizeSongFromRawPCM, this, std::placeholders::_1)
+            }
+        }
     };
 };
 
