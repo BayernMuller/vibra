@@ -11,7 +11,7 @@
 
 ### Run vibra
 
-##### Requirements
+#### Requirements
 
 * vibra uses CMake for building. You need to install [CMake](https://cmake.org/) to build vibra.
 * vibra utilizes C++11 features.
@@ -19,7 +19,7 @@
     * [libcurl](https://curl.se/libcurl/): To send HTTP requests to the Shazam API.
     * [libfftw3](http://www.fftw.org/): To calculate the Fast Fourier Transform.
 
-##### Build
+#### Build
 * You can build vibra with CMake using the following commands:
     * `mkdir build && cd build`
     * `cmake ..`
@@ -30,18 +30,28 @@
     * `cmake -DLIBRARY_PATH=/path/to/lib`
     
 
-##### Run
+#### Run
 * Use `./vibra help` to see the help message.
 
 ```
 Usage: vibra <action> <param>
 
 * Actions:
-        fingerprinting-by-file <param>
-        recognize-song-by-file <param>
+	fingerprint-from-raw-pcm <audio_chunk_seconds>
+		Generate fingerprint from raw PCM (s16le, mono, 16kHz) via stdin.
+
+	fingerprint-from-wav-file <wav_file_path>
+		Generate fingerprint from wav file
+
+	recognize-song-from-raw-pcm <audio_chunk_seconds>
+		Recognize song from raw PCM (s16le, mono, 16kHz) via stdin.
+
+	recognize-song-from-wav-file <wav_file_path>
+		Recognize song from wav file
 ```
 
-##### Examples
+#### Examples
+##### - recognizing song from wav file
 ```bash
 $ ./vibra recognize-song-by-file "stairway_to_heaven.wav" > result.json
 $ jq .track.title result.json
@@ -51,7 +61,14 @@ $ jq .track.subtitle result.json
 $ jq .track.share.href result.json
 "https://www.shazam.com/track/5933917/stairway-to-heaven"
 ```
-* You can see more metadata in the result json.
+
+##### - recognizing song from microphone
+* You can use [sox](http://sox.sourceforge.net/) or [ffmpeg](https://ffmpeg.org/) to print raw PCM data from **microphone**.
+
+```bash
+
+```
+
 
 ### License
 * vibra is licensed under the GPLv3 license. See [LICENSE](LICENSE) for more details.
