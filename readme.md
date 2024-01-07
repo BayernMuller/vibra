@@ -93,6 +93,18 @@ $ jq .track.sections[1].text result.json
 ...
 ```
 
+### Build for Web Assembly
+* vibra supports web assembly module to run shazam on a web browser
+* To build vibra to wasm, you need to build [fftw3](http://www.fftw.org/) with Emscripten.
+```
+wget http://www.fftw.org/fftw-3.3.10.tar.gz
+tar -cvf ./fftw-3.3.10.tar.gz
+cd fftw-3.3.10
+emconfigure ./configure --prefix="/path/to/fft"
+emmake make
+```
+
+
 
 ### License
 * vibra is licensed under the GPLv3 license. See [LICENSE](LICENSE) for more details.
