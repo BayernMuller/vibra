@@ -18,3 +18,5 @@ build/
 
 # Unignore LICENSE
 !LICENSE
+
+.DS_Store
