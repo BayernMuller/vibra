@@ -41,7 +41,6 @@ void Wav::GetLowQualityPCM(Raw16bitPCM* raw_pcm)
         getMonoSample = &Wav::stereoToMonoSample;
     } 
 
-    Sample sample = 0;
     for (std::uint32_t i = 0, j = 0;
         i < mDataSize && j < new_sample_count;
         i += (width * mChannel) * downsample_ratio, j++)
