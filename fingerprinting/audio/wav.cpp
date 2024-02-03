@@ -6,82 +6,7 @@
 #include <cmath>
 #include <memory.h>
 
-#define GETINTX(T, cp, i)  (*(T *)((unsigned char *)(cp) + (i)))
-#define SETINTX(T, cp, i, val)  do {                    \
-        *(T *)((unsigned char *)(cp) + (i)) = (T)(val); \
-    } while (0)
 
-
-#define GETINT8(cp, i)          GETINTX(signed char, (cp), (i))
-#define GETINT16(cp, i)         GETINTX(int16_t, (cp), (i))
-#define GETINT32(cp, i)         GETINTX(int32_t, (cp), (i))
-
-#ifdef WORDS_BIGENDIAN
-#define GETINT24(cp, i)  (                              \
-        ((unsigned char *)(cp) + (i))[2] +              \
-        (((unsigned char *)(cp) + (i))[1] * (1 << 8)) + \
-        (((signed char *)(cp) + (i))[0] * (1 << 16)) )
-#else
-#define GETINT24(cp, i)  (                              \
-        ((unsigned char *)(cp) + (i))[0] +              \
-        (((unsigned char *)(cp) + (i))[1] * (1 << 8)) + \
-        (((signed char *)(cp) + (i))[2] * (1 << 16)) )
-#endif
-
-
-#define SETINT8(cp, i, val)     SETINTX(signed char, (cp), (i), (val))
-#define SETINT16(cp, i, val)    SETINTX(int16_t, (cp), (i), (val))
-#define SETINT32(cp, i, val)    SETINTX(int32_t, (cp), (i), (val))
-
-#ifdef WORDS_BIGENDIAN
-#define SETINT24(cp, i, val)  do {                              \
-        ((unsigned char *)(cp) + (i))[2] = (int)(val);          \
-        ((unsigned char *)(cp) + (i))[1] = (int)(val) >> 8;     \
-        ((signed char *)(cp) + (i))[0] = (int)(val) >> 16;      \
-    } while (0)
-#else
-#define SETINT24(cp, i, val)  do {                              \
-        ((unsigned char *)(cp) + (i))[0] = (int)(val);          \
-        ((unsigned char *)(cp) + (i))[1] = (int)(val) >> 8;     \
-        ((signed char *)(cp) + (i))[2] = (int)(val) >> 16;      \
-    } while (0)
-#endif
-
-
-#define GETRAWSAMPLE(size, cp, i)  (                    \
-        (size == 1) ? (int)GETINT8((cp), (i)) :         \
-        (size == 2) ? (int)GETINT16((cp), (i)) :        \
-        (size == 3) ? (int)GETINT24((cp), (i)) :        \
-                      (int)GETINT32((cp), (i)))
-
-#define SETRAWSAMPLE(size, cp, i, val)  do {    \
-        if (size == 1)                          \
-            SETINT8((cp), (i), (val));          \
-        else if (size == 2)                     \
-            SETINT16((cp), (i), (val));         \
-        else if (size == 3)                     \
-            SETINT24((cp), (i), (val));         \
-        else                                    \
-            SETINT32((cp), (i), (val));         \
-    } while(0)
-
-
-#define GETSAMPLE32(size, cp, i)  (                           \
-        (size == 1) ? (int)GETINT8((cp), (i)) * (1 << 24) :   \
-        (size == 2) ? (int)GETINT16((cp), (i)) * (1 << 16) :  \
-        (size == 3) ? (int)GETINT24((cp), (i)) * (1 << 8) :   \
-                      (int)GETINT32((cp), (i)))
-
-#define SETSAMPLE32(size, cp, i, val)  do {     \
-        if (size == 1)                          \
-            SETINT8((cp), (i), (val) >> 24);    \
-        else if (size == 2)                     \
-            SETINT16((cp), (i), (val) >> 16);   \
-        else if (size == 3)                     \
-            SETINT24((cp), (i), (val) >> 8);    \
-        else                                    \
-            SETINT32((cp), (i), (val));         \
-    } while(0)
 
 Wav::Wav(const std::string& wav_file_path)
     : mWavFilePath(wav_file_path)
@@ -93,40 +18,35 @@ Wav::~Wav()
 {
 }
 
-void Wav::GetLowQualityPCM(Raw16bitPCM& raw_pcm)
+void Wav::GetLowQualityPCM(Raw16bitPCM* raw_pcm)
 {
     // clear raw_pcm
-    raw_pcm.clear();
+    raw_pcm->clear();
 
-    void* raw_data = mData.get();
+    const void* raw_data = mData.get();
+    
+    double downsample_ratio = mSampleRate / (double)LOW_QUALITY_SAMPLE_RATE;
     std::uint32_t width = mBitPerSample / 8;
     std::uint32_t sample_count = mDataSize / width;
-    std::uint32_t new_sample_count = sample_count / mChannel;
-    
-    raw_pcm.resize(new_sample_count);
+    std::uint32_t new_sample_count = sample_count / mChannel / downsample_ratio;
+    raw_pcm->resize(new_sample_count);
 
-    Sample sample = 0;
-    for (std::uint32_t i = 0, j = 0; i < mDataSize; i += (width * mChannel), j++)
+    auto getMonoSample = &Wav::getMonoSample;
+    if (mChannel == 1)
     {
-        double colleted_sample = 0;    
-        for (std::uint32_t k = 0; k < mChannel; k++)
-        {
-            sample = GETSAMPLE32(width, raw_data, i + (width * k)) >> LOW_QUALITY_SAMPLE_WIDTH;
-            colleted_sample += sample;
-        }
-        raw_pcm[j] = colleted_sample / mChannel;
+        getMonoSample = &Wav::monoToMonoSample;
     }
+    else if (mChannel == 2)
+    {
+        getMonoSample = &Wav::stereoToMonoSample;
+    } 
 
-    // downsample
-    // TODO: combine with above loop
-    double downsample_ratio = mSampleRate / (double)LOW_QUALITY_SAMPLE_RATE;
-    std::uint32_t downsampled_sample_count = new_sample_count / downsample_ratio;
-    Raw16bitPCM downsampled_pcm(downsampled_sample_count);
-    for (std::uint32_t i = 0; i < downsampled_sample_count; i++)
+    for (std::uint32_t i = 0, j = 0;
+        i < mDataSize && j < new_sample_count;
+        i += (width * mChannel) * downsample_ratio, j++)
     {
-        downsampled_pcm[i] = raw_pcm[i * downsample_ratio];
+        raw_pcm->at(j) = (this->*getMonoSample)(width, raw_data, i);
     }
-    raw_pcm = std::move(downsampled_pcm);
 }
 
 void Wav::readWavFile(const std::string& wav_file_path)
@@ -232,4 +152,28 @@ std::uint32_t Wav::gcd(std::uint32_t a, std::uint32_t b)
         a = temp;
     }
     return a;
+}
+
+Sample Wav::getMonoSample(std::uint32_t width, const void* data, std::uint32_t index)
+{
+    Sample temp_sample = 0;
+    double collected_sample = 0;
+    for (std::uint32_t k = 0; k < mChannel; k++)
+    {
+        temp_sample = GETSAMPLE32(width, data, index + (width * k)) >> LOW_QUALITY_SAMPLE_WIDTH;
+        collected_sample += temp_sample;
+    }
+    return Sample(collected_sample / mChannel);
+}
+
+Sample Wav::monoToMonoSample(std::uint32_t width, const void* data, std::uint32_t index)
+{
+    return GETSAMPLE32(width, data, index) >> LOW_QUALITY_SAMPLE_WIDTH;
+}
+
+Sample Wav::stereoToMonoSample(std::uint32_t width, const void* data, std::uint32_t index)
+{
+    Sample sample1 = GETSAMPLE32(width, data, index) >> LOW_QUALITY_SAMPLE_WIDTH;
+    Sample sample2 = GETSAMPLE32(width, data, index + width) >> LOW_QUALITY_SAMPLE_WIDTH;
+    return (sample1 + sample2) / 2;
 }

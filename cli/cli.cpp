@@ -61,7 +61,7 @@ Signature CLIMain::getSignatureFromWavFile(std::string filepath)
 {
     Wav wav(filepath);
     Raw16bitPCM pcm;
-    wav.GetLowQualityPCM(pcm);
+    wav.GetLowQualityPCM(&pcm);
     SignatureGenerator generator;
     generator.FeedInput(pcm);
     generator.SetMaxTimeSeconds(12);

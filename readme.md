@@ -1,5 +1,7 @@
 # 🎵 vibra
 
+![vibra](res/project_vibra.png)
+
 ### What is vibra?
 * vibra is a C++ music file recognition tool that uses an unofficial Shazam API.
 * vibra analyzes music files and returns fingerprint data. It searches the Shazam database to identify the song.
@@ -8,6 +10,13 @@
     * [How does Shazam work](https://www.cameronmacleod.com/blog/how-does-shazam-work)
 * I referenced the Rust implementation of the Shazam client code from [SongRec](https://github.com/marin-m/SongRec/tree/master).
 * I created this project for embedded devices such as Raspberry Pi or Jetson Nano, which are challenging to set up with Python or Rust environments.
+
+![vibra_benchmark](res/project_vibra_benchmark.png)
+<figcaption align = "center">benchmark on RPi4, lower is better</figcaption>
+<br>
+
+* I compared the performance of vibra with the [SongRec](https://github.com/marin-m/SongRec/tree/master) rust and python version on the Raspberry Pi 4.
+* vibra is about 2 times faster than the SongRec!
 
 ### Run vibra
 
