@@ -2,6 +2,9 @@
 
 ![vibra](res/project_vibra.png)
 
+The use of the Shazam logo in this project does not imply endorsement by Shazam or its parent company, Apple Inc. The logo is used in accordance with company guidelines and for identification purposes only.
+
+
 ### What is vibra?
 * vibra is a C++ music file recognition tool that uses an unofficial Shazam API.
 * vibra analyzes music files and returns fingerprint data. It searches the Shazam database to identify the song.
