@@ -1,10 +1,7 @@
 <p align="center">
-    <img src="res/project_vibra.png" width="400"></img>
-</p>
-
-<p style="color:gray; font-size:7pt" align="center">
-The use of the Shazam logo in this project does not imply endorsement by Shazam or its parent company, Apple Inc.
-The use of the Shazam logo in this project does not imply endorsement by Shazam or its parent company, Apple Inc. The logo is used in accordance with company guidelines and for identification purposes only.
+    <img src="res/project_vibra.png" width="400"/>
+    <br>
+    <img src='https://svgshare.com/i/13MG.svg' title='shazam_logo_license'/>
 </p>
 
 <span align="center">
