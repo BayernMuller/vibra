@@ -6,11 +6,16 @@
 
 <span align="center">
 
-# 🎵 vibra
-
-![GitHub stars](https://img.shields.io/github/stars/bayernmuller/vibra?style=social)
+# vibra
 
 </span>
+
+<p align="center">
+    <img src="https://github.com/bayernmuller/vibra/actions/workflows/ci.yaml/badge.svg"/>
+    <img src="https://img.shields.io/github/license/bayernmuller/vibra"/>
+    <img src="https://img.shields.io/github/languages/top/bayernmuller/vibra"/>
+</p>
+    
 
 ### What is vibra?
 * vibra is a C++ music file recognition tool that uses an unofficial Shazam API.
@@ -21,12 +26,30 @@
 * I referenced the Rust implementation of the Shazam client code from [SongRec](https://github.com/marin-m/SongRec/tree/master).
 * I created this project for embedded devices such as Raspberry Pi or Jetson Nano, which are challenging to set up with Python or Rust environments.
 
-![vibra_benchmark](res/project_vibra_benchmark.png)
-<figcaption align = "center">benchmark on RPi4, lower is better</figcaption>
-<br>
+### Performance comparison
+<p align="center">
+    <img src="res/project_vibra_benchmark.png" width="700"/><br/>
+    lower is better.
+</p>
 
 * I compared the performance of vibra with the [SongRec](https://github.com/marin-m/SongRec/tree/master) rust and python version on the Raspberry Pi 4.
 * vibra is about 2 times faster than the SongRec!
+
+
+
+### Compatibility table
+| Platform         | CPU Architecture | Build Status     |
+|------------------|------------------|------------------|
+| Linux            | x86_64           | ✅                |
+| Linux            | ARM64            | ✅                |
+| Windows          | x86_64           | ✅                |
+| macOS            | x86_64           | ✅                |
+| macOS            | ARM64            | ✅                |
+| Raspberry Pi 4   | ARMv8-A          | ✅                |
+| Raspberry Pi Zero| ARMv6            | ✅                |
+| Web Assembly     | -                | 🔜 (in progress) |
+* I'm working on the Web Assembly version of vibra!
+
 
 ### Run vibra
 
