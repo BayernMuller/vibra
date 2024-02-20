@@ -15,6 +15,7 @@ class Wav
 {
 public:
     Wav(const std::string& wav_file_path);
+    Wav(const char* raw_wav, std::uint32_t raw_wav_size);
     ~Wav();
 
     inline std::uint32_t GetAudioFormat() { return mAudioFormat; }
@@ -30,6 +31,7 @@ public:
 
 private:
     void readWavFile(const std::string& wav_file_path);
+    void readWavBuffer(std::istream& stream);
     std::uint32_t gcd(std::uint32_t a, std::uint32_t b);
 
     inline Sample stereoToMonoSample(std::uint32_t width, const void* data, std::uint32_t index);
