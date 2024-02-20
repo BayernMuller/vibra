@@ -120,21 +120,11 @@ $ jq .track.sections[1].text result.json
   "(Uh-huh, honey)",
   "",
   "All them other niggas lame, and you know it now",
-  "When a real nigga hold you down, you supposed to drown",
-  "",
-  "Bound (bound) to fall in love",
-  "B-B-B-Bound (bound) to fall in love",
-  "(Uh-huh, honey)",
-  "",
-  "What you doing in the club on a Thursday?",
-  "She say she only here for her girl birthday",
-  "They ordered champagne but still look thirsty",
-  "Rock Forever 21 but just turned 30",
-  "I know I got a bad reputation",
-  "Walk-around-always-mad reputation",
 ...
 ```
 
+### Sample Result
+* You can see the sample shazam result json file in [here](https://gist.github.com/BayernMuller/b92fd43eef4471b7016009196e62e4d2)
 
 ### License
 * vibra is licensed under the GPLv3 license. See [LICENSE](LICENSE) for more details.
