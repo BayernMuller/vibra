@@ -1,8 +1,8 @@
 #include "shazam.h"
 #include "user_agents.h"
 #include "timezones.h"
-#include "../utils/uuid4.h"
-#include "../algorithm/signature.h"
+#include "../fingerprinting/utils/uuid4.h"
+#include "../fingerprinting/algorithm/signature.h"
 #include <random>
 #include <sstream>
 #include <curl/curl.h>
@@ -50,7 +50,7 @@ std::string Shazam::RequestMetadata(const Signature& signature)
         json_buf << "\"timestamp\":" << time(nullptr) * 1000ULL << ",";
         json_buf << "\"timezone\":" << "\"" << timezone << "\"";
     json_buf << "}";
-    std::string json_str = std::move(json_buf.str());
+    std::string json_str = json_buf.str();
     
     CURL* curl = curl_easy_init();
     std::string readBuffer;

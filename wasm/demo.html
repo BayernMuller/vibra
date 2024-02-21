@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>WASM Demo</title>
+    <script src="./build/vibra.js"></script>
+</head>
+
+<body>
+
+<input type="file" id="fileInput" accept=".wav" disabled/>
+<div id="result"></div>
+
+<script>
+    Module.onRuntimeInitialized = () => {
+        document.getElementById('fileInput').disabled = false;
+    };
+
+    document.getElementById('fileInput').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (!file) {
+            console.error("파일을 선택해주세요.");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.readAsArrayBuffer(file);
+        reader.onloadend = function() {
+            const arrayBuffer = reader.result;
+            const header = new Uint8Array(arrayBuffer.slice(0, 4));
+
+            if (header[0] !== 82 || header[1] !== 73 || header[2] !== 70 || header[3] !== 70) { // "RIFF" -> 82, 73, 70, 70
+                console.error("Not a wav file");
+                return;
+            }
+            
+            getSignature(new Uint8Array(arrayBuffer), arrayBuffer.byteLength).then(signature => {
+                document.getElementById('result').innerText = signature;
+            });
+        };
+    });
+
+    async function getSignature(rawwav) {
+        const dataPtr = Module._malloc(rawwav.length);
+        Module.HEAPU8.set(rawwav, dataPtr);
+        const signaturePtr = Module.ccall(
+            'GetSignature',
+            'string',
+            ['number', 'number'],
+            [dataPtr, rawwav.length]
+        );
+        Module._free(dataPtr);
+        return signaturePtr;
+    }
+</script>
+</body>
+</html>

@@ -5,13 +5,19 @@
 #include <string>
 #include <cmath>
 #include <memory.h>
-
-
+#include <sstream>  
 
 Wav::Wav(const std::string& wav_file_path)
     : mWavFilePath(wav_file_path)
 {
     readWavFile(wav_file_path);
+}
+
+Wav::Wav(const char* raw_wav, std::uint32_t raw_wav_size)
+    : mWavFilePath("")
+{
+    std::istringstream stream(std::string(raw_wav, raw_wav_size));
+    readWavBuffer(stream);
 }
 
 Wav::~Wav()
@@ -53,16 +59,20 @@ void Wav::readWavFile(const std::string& wav_file_path)
 {
     std::ifstream wav_file(wav_file_path, std::ios::binary);
     assert(wav_file.is_open());
+    readWavBuffer(wav_file);
+}
 
+void Wav::readWavBuffer(std::istream& stream)
+{
     // read whole file
     char* data = nullptr;
-    wav_file.seekg(0, std::ios::end);
-    std::uint64_t file_size = wav_file.tellg();
+    stream.seekg(0, std::ios::end);
+    std::uint64_t file_size = stream.tellg();
     mFileSize = file_size;
 
     data = new char[file_size];
-    wav_file.seekg(0, std::ios::beg);
-    wav_file.read(data, file_size);
+    stream.seekg(0, std::ios::beg);
+    stream.read(data, file_size);
 
     // Read RIFF 
     char* riff_header = data;
@@ -107,7 +117,7 @@ void Wav::readWavFile(const std::string& wav_file_path)
         --subchunks_limit;
     }
     delete[] data;
-    assert(false); // read data failed
+    assert(false); // read data failed   
 }
 
 void Wav::SaveWavFile(const std::string& wav_file_path, Raw16bitPCM& raw_pcm, std::uint32_t sample_rate, std::uint32_t sample_width, std::uint32_t channel_count)
@@ -138,7 +148,7 @@ void Wav::SaveWavFile(const std::string& wav_file_path, Raw16bitPCM& raw_pcm, st
     std::uint32_t width = sample_width / 8;
     for (std::uint32_t i = 0; i < raw_pcm.size(); i++)
     {
-        u_int16_t val = raw_pcm[i];
+        std::uint16_t val = raw_pcm[i];
         wav_file.write((char*)&val, width);
     }
 }

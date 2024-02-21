@@ -47,7 +47,7 @@
 | macOS            | ARM64            | ✅                |
 | Raspberry Pi 4   | ARMv8-A          | ✅                |
 | Raspberry Pi Zero| ARMv6            | ✅                |
-| Web Assembly     | -                | 🔜 (in progress) |
+| Web Assembly     | -                | ✅                |
 * I'm working on the Web Assembly version of vibra!
 
 
