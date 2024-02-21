@@ -1,6 +1,21 @@
-# 🎵 vibra
+<p align="center">
+    <img src="res/project_vibra.png" width="400"/>
+    <br>
+    <img src='https://svgshare.com/i/13MG.svg' title='shazam_logo_license'/>
+</p>
 
-![vibra](res/project_vibra.png)
+<span align="center">
+
+# vibra
+
+</span>
+
+<p align="center">
+    <img src="https://github.com/bayernmuller/vibra/actions/workflows/ci.yaml/badge.svg"/>
+    <img src="https://img.shields.io/github/license/bayernmuller/vibra"/>
+    <img src="https://img.shields.io/github/languages/top/bayernmuller/vibra"/>
+</p>
+    
 
 ### What is vibra?
 * vibra is a C++ music file recognition tool that uses an unofficial Shazam API.
@@ -11,12 +26,30 @@
 * I referenced the Rust implementation of the Shazam client code from [SongRec](https://github.com/marin-m/SongRec/tree/master).
 * I created this project for embedded devices such as Raspberry Pi or Jetson Nano, which are challenging to set up with Python or Rust environments.
 
-![vibra_benchmark](res/project_vibra_benchmark.png)
-<figcaption align = "center">benchmark on RPi4, lower is better</figcaption>
-<br>
+### Performance comparison
+<p align="center">
+    <img src="res/project_vibra_benchmark.png" width="700"/><br/>
+    lower is better.
+</p>
 
 * I compared the performance of vibra with the [SongRec](https://github.com/marin-m/SongRec/tree/master) rust and python version on the Raspberry Pi 4.
 * vibra is about 2 times faster than the SongRec!
+
+
+
+### Compatibility table
+| Platform         | CPU Architecture | Build Status     |
+|------------------|------------------|------------------|
+| Linux            | x86_64           | ✅                |
+| Linux            | ARM64            | ✅                |
+| Windows          | x86_64           | ✅                |
+| macOS            | x86_64           | ✅                |
+| macOS            | ARM64            | ✅                |
+| Raspberry Pi 4   | ARMv8-A          | ✅                |
+| Raspberry Pi Zero| ARMv6            | ✅                |
+| Web Assembly     | -                | ✅                |
+* I'm working on the Web Assembly version of vibra!
+
 
 ### Run vibra
 
@@ -87,33 +120,11 @@ $ jq .track.sections[1].text result.json
   "(Uh-huh, honey)",
   "",
   "All them other niggas lame, and you know it now",
-  "When a real nigga hold you down, you supposed to drown",
-  "",
-  "Bound (bound) to fall in love",
-  "B-B-B-Bound (bound) to fall in love",
-  "(Uh-huh, honey)",
-  "",
-  "What you doing in the club on a Thursday?",
-  "She say she only here for her girl birthday",
-  "They ordered champagne but still look thirsty",
-  "Rock Forever 21 but just turned 30",
-  "I know I got a bad reputation",
-  "Walk-around-always-mad reputation",
 ...
 ```
 
-### Build for Web Assembly
-* vibra supports web assembly module to run shazam on a web browser
-* To build vibra to wasm, you need to build [fftw3](http://www.fftw.org/) with Emscripten.
-```
-wget http://www.fftw.org/fftw-3.3.10.tar.gz
-tar -cvf ./fftw-3.3.10.tar.gz
-cd fftw-3.3.10
-emconfigure ./configure --prefix="/path/to/fft"
-emmake make
-```
-
-
+### Sample Result
+* You can see the sample shazam result json file in [here](https://gist.github.com/BayernMuller/b92fd43eef4471b7016009196e62e4d2)
 
 ### License
 * vibra is licensed under the GPLv3 license. See [LICENSE](LICENSE) for more details.
