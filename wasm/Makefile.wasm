@@ -20,12 +20,13 @@ SOURCES := $(SRC_DIR)/wasm/wasm.cpp \
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
 TARGET_JS := $(BUILD_DIR)/vibra.js
 
-EXPORT_FUNCTIONS := -s EXPORTED_FUNCTIONS="['_GetSignature', '_FreeSignature']" \
-                    -s EXTRA_EXPORTED_RUNTIME_METHODS="['ccall', 'cwrap']"
-
-CFLAGS := -O3
-CXXFLAGS := -O3 -std=c++11 -I$(FFTW3_INCLUDE)
-LDFLAGS := -s WASM=1 -lfftw3 -L$(FFTW3_LIB) $(EXPORT_FUNCTIONS)
+WASM_SETTINGS := -s EXPORTED_FUNCTIONS="['_GetSignature', '_malloc', '_free']" \
+                 -s EXPORTED_RUNTIME_METHODS="['ccall', 'cwrap']" \
+                 -s ALLOW_MEMORY_GROWTH=1
+                    
+CFLAGS := -Os
+CXXFLAGS := -Os -std=c++11 -I$(FFTW3_INCLUDE)
+LDFLAGS := -s WASM=1 -lfftw3 -L$(FFTW3_LIB) $(WASM_SETTINGS)
 
 all: $(TARGET_JS)
 
