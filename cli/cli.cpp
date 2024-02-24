@@ -84,10 +84,6 @@ Signature CLIMain::getSignatureFromRawPCM(int chunk_seconds)
     generator.FeedInput(raw_pcm);
     generator.SetMaxTimeSeconds(chunk_seconds);
 
-    FILE* fp = fopen("test.raw", "wb");
-    fwrite(raw_pcm.data(), sizeof(Sample), raw_pcm.size(), fp);
-    fclose(fp);
-
     return generator.GetNextSignature();
 }
 
