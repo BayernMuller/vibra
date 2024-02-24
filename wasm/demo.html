@@ -10,7 +10,8 @@
 <body>
 
 <input type="file" id="fileInput" accept=".wav" disabled/>
-<div id="result"></div>
+<code id="result"></code>
+<code id="samplems"></code>
 
 <script>
     Module.onRuntimeInitialized = () => {
@@ -36,7 +37,8 @@
             }
             
             getSignature(new Uint8Array(arrayBuffer), arrayBuffer.byteLength).then(signature => {
-                document.getElementById('result').innerText = signature;
+                document.getElementById('result').innerText = signature.uri;
+                document.getElementById('samplems').innerText = signature.samplems;
             });
         };
     });
@@ -46,12 +48,19 @@
         Module.HEAPU8.set(rawwav, dataPtr);
         const signaturePtr = Module.ccall(
             'GetSignature',
-            'string',
+            'number',
             ['number', 'number'],
             [dataPtr, rawwav.length]
         );
         Module._free(dataPtr);
-        return signaturePtr;
+
+        const uri = Module.ccall('GetFingerprint', 'string', ['number'], [signaturePtr]);
+        const samplems = Module.ccall('GetSampleMs', 'number', ['number'], [signaturePtr]);
+
+        return {
+            uri: uri,
+            samplems: samplems
+        }
     }
 </script>
 </body>
