@@ -26,14 +26,11 @@ public:
     inline std::uint32_t GetDataSize() { return mDataSize; }
     inline std::uint32_t GetFileSize() { return mFileSize; }
     inline std::shared_ptr<std::uint8_t> GetData() const { return mData; }
-
     void GetLowQualityPCM(Raw16bitPCM* raw_pcm);
-    void SaveWavFile(const std::string& wav_file_path, Raw16bitPCM& raw_pcm, std::uint32_t sample_rate, std::uint32_t sample_width, std::uint32_t channel_count);
 
 private:
     void readWavFile(const std::string& wav_file_path);
     void readWavBuffer(std::istream& stream);
-    std::uint32_t gcd(std::uint32_t a, std::uint32_t b);
 
     inline Sample stereoToMonoSample(std::uint32_t width, const void* data, std::uint32_t index);
     inline Sample monoToMonoSample(std::uint32_t width, const void* data, std::uint32_t index);

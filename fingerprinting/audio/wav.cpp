@@ -133,50 +133,6 @@ void Wav::readWavBuffer(std::istream& stream)
     assert(false); // read data failed   
 }
 
-void Wav::SaveWavFile(const std::string& wav_file_path, Raw16bitPCM& raw_pcm, std::uint32_t sample_rate, std::uint32_t sample_width, std::uint32_t channel_count)
-{
-    std::ofstream wav_file(wav_file_path, std::ios::binary);
-    assert(wav_file.is_open());
-
-    std::uint32_t data_size = raw_pcm.size() * (sample_width / 8) * channel_count;
-    
-    wav_file.write("RIFF", 4);
-    wav_file.write((char*)&data_size, 4);
-    wav_file.write("WAVE", 4);
-    wav_file.write("fmt ", 4);
-    std::uint32_t fmt_size = 16;
-    wav_file.write((char*)&fmt_size, 4);
-    std::uint16_t audio_format = 1;
-    wav_file.write((char*)&audio_format, 2);
-    wav_file.write((char*)&channel_count, 2);
-    wav_file.write((char*)&sample_rate, 4);
-    std::uint32_t byte_rate = sample_rate * channel_count * (sample_width / 8);
-    wav_file.write((char*)&byte_rate, 4);
-    std::uint16_t block_align = channel_count * (sample_width / 8);
-    wav_file.write((char*)&block_align, 2);
-    wav_file.write((char*)&sample_width, 2);
-    wav_file.write("data", 4);
-    wav_file.write((char*)&data_size, 4);
-
-    std::uint32_t width = sample_width / 8;
-    for (std::uint32_t i = 0; i < raw_pcm.size(); i++)
-    {
-        std::uint16_t val = raw_pcm[i];
-        wav_file.write((char*)&val, width);
-    }
-}
-
-std::uint32_t Wav::gcd(std::uint32_t a, std::uint32_t b)
-{
-    while (b != 0)
-    {
-        std::uint32_t temp = b;
-        b = a % b;
-        a = temp;
-    }
-    return a;
-}
-
 Sample Wav::getMonoSample(std::uint32_t width, const void* data, std::uint32_t index)
 {
     Sample temp_sample = 0;
