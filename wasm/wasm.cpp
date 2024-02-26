@@ -8,17 +8,14 @@ extern "C" {
 #endif
 
 #define DBG(x) std::cout << "[" << __FUNCTION__ << "] " << #x << ": " << x << std::endl;
-
 struct SignatureWrapper
 {
     std::string uri;
     unsigned int samplems;
 };
 
-SignatureWrapper* EMSCRIPTEN_KEEPALIVE GetWavSignature(char* raw_wav, int wav_data_size)
+SignatureWrapper* fingerprintWav(const Wav& wav)
 {
-    Wav wav(raw_wav, wav_data_size);
-
     Raw16bitPCM pcm;
     wav.GetLowQualityPCM(&pcm);
 
@@ -35,6 +32,18 @@ SignatureWrapper* EMSCRIPTEN_KEEPALIVE GetWavSignature(char* raw_wav, int wav_da
     wrapper.uri = signature.GetBase64Uri();
     wrapper.samplems = signature.NumberOfSamples() / signature.SampleRate() * 1000;
     return &wrapper;
+}
+
+SignatureWrapper* EMSCRIPTEN_KEEPALIVE GetWavSignature(char* raw_wav, int wav_data_size)
+{
+    Wav wav(raw_wav, wav_data_size);
+    return fingerprintWav(wav);
+}
+
+SignatureWrapper* EMSCRIPTEN_KEEPALIVE GetPcmSignature(char* raw_pcm, int pcm_data_size, int sample_rate, int sample_width, int channel_count)
+{
+    Wav wav(raw_pcm, pcm_data_size, sample_rate, sample_width, channel_count);
+    return fingerprintWav(wav);
 }
 
 char* EMSCRIPTEN_KEEPALIVE GetFingerprint(SignatureWrapper* signature)
