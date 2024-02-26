@@ -37,7 +37,7 @@ Wav::~Wav()
 {
 }
 
-void Wav::GetLowQualityPCM(Raw16bitPCM* raw_pcm)
+void Wav::GetLowQualityPCM(Raw16bitPCM* raw_pcm) const
 {
     // clear raw_pcm
     raw_pcm->clear();
@@ -133,7 +133,7 @@ void Wav::readWavBuffer(std::istream& stream)
     assert(false); // read data failed   
 }
 
-Sample Wav::getMonoSample(std::uint32_t width, const void* data, std::uint32_t index)
+Sample Wav::getMonoSample(std::uint32_t width, const void* data, std::uint32_t index) const
 {
     Sample temp_sample = 0;
     double collected_sample = 0;
@@ -145,12 +145,12 @@ Sample Wav::getMonoSample(std::uint32_t width, const void* data, std::uint32_t i
     return Sample(collected_sample / mChannel);
 }
 
-Sample Wav::monoToMonoSample(std::uint32_t width, const void* data, std::uint32_t index)
+Sample Wav::monoToMonoSample(std::uint32_t width, const void* data, std::uint32_t index) const
 {
     return GETSAMPLE32(width, data, index) >> LOW_QUALITY_SAMPLE_WIDTH;
 }
 
-Sample Wav::stereoToMonoSample(std::uint32_t width, const void* data, std::uint32_t index)
+Sample Wav::stereoToMonoSample(std::uint32_t width, const void* data, std::uint32_t index) const
 {
     Sample sample1 = GETSAMPLE32(width, data, index) >> LOW_QUALITY_SAMPLE_WIDTH;
     Sample sample2 = GETSAMPLE32(width, data, index + width) >> LOW_QUALITY_SAMPLE_WIDTH;

@@ -26,15 +26,15 @@ public:
     inline std::uint32_t GetDataSize() { return mDataSize; }
     inline std::uint32_t GetFileSize() { return mFileSize; }
     inline std::shared_ptr<std::uint8_t> GetData() const { return mData; }
-    void GetLowQualityPCM(Raw16bitPCM* raw_pcm);
+    void GetLowQualityPCM(Raw16bitPCM* raw_pcm) const;
 
 private:
     void readWavFile(const std::string& wav_file_path);
     void readWavBuffer(std::istream& stream);
 
-    inline Sample stereoToMonoSample(std::uint32_t width, const void* data, std::uint32_t index);
-    inline Sample monoToMonoSample(std::uint32_t width, const void* data, std::uint32_t index);
-    inline Sample getMonoSample(std::uint32_t width, const void* data, std::uint32_t index);
+    inline Sample stereoToMonoSample(std::uint32_t width, const void* data, std::uint32_t index) const;
+    inline Sample monoToMonoSample(std::uint32_t width, const void* data, std::uint32_t index) const;
+    inline Sample getMonoSample(std::uint32_t width, const void* data, std::uint32_t index) const;
 
 
 private:
