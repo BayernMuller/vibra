@@ -16,6 +16,7 @@ class Wav
 public:
     Wav(const std::string& wav_file_path);
     Wav(const char* raw_wav, std::uint32_t raw_wav_size);
+    Wav(const char* raw_pcm, std::uint32_t raw_pcm_size, std::uint32_t sample_rate, std::uint32_t sample_width, std::uint32_t channel_count);
     ~Wav();
 
     inline std::uint32_t GetAudioFormat() { return mAudioFormat; }

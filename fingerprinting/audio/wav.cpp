@@ -20,6 +20,19 @@ Wav::Wav(const char* raw_wav, std::uint32_t raw_wav_size)
     readWavBuffer(stream);
 }
 
+Wav::Wav(const char* raw_pcm, std::uint32_t raw_pcm_size, std::uint32_t sample_rate, std::uint32_t sample_width, std::uint32_t channel_count)
+    : mWavFilePath("")
+{
+    mAudioFormat = 1;
+    mChannel = channel_count;
+    mSampleRate = sample_rate;
+    mBitPerSample = sample_width;
+    mDataSize = raw_pcm_size;
+    mFileSize = 44 + raw_pcm_size;
+    mData = std::shared_ptr<std::uint8_t>(new std::uint8_t[raw_pcm_size]);
+    ::memcpy(mData.get(), raw_pcm, raw_pcm_size);
+}
+
 Wav::~Wav()
 {
 }
