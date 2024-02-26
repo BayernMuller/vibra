@@ -25,6 +25,7 @@
     * [How does Shazam work](https://www.cameronmacleod.com/blog/how-does-shazam-work)
 * I referenced the Rust implementation of the Shazam client code from [SongRec](https://github.com/marin-m/SongRec/tree/master).
 * I created this project for embedded devices such as Raspberry Pi or Jetson Nano, which are challenging to set up with Python or Rust environments.
+* You can see the sample shazam result json file in [here](https://gist.github.com/BayernMuller/b92fd43eef4471b7016009196e62e4d2)
 
 ### Performance comparison
 <p align="center">
@@ -36,10 +37,10 @@
 * vibra is about 2 times faster than the SongRec!
 
 
-
 ### Compatibility table
-| Platform         | CPU Architecture | Build Status     |
+| Platform         |     Architecture | Build Status     |
 |------------------|------------------|------------------|
+| [WebAssembly](wasm/readme.md) | -                | ✅                |
 | Linux            | x86_64           | ✅                |
 | Linux            | ARM64            | ✅                |
 | Windows          | x86_64           | ✅                |
@@ -47,8 +48,6 @@
 | macOS            | ARM64            | ✅                |
 | Raspberry Pi 4   | ARMv8-A          | ✅                |
 | Raspberry Pi Zero| ARMv6            | ✅                |
-| Web Assembly     | -                | ✅                |
-* I'm working on the Web Assembly version of vibra!
 
 
 ### Run vibra
@@ -123,8 +122,8 @@ $ jq .track.sections[1].text result.json
 ...
 ```
 
-### Sample Result
-* You can see the sample shazam result json file in [here](https://gist.github.com/BayernMuller/b92fd43eef4471b7016009196e62e4d2)
+### WebAssembly Version Support
+* Please read [wasm/readme.md](wasm/readme.md) to build vibra webassembly version.
 
 ### License
 * vibra is licensed under the GPLv3 license. See [LICENSE](LICENSE) for more details.
