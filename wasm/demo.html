@@ -47,7 +47,7 @@
         const dataPtr = Module._malloc(rawwav.length);
         Module.HEAPU8.set(rawwav, dataPtr);
         const signaturePtr = Module.ccall(
-            'GetSignature',
+            'GetWavSignature',
             'number',
             ['number', 'number'],
             [dataPtr, rawwav.length]

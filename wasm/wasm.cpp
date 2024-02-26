@@ -15,7 +15,7 @@ struct SignatureWrapper
     unsigned int samplems;
 };
 
-SignatureWrapper* EMSCRIPTEN_KEEPALIVE GetSignature(char* raw_wav, int wav_data_size)
+SignatureWrapper* EMSCRIPTEN_KEEPALIVE GetWavSignature(char* raw_wav, int wav_data_size)
 {
     Wav wav(raw_wav, wav_data_size);
 
