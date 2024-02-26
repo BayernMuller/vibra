@@ -83,10 +83,12 @@ std::string Signature::GetBase64Uri() const
 
     header_buf.seekp(0);
     header_buf.write(reinterpret_cast<const char*>(&header), sizeof(header));
+
+    std::string header_string = header_buf.str();
     
     std::string base64Uri;
     base64Uri += "data:audio/vnd.shazam.sig;base64,";
-    base64Uri += base64::encode(header_buf.str().c_str(), header_buf.str().size());
+    base64Uri += base64::encode(header_string.c_str(), header_string.size());
     return base64Uri;
 }
 
