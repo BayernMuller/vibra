@@ -24,7 +24,9 @@ SignatureWrapper* fingerprintWav(const Wav& wav)
     SignatureGenerator generator;
     generator.FeedInput(pcm);
     generator.SetMaxTimeSeconds(12);
-    generator.AddSampleProcessed(LOW_QUALITY_SAMPLE_RATE * ((int)duaration / 2) - 6);
+
+    if (duaration > 12 * 3)
+        generator.AddSampleProcessed(LOW_QUALITY_SAMPLE_RATE * ((int)duaration / 2) - 6);
 
     Signature signature = generator.GetNextSignature();
     
