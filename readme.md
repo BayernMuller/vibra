@@ -1,7 +1,7 @@
 <p align="center">
     <img src="res/project_vibra.png" width="400"/>
     <br>
-    <img src='https://svgshare.com/i/13MG.svg' title='shazam_logo_license'/>
+    <img src='https://github.com/bayernmuller/vibra/blob/main/res/logo_license.svg'>
 </p>
 
 <span align="center">
