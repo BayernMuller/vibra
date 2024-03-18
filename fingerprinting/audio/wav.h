@@ -26,7 +26,7 @@ public:
     inline std::uint32_t GetDataSize() { return mDataSize; }
     inline std::uint32_t GetFileSize() { return mFileSize; }
     inline std::shared_ptr<std::uint8_t> GetData() const { return mData; }
-    void GetLowQualityPCM(Raw16bitPCM* raw_pcm) const;
+    void GetLowQualityPCM(Raw16bitPCM* raw_pcm, std::int32_t start_sec = 0, std::int32_t end_sec = -1) const;
 
 private:
     void readWavFile(const std::string& wav_file_path);
