@@ -37,17 +37,24 @@ Wav::~Wav()
 {
 }
 
-void Wav::GetLowQualityPCM(Raw16bitPCM* raw_pcm) const
+void Wav::GetLowQualityPCM(Raw16bitPCM* raw_pcm, std::int32_t start_sec, std::int32_t end_sec) const
 {
     // clear raw_pcm
     raw_pcm->clear();
-
-    const void* raw_data = mData.get();
     
     double downsample_ratio = mSampleRate / (double)LOW_QUALITY_SAMPLE_RATE;
     std::uint32_t width = mBitPerSample / 8;
     std::uint32_t sample_count = mDataSize / width;
+
+    const void* raw_data = mData.get() + (start_sec * mSampleRate * width * mChannel);
+
     std::uint32_t new_sample_count = sample_count / mChannel / downsample_ratio;
+
+    if (end_sec != -1)
+    {
+        new_sample_count = (end_sec - start_sec) * LOW_QUALITY_SAMPLE_RATE;
+    }
+
     raw_pcm->resize(new_sample_count);
 
     auto getMonoSample = &Wav::getMonoSample;
