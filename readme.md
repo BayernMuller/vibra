@@ -10,10 +10,10 @@
 
 </span>
 
+
 <p align="center">
     <img src="https://github.com/bayernmuller/vibra/actions/workflows/ci.yaml/badge.svg"/>
     <img src="https://img.shields.io/github/license/bayernmuller/vibra"/>
-    <img src="https://img.shields.io/github/languages/top/bayernmuller/vibra"/>
 </p>
     
 
@@ -38,6 +38,9 @@
 
 
 ### Compatibility table
+
+<div align="center">
+
 | Platform         |     Architecture | Build Status     |
 |------------------|------------------|------------------|
 | [WebAssembly](wasm/readme.md) | -                | ✅                |
@@ -49,6 +52,7 @@
 | Raspberry Pi 4   | ARMv8-A          | ✅                |
 | Raspberry Pi Zero| ARMv6            | ✅                |
 
+</div>
 
 ### Run vibra
 
