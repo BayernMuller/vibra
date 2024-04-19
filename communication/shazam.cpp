@@ -58,7 +58,7 @@ std::string Shazam::RequestMetadata(const Signature& signature)
     if (curl) {
         struct curl_slist* headers = NULL;
         headers = curl_slist_append(headers, user_agent.c_str());
-        headers = curl_slist_append(headers, "Accept-Encoding: gzip, deflate");
+        headers = curl_slist_append(headers, "Accept-Encoding: gzip, deflate, br");
         headers = curl_slist_append(headers, "Accept: */*");
         headers = curl_slist_append(headers, "Connection: keep-alive");
         headers = curl_slist_append(headers, "Content-Type: application/json");
@@ -70,6 +70,7 @@ std::string Shazam::RequestMetadata(const Signature& signature)
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
         curl_easy_setopt(curl, CURLOPT_POST, 1L);
+        curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "gzip, deflate, br");
         curl_easy_setopt(curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
 
         CURLcode res = curl_easy_perform(curl);
