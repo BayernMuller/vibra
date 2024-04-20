@@ -1,7 +1,7 @@
 <p align="center">
     <img src="res/project_vibra.png" width="400"/>
     <br>
-    <img src='https://github.com/bayernmuller/vibra/blob/main/res/logo_license.svg'>
+    <img src='res/logo_license.svg'>
 </p>
 
 <span align="center">
@@ -15,7 +15,6 @@
     <img src="https://github.com/bayernmuller/vibra/actions/workflows/ci.yaml/badge.svg"/>
     <img src="https://img.shields.io/github/license/bayernmuller/vibra"/>
 </p>
-    
 
 ### What is vibra?
 * vibra is a C++ music file recognition tool that uses an unofficial Shazam API.
@@ -26,16 +25,6 @@
 * I referenced the Rust implementation of the Shazam client code from [SongRec](https://github.com/marin-m/SongRec/tree/master).
 * I created this project for embedded devices such as Raspberry Pi or Jetson Nano, which are challenging to set up with Python or Rust environments.
 * You can see the sample shazam result json file in [here](https://gist.github.com/BayernMuller/b92fd43eef4471b7016009196e62e4d2)
-
-### Performance comparison
-<p align="center">
-    <img src="res/project_vibra_benchmark.png" width="700"/><br/>
-    lower is better.
-</p>
-
-* I compared the performance of vibra with the [SongRec](https://github.com/marin-m/SongRec/tree/master) rust and python version on the Raspberry Pi 4.
-* vibra is about 2 times faster than the SongRec!
-
 
 ### Compatibility table
 
@@ -54,7 +43,7 @@
 
 </div>
 
-### Run vibra
+### Build vibra
 
 #### Requirements
 
@@ -65,40 +54,39 @@
     * [libfftw3](http://www.fftw.org/): To calculate the Fast Fourier Transform.
 
 #### Build
-* You can build vibra with CMake using the following commands:
+* Clone repository **recursively** to include submodules.
+    * `git clone --recursive https://github.com/bayernmuller/vibra.git`
+
+* Run the following commands to build vibra:
     * `mkdir build && cd build`
     * `cmake ..`
     * `make`
 
-* If you want to specify the paths for libraries or include files, you can use the commands below:
-    * `cmake -DINCLUDE_PATH=/path/to/include`
-    * `cmake -DLIBRARY_PATH=/path/to/lib`
-    
-
-#### Run
-* Use `./vibra help` to see the help message.
+#### Usage
+* Use `vibra -h` to see the help message.
 
 ```
-Usage: vibra <action> <param>
+vibra {COMMAND} [OPTIONS]
 
-* Actions:
-	fingerprint-from-raw-pcm <audio_chunk_seconds>
-		Generate fingerprint from raw PCM (s16le, mono, 16kHz) via stdin.
+Options:
 
-	fingerprint-from-wav-file <wav_file_path>
-		Generate fingerprint from wav file
-
-	recognize-song-from-raw-pcm <audio_chunk_seconds>
-		Recognize song from raw PCM (s16le, mono, 16kHz) via stdin.
-
-	recognize-song-from-wav-file <wav_file_path>
-		Recognize song from wav file
+  Commands:
+      -F, --fingerprint                     Generate a fingerprint
+      -R, --recognize                       Recognize a song
+      -h, --help                            Display this help menu
+  Sources:
+      File sources:
+          -w, --wav                             WAV file
+      Raw PCM sources:
+          -s, --seconds                         Chunk seconds
+          -r, --rate                            Sample rate
+          -c, --channels                        Channels
+          -b, --bits                            Bits per sample
 ```
 
-#### Examples
 ##### - recognizing song from wav file
 ```bash
-$ ./vibra recognize-song-by-file "stairway_to_heaven.wav" > result.json
+$ vibra --recognize --wav sample.wav > result.json
 $ jq .track.title result.json
 "Stairway To Heaven"
 $ jq .track.subtitle result.json
@@ -111,7 +99,9 @@ $ jq .track.share.href result.json
 * You can use [sox](http://sox.sourceforge.net/) or [ffmpeg](https://ffmpeg.org/) to print raw PCM data from **microphone**.
 
 ```bash
-$ sox -d -t raw -b 16 -e signed-integer -r 16000 -c 1 - 2>/dev/null | ./vibra recognize-song-from-raw-pcm 5 > result.json
+$ sox -d -t raw -b 24 -e signed-integer -r 44100 -c 1 - 2>/dev/null
+  | vibra --recognize --seconds 5 --rate 44100 --channels 1 --bits 24 > result.json
+
 $ jq .track.title result.json
 "Bound 2"
 $ jq .track.subtitle result.json
@@ -125,6 +115,15 @@ $ jq .track.sections[1].text result.json
   "All them other niggas lame, and you know it now",
 ...
 ```
+
+### Performance comparison
+<p align="center">
+    <img src="res/project_vibra_benchmark.png" width="700"/><br/>
+    lower is better.
+</p>
+
+* I compared the performance of vibra with the [SongRec](https://github.com/marin-m/SongRec/tree/master) rust and python version on the Raspberry Pi 4.
+* vibra is about 2 times faster than the SongRec!
 
 ### WebAssembly Version Support
 * Please read [wasm/readme.md](wasm/readme.md) to build vibra webassembly version.

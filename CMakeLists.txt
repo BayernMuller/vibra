@@ -19,13 +19,13 @@ if(DEFINED LIBRARY_PATH)
 endif()
 
 add_executable(vibra 
-    main.cpp
+    cli/main.cpp
+    cli/cli.cpp
     fingerprinting/algorithm/signature.cpp
     fingerprinting/algorithm/frequency.cpp
     fingerprinting/algorithm/signature_generator.cpp
     fingerprinting/audio/wav.cpp
     communication/shazam.cpp
-    cli/cli.cpp
 )
 
 # Find required libraries

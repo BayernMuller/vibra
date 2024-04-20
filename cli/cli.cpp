@@ -1,65 +1,100 @@
 #include <iostream>
 #include "cli.h"
+#include "args/args.hxx"
 #include "../fingerprinting/audio/wav.h"
 #include "../fingerprinting/algorithm/signature_generator.h"
 #include "../communication/shazam.h"
 
-CLIMain::CLIMain(int argc, char** argv)
+CLI::CLI(int argc, char** argv)
 {
-    if (argc < 3)
-    {
-        help();
-        std::exit(1);
-    }
+    args::ArgumentParser parser("");
+    parser.SetArgumentSeparations(false, false, true, true);
 
-    m_action = argv[1];
-    m_param = argv[2];
+    parser.helpParams.width = 200;
+    parser.helpParams.progindent = 0;
+    parser.helpParams.progtailindent = 0;
+    parser.helpParams.flagindent = 2;
+    parser.helpParams.descriptionindent = 2;
+    parser.helpParams.eachgroupindent = 4;
+    parser.helpParams.showValueName = false;
+    parser.helpParams.optionsString = "Options:";
+    parser.helpParams.proglineOptions = "{COMMAND} [OPTIONS]";
     
-    if (m_commands.find(m_action) == m_commands.end())
+    args::Group actions(parser, "Commands:", args::Group::Validators::Xor);
+    args::Flag fingerprint(actions, "fingerprint", "Generate a fingerprint", {'F', "fingerprint"});
+    args::Flag recognize(actions, "recognize", "Recognize a song", {'R', "recognize"});
+    args::HelpFlag help(actions, "help", "Display this help menu", {'h', "help"});
+   
+    args::Group sources(parser, "Sources:", args::Group::Validators::Xor);
+
+    args::Group file_sources(sources, "File sources:", args::Group::Validators::Xor);
+    args::ValueFlag<std::string> wav_file(file_sources, "file", "WAV file", {'w', "wav"});
+    
+    args::Group raw_sources(sources, "Raw PCM sources:", args::Group::Validators::All);
+    args::ValueFlag<int> chunk_seconds(raw_sources, "seconds", "Chunk seconds", {'s', "seconds"});
+    args::ValueFlag<int> sample_rate(raw_sources, "rate", "Sample rate", {'r', "rate"});
+    args::ValueFlag<int> channels(raw_sources, "channels", "Channels", {'c', "channels"});
+    args::ValueFlag<int> bits_per_sample(raw_sources, "bits", "Bits per sample", {'b', "bits"});
+
+    try
     {
-        help();
-        std::exit(1);
+        parser.ParseCLI(argc, argv);
     }
+    catch (args::Help)
+    {
+        std::cout << parser;
+        exit(0);
+    }
+    catch (args::ParseError e)
+    {
+        std::cerr << std::endl;
+        std::cerr << e.what() << std::endl;
+        std::cerr << std::endl;
+        std::cerr << parser;
+        exit(1);
+    }
+    catch (args::ValidationError e)
+    {
+        std::cerr << std::endl;
+        std::cerr << e.what() << std::endl;
+        std::cerr << std::endl;
+        std::cerr << parser;
+        exit(1);
+    }
+
+    Wav *wav = nullptr;
+    if (wav_file)
+    {
+        wav = new Wav(args::get(wav_file));
+    }
+    else if (chunk_seconds && sample_rate && channels && bits_per_sample)
+    {
+        wav = getWavFromStdin(args::get(chunk_seconds), args::get(sample_rate), args::get(channels), args::get(bits_per_sample));
+    }
+    else
+    {
+        std::cerr << "Invalid arguments" << std::endl;
+        exit(1);
+    }
+    
+    Signature signature = getSignatureFromWav(*wav);
+    if (fingerprint)
+    {
+        std::cout << signature.GetBase64Uri() << std::endl;
+    }
+    else if (recognize)
+    {
+        std::cout << Shazam::RequestMetadata(signature) << std::endl;
+    }
+    delete wav;
 }
 
-CLIMain::~CLIMain()
+CLI::~CLI()
 {
 }
 
-void CLIMain::Run()
+Signature CLI::getSignatureFromWav(const Wav& wav)
 {
-    std::cout << m_commands[m_action].func(m_param) << std::endl;
-}
-
-std::string CLIMain::fingerprintFromWavFile(std::string filepath)
-{
-    auto signature = getSignatureFromWavFile(filepath);
-    return signature.GetBase64Uri();
-}
-
-std::string CLIMain::fingerprintFromRawPCM(std::string chunk_seconds)
-{
-    std::size_t seconds = std::stoi(chunk_seconds);
-    auto signature = getSignatureFromRawPCM(seconds);
-    return signature.GetBase64Uri();
-}
-
-std::string CLIMain::recognizeSongFromWavFile(std::string filepath)
-{
-    auto signature = getSignatureFromWavFile(filepath);
-    return Shazam::RequestMetadata(signature);
-}
-
-std::string CLIMain::recognizeSongFromRawPCM(std::string chunk_seconds)
-{
-    std::size_t seconds = std::stoi(chunk_seconds);
-    auto signature = getSignatureFromRawPCM(seconds);
-    return Shazam::RequestMetadata(signature);
-}
-
-Signature CLIMain::getSignatureFromWavFile(std::string filepath)
-{
-    Wav wav(filepath);
     Raw16bitPCM pcm;
     wav.GetLowQualityPCM(&pcm);
     SignatureGenerator generator;
@@ -72,32 +107,10 @@ Signature CLIMain::getSignatureFromWavFile(std::string filepath)
     return generator.GetNextSignature();
 }
 
-Signature CLIMain::getSignatureFromRawPCM(int chunk_seconds)
+Wav* CLI::getWavFromStdin(int chunk_seconds, int sample_rate, int channels, int bits_per_sample)
 {
-    int samples = LOW_QUALITY_SAMPLE_RATE * chunk_seconds;
-    if (samples <= 0)
-        throw std::runtime_error("Invalid chunk_seconds");
-
-    Raw16bitPCM raw_pcm(samples);
-    std::cin.read((char*)raw_pcm.data(), samples * sizeof(Sample));
-    SignatureGenerator generator;
-    generator.FeedInput(raw_pcm);
-    generator.SetMaxTimeSeconds(chunk_seconds);
-
-    return generator.GetNextSignature();
-}
-
-void CLIMain::help()
-{
-    std::cout << std::endl;
-    std::cout << "Usage: vibra <action> <param>" << std::endl;
-    std::cout << std::endl;
-    std::cout << "* Actions:" << std::endl;
-    for (auto& command : m_commands)
-    {
-        std::cout << "\t" << command.first << " <" << command.second.param << ">" << std::endl;
-        std::cout << "\t\t" << command.second.description << std::endl;
-        std::cout << std::endl;
-    }
-    std::cout << std::endl;
+    std::size_t bytes = chunk_seconds * sample_rate * channels * (bits_per_sample / 8);
+    std::vector<char> buffer(bytes);
+    std::cin.read(buffer.data(), bytes);
+    return new Wav(buffer.data(), bytes, sample_rate, bits_per_sample, channels);
 }
