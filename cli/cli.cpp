@@ -93,11 +93,6 @@ CLI::~CLI()
 {
 }
 
-void CLI::Run()
-{
-    
-}
-
 Signature CLI::getSignatureFromWav(const Wav& wav)
 {
     Raw16bitPCM pcm;
