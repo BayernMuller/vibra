@@ -1,7 +1,7 @@
 <p align="center">
-    <img src="res/project_vibra.png" width="400"/>
+    <img src="docs/project_vibra.png" width="400"/>
     <br>
-    <img src='res/logo_license.svg'>
+    <img src='dosc/logo_license.svg'>
 </p>
 
 <span align="center">
@@ -118,8 +118,8 @@ $ jq .track.sections[1].text result.json
 
 ### Performance comparison
 <p align="center">
-    <img src="res/project_vibra_benchmark.png" width="700"/><br/>
-    lower is better.
+    <img src="docs/project_vibra_benchmark.png" width="700"/><br/>
+    lower is better
 </p>
 
 * I compared the performance of vibra with the [SongRec](https://github.com/marin-m/SongRec/tree/master) rust and python version on the Raspberry Pi 4.
