@@ -4,7 +4,7 @@
 #include "../fingerprinting/algorithm/signature_generator.h"
 #include "../communication/shazam.h"
 
-CLIMain::CLIMain(int argc, char** argv)
+CLI::CLI(int argc, char** argv)
 {
     if (argc < 3)
     {
@@ -22,42 +22,42 @@ CLIMain::CLIMain(int argc, char** argv)
     }
 }
 
-CLIMain::~CLIMain()
+CLI::~CLI()
 {
 }
 
-void CLIMain::Run()
+void CLI::Run()
 {
     std::cout << m_commands[m_action].func(m_param) << std::endl;
 }
 
-std::string CLIMain::fingerprintFromWavFile(std::string filepath)
+std::string CLI::fingerprintFromWavFile(std::string filepath)
 {
     auto signature = getSignatureFromWavFile(filepath);
     return signature.GetBase64Uri();
 }
 
-std::string CLIMain::fingerprintFromRawPCM(std::string chunk_seconds)
+std::string CLI::fingerprintFromRawPCM(std::string chunk_seconds)
 {
     std::size_t seconds = std::stoi(chunk_seconds);
     auto signature = getSignatureFromRawPCM(seconds);
     return signature.GetBase64Uri();
 }
 
-std::string CLIMain::recognizeSongFromWavFile(std::string filepath)
+std::string CLI::recognizeSongFromWavFile(std::string filepath)
 {
     auto signature = getSignatureFromWavFile(filepath);
     return Shazam::RequestMetadata(signature);
 }
 
-std::string CLIMain::recognizeSongFromRawPCM(std::string chunk_seconds)
+std::string CLI::recognizeSongFromRawPCM(std::string chunk_seconds)
 {
     std::size_t seconds = std::stoi(chunk_seconds);
     auto signature = getSignatureFromRawPCM(seconds);
     return Shazam::RequestMetadata(signature);
 }
 
-Signature CLIMain::getSignatureFromWavFile(std::string filepath)
+Signature CLI::getSignatureFromWavFile(std::string filepath)
 {
     Wav wav(filepath);
     Raw16bitPCM pcm;
@@ -72,7 +72,7 @@ Signature CLIMain::getSignatureFromWavFile(std::string filepath)
     return generator.GetNextSignature();
 }
 
-Signature CLIMain::getSignatureFromRawPCM(int chunk_seconds)
+Signature CLI::getSignatureFromRawPCM(int chunk_seconds)
 {
     int samples = LOW_QUALITY_SAMPLE_RATE * chunk_seconds;
     if (samples <= 0)
@@ -87,7 +87,7 @@ Signature CLIMain::getSignatureFromRawPCM(int chunk_seconds)
     return generator.GetNextSignature();
 }
 
-void CLIMain::help()
+void CLI::help()
 {
     std::cout << std::endl;
     std::cout << "Usage: vibra <action> <param>" << std::endl;

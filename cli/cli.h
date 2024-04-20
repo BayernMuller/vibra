@@ -13,11 +13,11 @@ struct Action
     std::function<std::string(std::string)> func;
 };
 
-class CLIMain 
+class CLI 
 {
 public:
-    CLIMain(int argc, char** argv);
-    ~CLIMain();
+    CLI(int argc, char** argv);
+    ~CLI();
     void Run();
 
 private:
@@ -40,28 +40,28 @@ private:
             {
                 "Generate fingerprint from wav file",
                 "wav_file_path",
-                std::bind(&CLIMain::fingerprintFromWavFile, this, std::placeholders::_1)
+                std::bind(&CLI::fingerprintFromWavFile, this, std::placeholders::_1)
             }
         },
         {"recognize-song-from-wav-file", 
             {
                 "Recognize song from wav file",
                 "wav_file_path",
-                std::bind(&CLIMain::recognizeSongFromWavFile, this, std::placeholders::_1)
+                std::bind(&CLI::recognizeSongFromWavFile, this, std::placeholders::_1)
             }
         },
         {"fingerprint-from-raw-pcm", 
             {
                 "Generate fingerprint from raw PCM (s16le, mono, 16kHz) via stdin.",
                 "audio_chunk_seconds",
-                std::bind(&CLIMain::fingerprintFromRawPCM, this, std::placeholders::_1)
+                std::bind(&CLI::fingerprintFromRawPCM, this, std::placeholders::_1)
             }
         },
         {"recognize-song-from-raw-pcm", 
             {
                 "Recognize song from raw PCM (s16le, mono, 16kHz) via stdin.",
                 "audio_chunk_seconds",
-                std::bind(&CLIMain::recognizeSongFromRawPCM, this, std::placeholders::_1)
+                std::bind(&CLI::recognizeSongFromRawPCM, this, std::placeholders::_1)
             }
         }
     };

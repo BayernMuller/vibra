@@ -2,7 +2,7 @@
 
 int main(int argc, char** argv)
 {
-    CLIMain cli(argc, argv);
+    CLI cli(argc, argv);
     cli.Run();
     return 0;
 }
