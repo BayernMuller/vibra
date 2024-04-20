@@ -62,28 +62,31 @@ CLI::CLI(int argc, char** argv)
         exit(1);
     }
 
+    Wav *wav = nullptr;
     if (wav_file)
     {
-        if (fingerprint)
-        {
-            std::cout << fingerprintFromWavFile(args::get(wav_file)) << std::endl;
-        }
-        else if (recognize)
-        {
-            std::cout << recognizeSongFromWavFile(args::get(wav_file)) << std::endl;
-        }
+        wav = new Wav(args::get(wav_file));
+    }
+    else if (chunk_seconds && sample_rate && channels && bits_per_sample)
+    {
+        wav = getWavFromStdin(args::get(chunk_seconds), args::get(sample_rate), args::get(channels), args::get(bits_per_sample));
     }
     else
     {
-        if (fingerprint)
-        {
-            std::cout << fingerprintFromRawPCM(args::get(chunk_seconds)) << std::endl;
-        }
-        else if (recognize)
-        {
-            std::cout << recognizeSongFromRawPCM(args::get(chunk_seconds)) << std::endl;
-        }
+        std::cerr << "Invalid arguments" << std::endl;
+        exit(1);
     }
+    
+    Signature signature = getSignatureFromWav(*wav);
+    if (fingerprint)
+    {
+        std::cout << signature.GetBase64Uri() << std::endl;
+    }
+    else if (recognize)
+    {
+        std::cout << Shazam::RequestMetadata(signature) << std::endl;
+    }
+    delete wav;
 }
 
 CLI::~CLI()
@@ -95,33 +98,8 @@ void CLI::Run()
     
 }
 
-std::string CLI::fingerprintFromWavFile(std::string filepath)
+Signature CLI::getSignatureFromWav(const Wav& wav)
 {
-    auto signature = getSignatureFromWavFile(filepath);
-    return signature.GetBase64Uri();
-}
-
-std::string CLI::fingerprintFromRawPCM(int chunk_seconds)
-{
-    auto signature = getSignatureFromRawPCM(chunk_seconds);
-    return signature.GetBase64Uri();
-}
-
-std::string CLI::recognizeSongFromWavFile(std::string filepath)
-{
-    auto signature = getSignatureFromWavFile(filepath);
-    return Shazam::RequestMetadata(signature);
-}
-
-std::string CLI::recognizeSongFromRawPCM(int chunk_seconds)
-{
-    auto signature = getSignatureFromRawPCM(chunk_seconds);
-    return Shazam::RequestMetadata(signature);
-}
-
-Signature CLI::getSignatureFromWavFile(std::string filepath)
-{
-    Wav wav(filepath);
     Raw16bitPCM pcm;
     wav.GetLowQualityPCM(&pcm);
     SignatureGenerator generator;
@@ -134,17 +112,10 @@ Signature CLI::getSignatureFromWavFile(std::string filepath)
     return generator.GetNextSignature();
 }
 
-Signature CLI::getSignatureFromRawPCM(int chunk_seconds)
+Wav* CLI::getWavFromStdin(int chunk_seconds, int sample_rate, int channels, int bits_per_sample)
 {
-    int samples = LOW_QUALITY_SAMPLE_RATE * chunk_seconds;
-    if (samples <= 0)
-        throw std::runtime_error("Invalid chunk_seconds");
-
-    Raw16bitPCM raw_pcm(samples);
-    std::cin.read((char*)raw_pcm.data(), samples * sizeof(Sample));
-    SignatureGenerator generator;
-    generator.FeedInput(raw_pcm);
-    generator.SetMaxTimeSeconds(chunk_seconds);
-
-    return generator.GetNextSignature();
+    std::size_t bytes = chunk_seconds * sample_rate * channels * (bits_per_sample / 8);
+    std::vector<char> buffer(bytes);
+    std::cin.read(buffer.data(), bytes);
+    return new Wav(buffer.data(), bytes, sample_rate, bits_per_sample, channels);
 }

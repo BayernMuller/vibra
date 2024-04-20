@@ -6,6 +6,9 @@
 #include <functional>
 #include "../fingerprinting/algorithm/signature.h"
 
+// Forward declaration
+class Wav;
+
 class CLI 
 {
 public:
@@ -14,15 +17,8 @@ public:
     void Run();
 
 private:
-    std::string fingerprintFromWavFile(std::string filepath);
-    std::string recognizeSongFromWavFile(std::string filepath);
-
-    std::string fingerprintFromRawPCM(int chunk_seconds);
-    std::string recognizeSongFromRawPCM(int chunk_seconds);
-
-private:
-    Signature getSignatureFromWavFile(std::string filepath);
-    Signature getSignatureFromRawPCM(int chunk_seconds);
+    Signature getSignatureFromWav(const Wav& wav);
+    Wav* getWavFromStdin(int chunk_seconds, int sample_rate, int channels, int bits_per_sample);
 };
 
 #endif // __CLI_H__
