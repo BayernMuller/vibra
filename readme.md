@@ -1,7 +1,7 @@
 <p align="center">
     <img src="docs/project_vibra.png" width="400"/>
     <br>
-    <img src='dosc/logo_license.svg'>
+    <img src='docs/logo_license.svg'>
 </p>
 
 <span align="center">
