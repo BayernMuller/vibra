@@ -24,7 +24,6 @@
     * [How does Shazam work](https://www.cameronmacleod.com/blog/how-does-shazam-work)
 * I referenced the Rust implementation of the Shazam client code from [SongRec](https://github.com/marin-m/SongRec/tree/master).
 * I created this project for embedded devices such as Raspberry Pi or Jetson Nano, which are challenging to set up with Python or Rust environments.
-* You can see the sample shazam result json file in [here](https://gist.github.com/BayernMuller/b92fd43eef4471b7016009196e62e4d2)
 
 ### Compatibility table
 
@@ -115,6 +114,8 @@ $ jq .track.sections[1].text result.json
   "All them other niggas lame, and you know it now",
 ...
 ```
+
+* You can see the sample shazam result json file in [here](https://gist.github.com/BayernMuller/b92fd43eef4471b7016009196e62e4d2)
 
 ### Performance comparison
 <p align="center">
