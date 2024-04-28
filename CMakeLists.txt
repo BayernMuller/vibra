@@ -8,6 +8,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Compiler flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -O2")
 
+# Enable verbose output
+set(CMAKE_VERBOSE_MAKEFILE ON)
+
 # Check if an external include path is provided and use it if present
 if(DEFINED INCLUDE_PATH)
     include_directories(${INCLUDE_PATH})
