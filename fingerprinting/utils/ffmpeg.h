@@ -12,6 +12,7 @@ namespace ffmpeg
 {
     constexpr char DEFAULT_FFMPEG_PATH[] = "/opt/homebrew/bin/ffmpeg";
     constexpr char FFMPEG_PATH_ENV[] = "FFMPEG_PATH";
+    constexpr int EXPECTED_DURATION = 5 * 60; // 5 minutes
 
     int convertToWav(const std::string &input_file, Raw16bitPCM* pcm)
     {
@@ -45,12 +46,13 @@ namespace ffmpeg
         std::array<Sample, 4096> buffer;
         size_t bytes_read;
 
+        pcm->reserve(EXPECTED_DURATION * LOW_QUALITY_SAMPLE_RATE);
+
         while ((bytes_read = fread(buffer.data(), 1, buffer.size(), pipe)) != 0) 
         {
-            pcm->resize(pcm->size() + bytes_read / sizeof(Sample));
-            std::copy(buffer.begin(), buffer.begin() + bytes_read / sizeof(Sample), pcm->end() - bytes_read / sizeof(Sample));
+            pcm->insert(pcm->end(), buffer.begin(), buffer.begin() + (bytes_read / sizeof(Sample)));
         }
-        
+
         fclose(pipe);
         return 0;
     }
