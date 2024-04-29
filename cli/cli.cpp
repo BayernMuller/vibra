@@ -1,8 +1,8 @@
 #include <iostream>
 #include "cli.h"
 #include "args/args.hxx"
-#include "../fingerprinting/audio/wav.h"
 #include "../fingerprinting/algorithm/signature_generator.h"
+#include "../fingerprinting/utils/ffmpeg.h"
 #include "../communication/shazam.h"
 
 int CLI::Run(int argc, char** argv)
@@ -28,7 +28,7 @@ int CLI::Run(int argc, char** argv)
     args::Group sources(parser, "Sources:", args::Group::Validators::Xor);
 
     args::Group file_sources(sources, "File sources:", args::Group::Validators::Xor);
-    args::ValueFlag<std::string> wav_file(file_sources, "file", "WAV file", {'w', "wav"});
+    args::ValueFlag<std::string> music_file(file_sources, "file", "FFmpeg required for non-wav files", {'f', "file"});
     
     args::Group raw_sources(sources, "Raw PCM sources:", args::Group::Validators::All);
     args::ValueFlag<int> chunk_seconds(raw_sources, "seconds", "Chunk seconds", {'s', "seconds"});
@@ -62,22 +62,31 @@ int CLI::Run(int argc, char** argv)
         return 1;
     }
 
-    Wav *wav = nullptr;
-    if (wav_file)
+    Raw16bitPCM pcm;
+    if (music_file)
     {
-        wav = new Wav(args::get(wav_file));
+        std::string file = args::get(music_file);
+        if (file.size() >= 4 && file.substr(file.size() - 4) == ".wav")
+        {
+            Wav wav(file);
+            wav.GetLowQualityPCM(&pcm);
+        }
+        else
+        {
+            ffmpeg::convertToWav(file, &pcm);             
+        }
     }
     else if (chunk_seconds && sample_rate && channels && bits_per_sample)
     {
-        wav = getWavFromStdin(args::get(chunk_seconds), args::get(sample_rate), args::get(channels), args::get(bits_per_sample));
+        pcm = getPcmFromStdin(args::get(chunk_seconds), args::get(sample_rate), args::get(channels), args::get(bits_per_sample));
     }
     else
     {
         std::cerr << "Invalid arguments" << std::endl;
-        exit(1);
+        return 1;   
     }
     
-    Signature signature = getSignatureFromWav(*wav);
+    Signature signature = getSignatureFromPcm(pcm);
     if (fingerprint)
     {
         std::cout << signature.GetBase64Uri() << std::endl;
@@ -86,14 +95,11 @@ int CLI::Run(int argc, char** argv)
     {
         std::cout << Shazam::RequestMetadata(signature) << std::endl;
     }
-    delete wav;
     return 0;
 }
 
-Signature CLI::getSignatureFromWav(const Wav& wav)
+Signature CLI::getSignatureFromPcm(const Raw16bitPCM& pcm)
 {
-    Raw16bitPCM pcm;
-    wav.GetLowQualityPCM(&pcm);
     SignatureGenerator generator;
     generator.FeedInput(pcm);
     generator.SetMaxTimeSeconds(12);
@@ -104,10 +110,13 @@ Signature CLI::getSignatureFromWav(const Wav& wav)
     return generator.GetNextSignature();
 }
 
-Wav* CLI::getWavFromStdin(int chunk_seconds, int sample_rate, int channels, int bits_per_sample)
+Raw16bitPCM CLI::getPcmFromStdin(int chunk_seconds, int sample_rate, int channels, int bits_per_sample)
 {
     std::size_t bytes = chunk_seconds * sample_rate * channels * (bits_per_sample / 8);
     std::vector<char> buffer(bytes);
     std::cin.read(buffer.data(), bytes);
-    return new Wav(buffer.data(), bytes, sample_rate, bits_per_sample, channels);
+    Wav wav(buffer.data(), bytes, sample_rate, bits_per_sample, channels);
+    Raw16bitPCM pcm;
+    wav.GetLowQualityPCM(&pcm);
+    return pcm;
 }
