@@ -45,15 +45,7 @@ int CLI::Run(int argc, char** argv)
         std::cout << parser;
         return 0;
     }
-    catch (args::ParseError e)
-    {
-        std::cerr << std::endl;
-        std::cerr << e.what() << std::endl;
-        std::cerr << std::endl;
-        std::cerr << parser;
-        return 1;
-    }
-    catch (args::ValidationError e)
+    catch (const std::runtime_error& e)
     {
         std::cerr << std::endl;
         std::cerr << e.what() << std::endl;
