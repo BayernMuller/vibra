@@ -2,6 +2,6 @@
 
 int main(int argc, char** argv)
 {
-    CLI cli(argc, argv);
-    return 0;
+    CLI cli;
+    return cli.Run(argc, argv);
 }
