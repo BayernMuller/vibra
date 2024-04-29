@@ -5,7 +5,7 @@
 #include "../fingerprinting/algorithm/signature_generator.h"
 #include "../communication/shazam.h"
 
-CLI::CLI(int argc, char** argv)
+int CLI::Run(int argc, char** argv)
 {
     args::ArgumentParser parser("");
     parser.SetArgumentSeparations(false, false, true, true);
@@ -43,7 +43,7 @@ CLI::CLI(int argc, char** argv)
     catch (args::Help)
     {
         std::cout << parser;
-        exit(0);
+        return 0;
     }
     catch (args::ParseError e)
     {
@@ -51,7 +51,7 @@ CLI::CLI(int argc, char** argv)
         std::cerr << e.what() << std::endl;
         std::cerr << std::endl;
         std::cerr << parser;
-        exit(1);
+        return 1;
     }
     catch (args::ValidationError e)
     {
@@ -59,7 +59,7 @@ CLI::CLI(int argc, char** argv)
         std::cerr << e.what() << std::endl;
         std::cerr << std::endl;
         std::cerr << parser;
-        exit(1);
+        return 1;
     }
 
     Wav *wav = nullptr;
@@ -87,10 +87,7 @@ CLI::CLI(int argc, char** argv)
         std::cout << Shazam::RequestMetadata(signature) << std::endl;
     }
     delete wav;
-}
-
-CLI::~CLI()
-{
+    return 0;
 }
 
 Signature CLI::getSignatureFromWav(const Wav& wav)

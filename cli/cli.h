@@ -12,8 +12,7 @@ class Wav;
 class CLI 
 {
 public:
-    CLI(int argc, char** argv);
-    ~CLI();
+    int Run(int argc, char** argv);
 
 private:
     Signature getSignatureFromWav(const Wav& wav);
