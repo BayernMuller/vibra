@@ -50,7 +50,8 @@ namespace ffmpeg
             pcm->resize(pcm->size() + bytes_read / sizeof(Sample));
             std::copy(buffer.begin(), buffer.begin() + bytes_read / sizeof(Sample), pcm->end() - bytes_read / sizeof(Sample));
         }
-
+        
+        fclose(pipe);
         return 0;
     }
 }
