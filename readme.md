@@ -87,7 +87,7 @@ Options:
 
 ##### - recognizing song from wav file
 ```bash
-$ vibra --recognize --wav sample.wav > result.json
+$ vibra --recognize --file sample.wav > result.json
 $ jq .track.title result.json
 "Stairway To Heaven"
 $ jq .track.subtitle result.json
