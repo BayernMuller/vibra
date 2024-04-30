@@ -41,6 +41,15 @@ void Wav::GetLowQualityPCM(Raw16bitPCM* raw_pcm, std::int32_t start_sec, std::in
 {
     // clear raw_pcm
     raw_pcm->clear();
+
+    if (mChannel == 1 && mSampleRate == LOW_QUALITY_SAMPLE_RATE && mBitPerSample == 16 && start_sec == 0 && end_sec == -1)
+    {
+        // no need to convert low quality pcm. just copy raw data
+        raw_pcm->resize(mDataSize);
+        ::memcpy(raw_pcm->data(), mData.get(), mDataSize);
+        return;
+    }
+    
     
     double downsample_ratio = mSampleRate / (double)LOW_QUALITY_SAMPLE_RATE;
     std::uint32_t width = mBitPerSample / 8;
