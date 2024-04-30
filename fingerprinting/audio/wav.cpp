@@ -97,12 +97,12 @@ void Wav::readWavBuffer(std::istream& stream)
     // Read RIFF 
     char* riff_header = data;
     assert(::strncmp(riff_header, "RIFF", 4) == 0);
-    (void*)riff_header; // suppress unused variable warning
+    (void)riff_header; // suppress warning
     
     // Read WAVE
     char* wave_header = data + 8;
     assert(::strncmp(wave_header, "WAVE", 4) == 0);
-    (void*)wave_header; // suppress unused variable warning
+    (void)wave_header; // suppress warning
 
     // Read Audio Format
     mAudioFormat = *(std::uint16_t*)(data + 20);
