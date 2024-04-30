@@ -42,7 +42,7 @@ int CLI::Run(int argc, char** argv)
     {
         parser.ParseCLI(argc, argv);
     }
-    catch (args::Help)
+    catch (const args::Help&)
     {
         std::cout << parser;
         return 0;
