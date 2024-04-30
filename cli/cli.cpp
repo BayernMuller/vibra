@@ -7,6 +7,8 @@
 
 int CLI::Run(int argc, char** argv)
 {
+    using namespace ffmpeg;
+
     args::ArgumentParser parser("");
     parser.SetArgumentSeparations(false, false, true, true);
 
@@ -65,7 +67,7 @@ int CLI::Run(int argc, char** argv)
         }
         else
         {
-            ffmpeg::convertToWav(file, &pcm);             
+            FFmpegWrapper::convertToWav(file, &pcm);             
         }
     }
     else if (chunk_seconds && sample_rate && channels && bits_per_sample)

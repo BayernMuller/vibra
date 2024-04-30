@@ -10,22 +10,34 @@
 
 namespace ffmpeg
 {
-    constexpr char DEFAULT_FFMPEG_PATH[] = "/opt/homebrew/bin/ffmpeg";
-    constexpr char FFMPEG_PATH_ENV[] = "FFMPEG_PATH";
+    constexpr const char* DEFAULT_FFMPEG_PATHS[] = {"ffmpeg", "ffmpeg.exe"};
+    constexpr const char FFMPEG_PATH_ENV[] = "FFMPEG_PATH";
     constexpr int EXPECTED_DURATION = 5 * 60; // 5 minutes
 
-    int convertToWav(const std::string &input_file, Raw16bitPCM* pcm)
+    class FFmpegWrapper
     {
-        std::string ffmpeg_path = DEFAULT_FFMPEG_PATH;
-        const char *env = std::getenv(FFMPEG_PATH_ENV);
-        if (env != nullptr)
-        {
-            ffmpeg_path = env;
-        }
+    public:
+        FFmpegWrapper() = delete;
+        static int convertToWav(const std::string &input_file, Raw16bitPCM* pcm);
 
-        if (std::ifstream(ffmpeg_path).good() == false)
+    private:
+        static std::string getFFmpegPath();
+        static bool isWindows();
+
+    private:
+        static std::string ffmpeg_path_;
+    };
+
+    std::string FFmpegWrapper::ffmpeg_path_; // static member initialization
+ 
+    int FFmpegWrapper::convertToWav(const std::string &input_file, Raw16bitPCM* pcm)
+    {
+        std::string ffmpeg_path = FFmpegWrapper::getFFmpegPath();
+        if (ffmpeg_path.empty())
         {
-            throw std::runtime_error("ffmpeg not found");
+            std::cerr << "FFmpeg not found on system. Please install FFmpeg or set the ";
+            std::cerr << FFMPEG_PATH_ENV << " environment variable." << std::endl;
+            throw std::runtime_error("FFmpeg not found");
         }
 
         std::stringstream ss;
@@ -55,6 +67,48 @@ namespace ffmpeg
 
         fclose(pipe);
         return 0;
+    }
+
+    std::string FFmpegWrapper::getFFmpegPath()
+    {
+        if (!FFmpegWrapper::ffmpeg_path_.empty())
+        {
+            return FFmpegWrapper::ffmpeg_path_;
+        }
+
+        const char* ffmpeg_env = std::getenv(FFMPEG_PATH_ENV);
+        if (ffmpeg_env)
+        {
+            FFmpegWrapper::ffmpeg_path_ = ffmpeg_env;
+            return ffmpeg_env;
+        }
+        
+        std::string path = std::getenv("PATH");
+        std::istringstream ss(path);
+        std::string token;
+        char delimiter = isWindows() ? ';' : ':';
+        while (std::getline(ss, token, delimiter))
+        {
+            for (const char* ffmpeg_path : DEFAULT_FFMPEG_PATHS)
+            {
+                std::string full_path = token + "/" + ffmpeg_path;
+                if (std::ifstream(full_path).good())
+                {
+                    FFmpegWrapper::ffmpeg_path_ = full_path;
+                    return full_path;
+                }
+            }
+        }
+        return ""; // empty string means FFmpeg not found
+    }
+
+    bool FFmpegWrapper::isWindows()
+    {
+        #if defined(_WIN32) || defined(_WIN64)
+            return true;
+        #endif // _WIN32
+
+        return false;
     }
 }
 
