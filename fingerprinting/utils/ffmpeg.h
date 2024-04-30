@@ -6,6 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <array>
 #include "../audio/wav.h"
 
 namespace ffmpeg
@@ -65,7 +66,7 @@ namespace ffmpeg
             pcm->insert(pcm->end(), buffer.begin(), buffer.begin() + (bytes_read / sizeof(Sample)));
         }
 
-        fclose(pipe);
+        pclose(pipe);
         return 0;
     }
 
