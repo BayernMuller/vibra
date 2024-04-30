@@ -51,6 +51,8 @@
 * vibra depends on the following libraries:
     * [libcurl](https://curl.se/libcurl/): To send HTTP requests to the Shazam API.
     * [libfftw3](http://www.fftw.org/): To calculate the Fast Fourier Transform.
+    * (Optional) [FFmpeg](https://ffmpeg.org/): To decode audio files other than WAV. (e.g., MP3, FLAC, etc.)
+        * If you want to want recognize non-WAV files, you need to install FFmpeg on your system.
 
 #### Build
 * Clone repository **recursively** to include submodules.
@@ -75,7 +77,7 @@ Options:
       -h, --help                            Display this help menu
   Sources:
       File sources:
-          -w, --wav                             WAV file
+          -f, --file                            File path
       Raw PCM sources:
           -s, --seconds                         Chunk seconds
           -r, --rate                            Sample rate
@@ -95,7 +97,7 @@ $ jq .track.share.href result.json
 ```
 
 ##### - recognizing song from microphone
-* You can use [sox](http://sox.sourceforge.net/) or [ffmpeg](https://ffmpeg.org/) to print raw PCM data from **microphone**.
+* You can use [sox](http://sox.sourceforge.net/) or [FFmpeg](https://ffmpeg.org/) to print raw PCM data from **microphone**.
 
 ```bash
 $ sox -d -t raw -b 24 -e signed-integer -r 44100 -c 1 - 2>/dev/null
@@ -114,6 +116,19 @@ $ jq .track.sections[1].text result.json
   "All them other niggas lame, and you know it now",
 ...
 ```
+
+##### - recognizing non-WAV files
+* You need to install FFmpeg on your system to decode non-WAV media files.
+* Vibra will try to locate FFmpeg in your PATH environment variable. Alternatively, you can specify the FFmpeg path by setting the `FFMPEG_PATH` environment variable.
+```bash
+# Automatically find FFmpeg
+vibra --recognize --file out.mp3
+
+# Specify the FFmpeg path
+export FFMPEG_PATH=/opt/homebrew/bin/FFmpeg
+vibra --recognize --file out.mp3
+```
+
 
 * You can see the sample shazam result json file in [here](https://gist.github.com/BayernMuller/b92fd43eef4471b7016009196e62e4d2)
 
