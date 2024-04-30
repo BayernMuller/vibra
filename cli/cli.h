@@ -5,6 +5,7 @@
 #include <map>
 #include <functional>
 #include "../fingerprinting/algorithm/signature.h"
+#include "../fingerprinting/audio/wav.h"
 
 // Forward declaration
 class Wav;
@@ -12,12 +13,11 @@ class Wav;
 class CLI 
 {
 public:
-    CLI(int argc, char** argv);
-    ~CLI();
+    int Run(int argc, char** argv);
 
 private:
-    Signature getSignatureFromWav(const Wav& wav);
-    Wav* getWavFromStdin(int chunk_seconds, int sample_rate, int channels, int bits_per_sample);
+    Signature getSignatureFromPcm(const Raw16bitPCM& pcm);
+    Raw16bitPCM getPcmFromStdin(int chunk_seconds, int sample_rate, int channels, int bits_per_sample);
 };
 
 #endif // __CLI_H__
