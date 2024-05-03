@@ -16,4 +16,4 @@ RUN cmake . -DENABLE_PROFILING=ON
 RUN make -j9
 
 CMD ./vibra --recognize --file tests/sample.mp3 | jq \
-    # && gprof ./vibra gmon.out 
+    # > /dev/null && gprof ./vibra gmon.out
