@@ -29,7 +29,7 @@ Wav::Wav(const char* raw_pcm, std::uint32_t raw_pcm_size, std::uint32_t sample_r
     mBitPerSample = sample_width;
     mDataSize = raw_pcm_size;
     mFileSize = 44 + raw_pcm_size;
-    mData = std::shared_ptr<std::uint8_t>(new std::uint8_t[raw_pcm_size]);
+    mData = std::make_shared<std::uint8_t>(raw_pcm_size);
     ::memcpy(mData.get(), raw_pcm, raw_pcm_size);
 }
 
@@ -136,7 +136,7 @@ void Wav::readWavBuffer(std::istream& stream)
         if (strncmp(subchunk_id, "data", 4) == 0)
         {
             mDataSize = subchunk_size;
-            mData = std::shared_ptr<std::uint8_t>(new std::uint8_t[mDataSize]);
+            mData = std::make_shared<std::uint8_t>(mDataSize);
             ::memcpy(mData.get(), data + pos + 8, mDataSize);
             
             delete[] data;
