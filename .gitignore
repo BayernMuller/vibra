@@ -24,3 +24,6 @@ build/
 
 # Unignore cli/clipp
 !cli/args
+
+# Unignore Dockerfile
+!Dockerfile
