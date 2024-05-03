@@ -1,12 +1,13 @@
 FROM ubuntu:latest
 
 RUN apt-get update && apt-get install -y \
-    build-essential \
+    jq \
     gcc \
     cmake \
+    ffmpeg \
+    build-essential \
     libcurl4-openssl-dev \
-    libfftw3-dev \
-    ffmpeg 
+    libfftw3-dev
 
 COPY . /app
 WORKDIR /app
@@ -14,4 +15,5 @@ WORKDIR /app
 RUN cmake . -DENABLE_PROFILING=ON
 RUN make -j9
 
-CMD ["./vibra", "-R", "--file", "tests/sample.mp3"]
+CMD ./vibra --recognize --file tests/sample.mp3 | jq \
+    # && gprof ./vibra gmon.out 
