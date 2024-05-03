@@ -8,12 +8,19 @@
 #include <curl/curl.h>
 #include <algorithm>
 
+// static variables initialization
 constexpr char Shazam::HOST[];
 
-static size_t writeCallback(void* contents, size_t size, size_t nmemb, std::string* userp)
+// static variables
+static std::string read_buffer;
+
+// static functions
+static size_t writeCallback(void* contents, size_t size, size_t nmemb, void* userp)
 {
-    userp->append((char*)contents, size * nmemb);
-    return size * nmemb;
+    (void)userp; // suppress warning (unused parameter)
+    std::size_t realsize = size * nmemb;
+    read_buffer.append((char*)contents, realsize);
+    return realsize;
 }
 
 std::string Shazam::RequestMetadata(const Signature& signature)
@@ -23,10 +30,12 @@ std::string Shazam::RequestMetadata(const Signature& signature)
 
     std::string url = HOST + uuid4::generate() + "/" + uuid4::generate();
     url += "?sync=true&webv3=true&sampling=true&connected=&shazamapiversion=v3&sharehub=true&video=v3";
-    
-    std::string read_buffer;
+
     CURL* curl = curl_easy_init();
-    if (curl) {
+    read_buffer.clear();
+
+    if (curl) 
+    {
         struct curl_slist* headers = nullptr;
         headers = curl_slist_append(headers, "Accept-Encoding: gzip, deflate, br");
         headers = curl_slist_append(headers, "Accept: */*");
@@ -34,12 +43,13 @@ std::string Shazam::RequestMetadata(const Signature& signature)
         headers = curl_slist_append(headers, "Content-Type: application/json");
         headers = curl_slist_append(headers, "Content-Language: en_US");
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+        curl_easy_setopt(curl, CURLOPT_POST, 1L);
         curl_easy_setopt(curl, CURLOPT_USERAGENT, user_agent.c_str());
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, content.c_str());
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &read_buffer);
-        curl_easy_setopt(curl, CURLOPT_POST, 1L);
+        
         curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "gzip, deflate, br");
         curl_easy_setopt(curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
         
@@ -58,7 +68,6 @@ std::string Shazam::RequestMetadata(const Signature& signature)
         curl_slist_free_all(headers);
         curl_easy_cleanup(curl);
     }
-    
     return read_buffer;
 }
 
