@@ -85,12 +85,13 @@ Options:
 
 ##### - recognizing song from wav file
 ```bash
-$ vibra --recognize --file sample.wav > result.json
-$ jq .track.title result.json
+vibra --recognize --file sample.wav > result.json
+
+jq .track.title result.json
 "Stairway To Heaven"
-$ jq .track.subtitle result.json
+jq .track.subtitle result.json
 "Led Zeppelin"
-$ jq .track.share.href result.json
+jq .track.share.href result.json
 "https://www.shazam.com/track/5933917/stairway-to-heaven"
 ```
 
@@ -98,32 +99,31 @@ $ jq .track.share.href result.json
 * You can use [sox](http://sox.sourceforge.net/) or [FFmpeg](https://ffmpeg.org/) to print raw PCM data from **microphone**.
 
 ```bash
-$ sox -d -t raw -b 24 -e signed-integer -r 44100 -c 1 - 2>/dev/null
-  | vibra --recognize --seconds 5 --rate 44100 --channels 1 --bits 24 > result.json
+sox -d -t raw -b 24 -e signed-integer -r 44100 -c 1 - 2>/dev/null
+| vibra --recognize --seconds 5 --rate 44100 --channels 1 --bits 24 > result.json
 
-$ jq .track.title result.json
+jq .track.title result.json
 "Bound 2"
-$ jq .track.subtitle result.json
+jq .track.subtitle result.json
 "Kanye West"
-$ jq .track.sections[1].text result.json
+jq .track.sections[1].text result.json
 [
   "B-B-B-Bound to fall in love",
   "Bound to fall in love",
   "(Uh-huh, honey)",
-  "",
-  "All them other niggas lame, and you know it now",
-...
+  ...
+]
 ```
 
 ##### - recognizing non-WAV files
 * You need to install FFmpeg on your system to decode non-WAV media files.
 * Vibra will try to locate FFmpeg in your PATH environment variable. Alternatively, you can specify the FFmpeg path by setting the `FFMPEG_PATH` environment variable.
 ```bash
-# Automatically find FFmpeg
+# Automatically find FFmpeg in PATH
 vibra --recognize --file out.mp3
 
 # Specify the FFmpeg path
-export FFMPEG_PATH=/opt/homebrew/bin/FFmpeg
+export FFMPEG_PATH=/opt/homebrew/bin/ffmpeg
 vibra --recognize --file out.mp3
 ```
 
