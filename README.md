@@ -27,8 +27,6 @@
 
 ### Compatibility table
 
-<div align="center">
-
 | Platform         |     Architecture | Build Status     |
 |------------------|------------------|------------------|
 | [WebAssembly](wasm/readme.md) | -                | ✅                |
@@ -40,7 +38,6 @@
 | Raspberry Pi 4   | ARMv8-A          | ✅                |
 | Raspberry Pi Zero| ARMv6            | ✅                |
 
-</div>
 
 ### Build vibra
 
