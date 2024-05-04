@@ -37,8 +37,8 @@ private:
 
     Signature mNextSignature;
     RingBuffer<std::int16_t> mRingBufferOfSamples;
-    RingBuffer<FFT::RealArray> mFFTOutputs;
-    RingBuffer<FFT::RealArray> mSpreadFFTsOutput;    
+    RingBuffer<fft::RealArray> mFFTOutputs;
+    RingBuffer<fft::RealArray> mSpreadFFTsOutput;    
 };
 
 #endif // SIGNATURE_GENERATOR_H
