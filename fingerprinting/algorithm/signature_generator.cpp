@@ -1,9 +1,8 @@
 #include "signature_generator.h"
-#include "../utils/array.h"
 #include "../utils/hanning.h"
-
 #include <algorithm>
 #include <numeric>
+#include <iostream>
 
 SignatureGenerator::SignatureGenerator()
     : mInputPendingProcessing()
@@ -11,8 +10,8 @@ SignatureGenerator::SignatureGenerator()
     , mMaxTimeSeconds(3.1)
     , mNextSignature(16000, 0)
     , mRingBufferOfSamples(2048, 0)
-    , mFFTOutputs(256, FFT::RealArray(1025, 0.0))
-    , mSpreadFFTsOutput(256, FFT::RealArray(1025, 0.0))
+    , mFFTOutputs(256, fft::RealArray(1025, 0.0))
+    , mSpreadFFTsOutput(256, fft::RealArray(1025, 0.0))
 {
 }
 
@@ -45,8 +44,8 @@ Signature SignatureGenerator::GetNextSignature()
     
     mNextSignature = Signature(16000, 0);
     mRingBufferOfSamples = RingBuffer<std::int16_t>(2048, 0);
-    mFFTOutputs = RingBuffer<FFT::RealArray>(256, FFT::RealArray(1025, 0.0));
-    mSpreadFFTsOutput = RingBuffer<FFT::RealArray>(256, FFT::RealArray(1025, 0.0));
+    mFFTOutputs = RingBuffer<fft::RealArray>(256, fft::RealArray(1025, 0.0));
+    mSpreadFFTsOutput = RingBuffer<fft::RealArray>(256, fft::RealArray(1025, 0.0));
 
     return result; // RVO
 }
@@ -72,7 +71,7 @@ void SignatureGenerator::doFFT(const Raw16bitPCM& input)
     mRingBufferOfSamples.Position() %= 2048;
     mRingBufferOfSamples.NumWritten() += input.size();
 
-    FFT::RealArray excerpt_from_ring_buffer(2048, 0.0);
+    fft::RealArray excerpt_from_ring_buffer(2048, 0.0);
 
     std::copy(mRingBufferOfSamples.begin() + mRingBufferOfSamples.Position(), mRingBufferOfSamples.end(),
         excerpt_from_ring_buffer.begin());
@@ -80,24 +79,13 @@ void SignatureGenerator::doFFT(const Raw16bitPCM& input)
     std::copy(mRingBufferOfSamples.begin(), mRingBufferOfSamples.begin() + mRingBufferOfSamples.Position(),
         excerpt_from_ring_buffer.begin() + 2048 - mRingBufferOfSamples.Position());
 
-    array::multiply(excerpt_from_ring_buffer, HANNIG_MATRIX);
-
-    FFT::RealArray real;
-    FFT::RealArray imag;
-    FFT::RFFT(excerpt_from_ring_buffer, real, imag);
-
-    // do max((real^2 + imag^2) / (1 << 17), 0.0000000001)
-
-    for (int i = 0; i < 1025; ++i)
+    for (int i = 0; i < 2048; ++i)
     {
-        real[i] *= real[i];
-        imag[i] *= imag[i];
-
-        real[i] += imag[i];
-        real[i] /= (1 << 17);
-        real[i] = real[i] < 0.0000000001 ? 0.0000000001 : real[i];
+        excerpt_from_ring_buffer[i] *= HANNIG_MATRIX[i];
     }
 
+    fft::RealArray real;
+    fft::FFT::RFFT(excerpt_from_ring_buffer, &real);
     mFFTOutputs.Append(real);
 }
 
@@ -204,8 +192,8 @@ void SignatureGenerator::doPeakRecognition()
 
 void SignatureGenerator::prepareInput()
 {
-    mNextSignature.Reset(16000, 0);
+    mNextSignature.Reset(LOW_QUALITY_SAMPLE_RATE, 0);
     mRingBufferOfSamples = RingBuffer<std::int16_t>(2048, 0);
-    mFFTOutputs = RingBuffer<FFT::RealArray>(256, FFT::RealArray(1025, 0.0));
-    mSpreadFFTsOutput = RingBuffer<FFT::RealArray>(256, FFT::RealArray(1025, 0.0));
+    mFFTOutputs = RingBuffer<fft::RealArray>(256, fft::RealArray(1025, 0.0));
+    mSpreadFFTsOutput = RingBuffer<fft::RealArray>(256, fft::RealArray(1025, 0.0));
 }
