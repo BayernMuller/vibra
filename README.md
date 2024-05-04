@@ -13,6 +13,7 @@
 
 <p align="center">
     <img src="https://github.com/bayernmuller/vibra/actions/workflows/ci.yaml/badge.svg"/>
+    <img src="https://img.shields.io/github/last-commit/bayernmuller/vibra"/>
     <img src="https://img.shields.io/github/license/bayernmuller/vibra"/>
 </p>
 
