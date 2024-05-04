@@ -60,6 +60,12 @@ int CLI::Run(int argc, char** argv)
     if (music_file)
     {
         std::string file = args::get(music_file);
+        if (std::ifstream(file).good() == false)
+        {
+            std::cerr << "File not found: " << file << std::endl;
+            return 1;
+        }
+
         if (file.size() >= 4 && file.substr(file.size() - 4) == ".wav")
         {
             Wav wav(file);
