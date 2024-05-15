@@ -46,11 +46,17 @@
 
 * vibra uses CMake for building. You need to install [CMake](https://cmake.org/) to build vibra.
 * vibra utilizes C++11 features.
-* vibra depends on the following libraries:
+* vibra depends on the following libraries or tools:
+    * [CMake](https://cmake.org/): To build the project.
     * [libcurl](https://curl.se/libcurl/): To send HTTP requests to the Shazam API.
     * [libfftw3](http://www.fftw.org/): To calculate the Fast Fourier Transform.
     * (Optional) [FFmpeg](https://ffmpeg.org/): To decode audio files other than WAV. (e.g., MP3, FLAC, etc.)
         * If you want to want recognize non-WAV files, you need to install FFmpeg on your system.
+
+#### Install dependencies
+* Ubuntu
+    * `sudo apt-get install cmake libcurl4-openssl-dev libfftw3-dev`
+    * `sudo apt-get install ffmpeg` (Optional)
 
 #### Build
 * Clone repository **recursively** to include submodules.
