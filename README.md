@@ -68,7 +68,8 @@
     * `make`
 
 #### Usage
-* Use `vibra -h` to see the help message.
+<details>
+<summary>Use --help option to see the help message.</summary>
 
 ```
 vibra {COMMAND} [OPTIONS]
@@ -88,6 +89,8 @@ Options:
           -c, --channels                        Channels
           -b, --bits                            Bits per sample
 ```
+
+</details>
 
 ##### - recognizing song from wav file
 ```bash
