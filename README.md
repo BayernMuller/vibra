@@ -45,7 +45,7 @@
 #### Requirements
 
 * vibra uses CMake for building. You need to install [CMake](https://cmake.org/) to build vibra.
-* vibra utilizes C++11 features.
+* vibra utilizes **C++11** features.
 * vibra depends on the following libraries or tools:
     * [CMake](https://cmake.org/): To build the project.
     * [libcurl](https://curl.se/libcurl/): To send HTTP requests to the Shazam API.
@@ -55,6 +55,7 @@
 
 #### Install dependencies
 * Ubuntu
+    * `sudo apt-get update`
     * `sudo apt-get install cmake libcurl4-openssl-dev libfftw3-dev`
     * `sudo apt-get install ffmpeg` (Optional)
 
