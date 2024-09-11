@@ -58,11 +58,11 @@ unsigned int EMSCRIPTEN_KEEPALIVE GetSampleMs(SignatureWrapper* signature)
     return signature->samplems;
 }
 
+#ifdef __cplusplus
+}
+#endif
+
 int main()
 {
     return 0; // does nothing
 }
-
-#ifdef __cplusplus
-}
-#endif

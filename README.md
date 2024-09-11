@@ -18,48 +18,58 @@
 </p>
 
 ### What is vibra?
-* vibra is a C++ music file recognition tool that uses an unofficial Shazam API.
-* vibra analyzes music files and returns fingerprint data. It searches the Shazam database to identify the song.
-* The Shazam algorithm is based on:
-    * [An Industrial-Strength Audio Search Algorithm](https://www.ee.columbia.edu/~dpwe/papers/Wang03-shazam.pdf)
-    * [How does Shazam work](https://www.cameronmacleod.com/blog/how-does-shazam-work)
-* I referenced the Rust implementation of the Shazam client code from [SongRec](https://github.com/marin-m/SongRec/tree/master).
-* I created this project for embedded devices such as Raspberry Pi or Jetson Nano, which are challenging to set up with Python or Rust environments.
+* vibra is a powerful C++ library and command-line tool for music recognition, leveraging an unofficial Shazam API.
+* It efficiently analyzes audio files, generates unique fingerprints, and queries the vast Shazam database to identify songs with high accuracy.
+* Key features of vibra:
+    * Fast and lightweight: Optimized for performance on various platforms, including embedded devices.
+    * Cross-platform compatibility: Supports Linux, Windows, macOS, and **WebAssembly**.
+    * Flexible input: Can process WAV files natively, with optional FFmpeg support for other audio formats.
+* The core algorithm is based on Shazam's groundbreaking approach:
+    * [An Industrial-Strength Audio Search Algorithm](https://www.ee.columbia.edu/~dpwe/papers/Wang03-shazam.pdf) - The original research paper.
+    * [How does Shazam work](https://www.cameronmacleod.com/blog/how-does-shazam-work) - A detailed explanation of the algorithm.
+* Implementation inspiration:
+    * The project references the Rust implementation from [SongRec](https://github.com/marin-m/SongRec/tree/master), adapting it to C++ for broader compatibility.
+* Target platforms:
+    * Specifically designed for embedded devices like Raspberry Pi and Jetson Nano, where setting up Python or Rust environments can be challenging.
+    * Equally effective on desktop and server environments for high-performance audio recognition tasks.
+
 
 ### Compatibility table
 
-| Platform         |     Architecture | Build Status     |
-|------------------|------------------|------------------|
-| [WebAssembly](wasm/readme.md) | -                | ✅                |
-| Linux            | x86_64           | ✅                |
-| Linux            | ARM64            | ✅                |
-| Windows          | x86_64           | ✅                |
-| macOS            | x86_64           | ✅                |
-| macOS            | ARM64            | ✅                |
-| Raspberry Pi 4   | ARMv8-A          | ✅                |
-| Raspberry Pi Zero| ARMv6            | ✅                |
+| Platform         | Architecture     | Build Status |
+|------------------|------------------|--------------|
+| [WebAssembly](wasm/README.md) | -    | ✅            |
+| Linux            | x86_64, ARM64    | ✅            |
+| Windows          | x86_64           | ✅            |
+| macOS            | x86_64, ARM64    | ✅            |
+| Raspberry Pi     | ARMv8-A, ARMv6   | ✅            |
 
 
 ### Build vibra
 
-#### Requirements
+#### WebAssembly Version
+* Please read **[wasm/README.md](wasm/README.md)** to build and run vibra webassembly version.
 
-* vibra uses CMake for building. You need to install [CMake](https://cmake.org/) to build vibra.
-* vibra utilizes **C++11** features.
-* vibra depends on the following libraries or tools:
-    * [CMake](https://cmake.org/): To build the project.
-    * [libcurl](https://curl.se/libcurl/): To send HTTP requests to the Shazam API.
-    * [libfftw3](http://www.fftw.org/): To calculate the Fast Fourier Transform.
-    * (Optional) [FFmpeg](https://ffmpeg.org/): To decode audio files other than WAV. (e.g., MP3, FLAC, etc.)
-        * If you want to want recognize non-WAV files, you need to install FFmpeg on your system.
 
-#### Install dependencies
+#### Native Version
+##### Requirements
+
+* vibra requires CMake for its build process. Install [CMake](https://cmake.org/) before building.
+* The project is built using **C++11** standard features.
+* vibra has the following dependencies:
+    * [CMake](https://cmake.org/): Build system generator.
+    * [libcurl](https://curl.se/libcurl/): Handles HTTP requests to the Shazam API.
+    * [libfftw3](http://www.fftw.org/): Performs Fast Fourier Transform calculations.
+    * [FFmpeg](https://ffmpeg.org/) (Optional): Enables support for non-WAV audio formats (e.g., MP3, FLAC).
+        * Install FFmpeg if you need to process audio files other than WAV.
+
+##### Install dependencies
 * Ubuntu
     * `sudo apt-get update`
     * `sudo apt-get install cmake libcurl4-openssl-dev libfftw3-dev`
     * `sudo apt-get install ffmpeg` (Optional)
 
-#### Build
+##### Build
 * Clone repository **recursively** to include submodules.
     * `git clone --recursive https://github.com/bayernmuller/vibra.git`
 
@@ -68,7 +78,7 @@
     * `cmake ..`
     * `make`
 
-#### Usage
+##### Usage
 <details>
 <summary>Use --help option to see the help message.</summary>
 
@@ -148,9 +158,6 @@ vibra --recognize --file out.mp3
 
 * I compared the performance of vibra with the [SongRec](https://github.com/marin-m/SongRec/tree/master) rust and python version on the Raspberry Pi 4.
 * vibra is about 2 times faster than the SongRec!
-
-### WebAssembly Version Support
-* Please read [wasm/readme.md](wasm/readme.md) to build vibra webassembly version.
 
 ### Demo Video
 * Real time music tracker and lighting solution "Mooding", which uses vibra.
