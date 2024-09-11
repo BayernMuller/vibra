@@ -22,11 +22,12 @@ TARGET_JS := $(BUILD_DIR)/vibra.js
 
 WASM_SETTINGS := -s EXPORTED_FUNCTIONS="['_GetWavSignature', '_GetFingerprint', '_GetPcmSignature', '_GetSampleMs', '_malloc', '_free']" \
                  -s EXPORTED_RUNTIME_METHODS="['ccall', 'cwrap']" \
-                 -s ALLOW_MEMORY_GROWTH=1
-                    
+                 -s ALLOW_MEMORY_GROWTH=1 \
+                 -s WASM=1
+
 CFLAGS := -Os
 CXXFLAGS := -Os -std=c++11 -I$(FFTW3_INCLUDE)
-LDFLAGS := -s WASM=1 -lfftw3 -L$(FFTW3_LIB) $(WASM_SETTINGS)
+LDFLAGS := $(WASM_SETTINGS) -L$(FFTW3_LIB) -lfftw3
 
 all: $(TARGET_JS)
 
@@ -35,7 +36,7 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(EMCXX) $(CXXFLAGS) -c $< -o $@
 
 $(TARGET_JS): $(OBJECTS)
-	$(EMCXX) $(LDFLAGS) $(OBJECTS) -o $@
+	$(EMCXX) $(OBJECTS) $(LDFLAGS) -o $@
 
 clean:
 	rm -rf $(BUILD_DIR)
