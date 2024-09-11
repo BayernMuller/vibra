@@ -27,3 +27,13 @@ build/
 
 # Unignore Dockerfile
 !Dockerfile
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn.lock
+
+# TypeScript
+*.tsbuildinfo
+dist/

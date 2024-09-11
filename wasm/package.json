@@ -1,0 +1,25 @@
+{
+  "name": "vibra",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "vibrajs": "dist/cli.js"
+  },
+  "scripts": {
+    "start": "node dist/cli.js",
+    "build": "tsc && cp src/vibra.wasm dist/vibra.wasm",
+    "prestart": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/node": "^20.11.19",
+    "@types/uuid": "^9.0.8",
+    "axios": "^1.6.7",
+    "typescript": "^5.3.3",
+    "uuid": "^9.0.1"
+  }
+}
