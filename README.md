@@ -33,7 +33,7 @@
     * Equally effective on desktop and server environments for high-performance audio recognition tasks.
 
 
-## Compatibility table
+### Compatibility table
 
 | Platform         | Architecture     | Build Status |
 |------------------|------------------|--------------|
@@ -43,12 +43,10 @@
 | macOS            | x86_64, ARM64    | ✅            |
 | Raspberry Pi     | ARMv8-A, ARMv6   | ✅            |
 
-## Build vibra
-
-### WebAssembly Version
+### Build WebAssembly Version
 * Please read **[wasm/README.md](wasm/README.md)** to build and run vibra webassembly version.
 
-### Native Version
+### Build Native Version
 
 #### Requirements
 * vibra requires CMake for its build process. Install [CMake](https://cmake.org/) before building.
