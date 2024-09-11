@@ -17,7 +17,6 @@
     <img src="https://img.shields.io/github/license/bayernmuller/vibra"/>
 </p>
 
-### What is vibra?
 * vibra is a powerful C++ library and command-line tool for music recognition, leveraging an unofficial Shazam API.
 * It efficiently analyzes audio files, generates unique fingerprints, and queries the vast Shazam database to identify songs with high accuracy.
 * Key features of vibra:
@@ -34,7 +33,7 @@
     * Equally effective on desktop and server environments for high-performance audio recognition tasks.
 
 
-### Compatibility table
+## Compatibility table
 
 | Platform         | Architecture     | Build Status |
 |------------------|------------------|--------------|
@@ -44,16 +43,14 @@
 | macOS            | x86_64, ARM64    | ✅            |
 | Raspberry Pi     | ARMv8-A, ARMv6   | ✅            |
 
+## Build vibra
 
-### Build vibra
-
-#### WebAssembly Version
+### WebAssembly Version
 * Please read **[wasm/README.md](wasm/README.md)** to build and run vibra webassembly version.
 
+### Native Version
 
-#### Native Version
-##### Requirements
-
+#### Requirements
 * vibra requires CMake for its build process. Install [CMake](https://cmake.org/) before building.
 * The project is built using **C++11** standard features.
 * vibra has the following dependencies:
@@ -63,13 +60,13 @@
     * [FFmpeg](https://ffmpeg.org/) (Optional): Enables support for non-WAV audio formats (e.g., MP3, FLAC).
         * Install FFmpeg if you need to process audio files other than WAV.
 
-##### Install dependencies
+#### Install dependencies
 * Ubuntu
     * `sudo apt-get update`
     * `sudo apt-get install cmake libcurl4-openssl-dev libfftw3-dev`
     * `sudo apt-get install ffmpeg` (Optional)
 
-##### Build
+#### Build
 * Clone repository **recursively** to include submodules.
     * `git clone --recursive https://github.com/bayernmuller/vibra.git`
 
@@ -78,7 +75,7 @@
     * `cmake ..`
     * `make`
 
-##### Usage
+#### Usage
 <details>
 <summary>Use --help option to see the help message.</summary>
 
