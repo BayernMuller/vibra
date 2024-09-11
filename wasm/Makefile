@@ -39,6 +39,6 @@ $(TARGET_JS): $(OBJECTS)
 	$(EMCXX) $(OBJECTS) $(LDFLAGS) -o $@
 
 clean:
-	rm -rf $(BUILD_DIR)
+	rm -rf $(BUILD_DIR)/*
 
 .PHONY: all clean

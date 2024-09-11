@@ -17,5 +17,6 @@ COPY ../ /app
 WORKDIR /app
 
 CMD cd /app/wasm && \
+    make clean && \
     emmake make -j9 && \
     ls -l build/vibra.wasm build/vibra.js
