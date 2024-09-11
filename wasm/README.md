@@ -1,56 +1,35 @@
-### WebAssembly Version Support
+### vibra: WebAssembly Version Support
 
-* Vibra now supports a WebAssembly (WASM) build, enabling it to run in web browsers. Before you can build Vibra for WebAssembly, you must first compile `libfftw3` for WebAssembly.
+* vibra now supports a WebAssembly (WASM) build, enabling it to run in web browsers
+* You can compile the project into WebAssembly using Docker.
 
-#### Building Dependency: `libfftw3` for WebAssembly
+### Building the WebAssembly version vibra with Docker
 
-* To build `libfftw3` on macOS for use with Vibra, follow these steps:
+1. Install Docker on your system if you haven't already. Visit the official Docker website for installation instructions specific to your operating system.
 
-1. Download the `libfftw3` source code:
+2. Clone the vibra repository:
 ```bash
-wget http://www.fftw.org/fftw-3.3.10.tar.gz
-```
-2. Extract the downloaded file:
-```bash
-tar -xvf fftw-3.3.10.tar.gz
-```
-3. Navigate into the extracted directory:
-```bash
-cd fftw-3.3.10
-```
-4. Configure the build for WebAssembly without Fortran support and specify the installation prefix:
-```bash
-emconfigure ./configure --disable-fortran --enable-single --prefix="/path/to/fftw"
-```
-5. Compile the library using multiple cores (for example, using 9 cores):
-```bash
-emmake make -j9
+git clone https://github.com/bayernmuller/vibra
 ```
 
-* After completing these steps, you will find the WebAssembly version of `libfftw3` in the `/path/to/fftw` directory.
-
-#### Building vibra for WebAssembly
-
-* Once `libfftw3` is ready, you can proceed to build Vibra for WebAssembly:
-
-1. Navigate to the wasm directory within the Vibra project:
+3. Open a terminal and navigate to the `vibra` directory
 ```bash
-cd vibra/wasm
+cd vibra
 ```
-2. Set the FFTW3_PATH environment variable to the path where `libfftw3` was installed:
-```bash
-export FFTW3_PATH=/path/to/fftw
-```
-3. Compile Vibra using the provided Makefile for WebAssembly, ensuring to include the FFTW3 include path:
-```bash
-emmake make -f Makefile.wasm -I"$FFTW3_PATH/include"
-```
-4. Verify the build outputs:
-```bash
-ls build
-```
-* You should see the following files indicating a successful build:
-    * `vibra.js`
-    * `vibra.wasm`
 
-* These files constitute the WebAssembly version of Vibra, ready for integration into web applications.
+4. Build the Docker image:
+```bash
+docker build -f wasm/Dockerfile -t vibra-wasm . 
+```
+
+5. Run the Docker container:
+```bash
+docker run --rm -v $(pwd)/wasm/build:/app/wasm/build vibra-wasm
+```
+
+6. The compiled files will be located in the `wasm/build` directory.
+```bash
+$ ls -l wasm/build
+.rw-r--r-- jayden staff  88 KB Wed Sep 11 23:07:52 2024 vibra.js
+.rwxr-xr-x jayden staff 804 KB Wed Sep 11 23:07:52 2024 vibra.wasm
+```
