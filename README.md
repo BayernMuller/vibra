@@ -18,6 +18,8 @@
 </p>
 
 
+### Overview
+
 * vibra is a C++ library and command-line tool for music recognition using the **unofficial** Shazam API.
 * It analyzes audio files, generates fingerprints, and queries the Shazam database to identify songs.
 * Key features:
@@ -33,7 +35,7 @@
     * Desktop and server environments for high-performance audio recognition
 
 
-### Compatibility table
+### Platform Compatibility and Build Status
 
 <table>
   <tr>
