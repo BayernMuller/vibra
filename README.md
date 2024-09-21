@@ -12,7 +12,7 @@
 
 
 <p align="center">
-    <img src="https://github.com/bayernmuller/vibra/actions/workflows/ci.yaml/badge.svg"/>
+    <img src="https://img.shields.io/github/stars/bayernmuller/vibra?style=social" alt="GitHub stars"/>
     <img src="https://img.shields.io/github/last-commit/bayernmuller/vibra"/>
     <img src="https://img.shields.io/github/license/bayernmuller/vibra"/>
 </p>
@@ -35,13 +35,38 @@
 
 ### Compatibility table
 
-| Platform         | Architecture     | Build Status |
-|------------------|------------------|--------------|
-| [WebAssembly](wasm/README.md) | -    | ✅            |
-| Linux            | x86_64, ARM64    | ✅            |
-| Windows          | x86_64           | ✅            |
-| macOS            | x86_64, ARM64    | ✅            |
-| Raspberry Pi     | ARMv8-A, ARMv6   | ✅            |
+<table>
+  <tr>
+    <th>Platform</th>
+    <th>Architecture</th>
+    <th>Build Status</th>
+  </tr>
+  <tr>
+    <td><a href="wasm/README.md">WebAssembly</a></td>
+    <td>-</td>
+    <td><img src="https://github.com/bayernmuller/vibra/actions/workflows/wasm-build.yaml/badge.svg"/></td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>x86_64, ARM64</td>
+    <td><img src="https://github.com/bayernmuller/vibra/actions/workflows/native-build.yaml/badge.svg"/></td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>x86_64</td>
+    <td>✅</td>
+  </tr>
+  <tr>
+    <td>macOS</td>
+    <td>x86_64, ARM64</td>
+    <td>✅</td>
+  </tr>
+  <tr>
+    <td>Raspberry Pi</td>
+    <td>ARMv8-A, ARMv6</td>
+    <td>✅</td>
+  </tr>
+</table>
 
 ### Build WebAssembly Version
 * Please read **[wasm/README.md](wasm/README.md)** to build and run vibra webassembly version.
