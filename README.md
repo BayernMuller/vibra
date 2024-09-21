@@ -17,20 +17,20 @@
     <img src="https://img.shields.io/github/license/bayernmuller/vibra"/>
 </p>
 
-* vibra is a powerful C++ library and command-line tool for music recognition, leveraging an unofficial Shazam API.
-* It efficiently analyzes audio files, generates unique fingerprints, and queries the vast Shazam database to identify songs with high accuracy.
-* Key features of vibra:
-    * Fast and lightweight: Optimized for performance on various platforms, including embedded devices.
-    * Cross-platform compatibility: Supports Linux, Windows, macOS, and **WebAssembly**.
-    * Flexible input: Can process WAV files natively, with optional FFmpeg support for other audio formats.
-* The core algorithm is based on Shazam's groundbreaking approach:
+
+* vibra is a C++ library and command-line tool for music recognition using the **unofficial** Shazam API.
+* It analyzes audio files, generates fingerprints, and queries the Shazam database to identify songs.
+* Key features:
+    * **Fast and lightweight**: Optimized for various platforms, including embedded devices.
+    * **Cross-platform**: Supports Linux, Windows, macOS, and **WebAssembly**.
+    * **Flexible input**: Processes WAV files natively, with optional FFmpeg support for other formats.
+* Based on Shazam's algorithm:
     * [An Industrial-Strength Audio Search Algorithm](https://www.ee.columbia.edu/~dpwe/papers/Wang03-shazam.pdf) - The original research paper.
     * [How does Shazam work](https://www.cameronmacleod.com/blog/how-does-shazam-work) - A detailed explanation of the algorithm.
-* Implementation inspiration:
-    * The project references the Rust implementation from [SongRec](https://github.com/marin-m/SongRec/tree/master), adapting it to C++ for broader compatibility.
+* Implementation inspired by [SongRec](https://github.com/marin-m/SongRec/tree/master), adapted to C++ 11.
 * Target platforms:
-    * Specifically designed for embedded devices like Raspberry Pi and Jetson Nano, where setting up Python or Rust environments can be challenging.
-    * Equally effective on desktop and server environments for high-performance audio recognition tasks.
+    * Embedded devices (e.g., Raspberry Pi, Jetson Nano)
+    * Desktop and server environments for high-performance audio recognition
 
 
 ### Compatibility table
@@ -68,32 +68,45 @@
   </tr>
 </table>
 
-### Build WebAssembly Version
-* Please read **[wasm/README.md](wasm/README.md)** to build and run vibra webassembly version.
+### Building the WebAssembly Version
+* Please refer to **[wasm/README.md](wasm/README.md)** for instructions on building and running the WebAssembly version of vibra.
 
-### Build Native Version
+### Building the Native Version
 
-#### Requirements
-* vibra requires CMake for its build process. Install [CMake](https://cmake.org/) before building.
-* The project is built using **C++11** standard features.
+#### Prerequisites
+* vibra requires CMake for its build process. Please install [CMake](https://cmake.org/) before proceeding.
+* The project is developed using the **C++11** standard.
 * vibra has the following dependencies:
-    * [CMake](https://cmake.org/): Build system generator.
-    * [libcurl](https://curl.se/libcurl/): Handles HTTP requests to the Shazam API.
-    * [libfftw3](http://www.fftw.org/): Performs Fast Fourier Transform calculations.
-    * [FFmpeg](https://ffmpeg.org/) (Optional): Enables support for non-WAV audio formats (e.g., MP3, FLAC).
-        * Install FFmpeg if you need to process audio files other than WAV.
+    * [CMake](https://cmake.org/): A cross-platform build system generator.
+    * [libcurl](https://curl.se/libcurl/): A library for making HTTP requests to the Shazam API.
+    * [libfftw3](http://www.fftw.org/): A library for computing Fast Fourier Transforms.
+    * [FFmpeg](https://ffmpeg.org/) (Optional): Provides support for audio formats other than WAV (e.g., MP3, FLAC).
+        * Install FFmpeg if you need to process audio files in formats other than WAV.
 
 #### Install dependencies
-* Ubuntu
+* **Ubuntu**
     * `sudo apt-get update`
     * `sudo apt-get install cmake libcurl4-openssl-dev libfftw3-dev`
     * `sudo apt-get install ffmpeg` (Optional)
+* **Windows**
+    * Install [CMake](https://cmake.org/download/)
+    * Install [vcpkg](https://github.com/Microsoft/vcpkg)
+    * Install dependencies using vcpkg:
+        * `vcpkg install curl:x64-windows fftw3:x64-windows`
+    * Add the vcpkg toolchain file to your CMake command (see Build section)
+    * Install [FFmpeg](https://ffmpeg.org/download.html#build-windows) (Optional)
+* **macOS**
+    * Install [Homebrew](https://brew.sh/)
+    * `brew install cmake curl fftw`
+    * `brew install ffmpeg` (Optional)
+
 
 #### Build
 * Clone repository **recursively** to include submodules.
     * `git clone --recursive https://github.com/bayernmuller/vibra.git`
 
 * Run the following commands to build vibra:
+    * `cd vibra`
     * `mkdir build && cd build`
     * `cmake ..`
     * `make`
@@ -123,7 +136,7 @@ Options:
 
 </details>
 
-##### - recognizing song from wav file
+##### Recognizing a song from a WAV file
 ```bash
 vibra --recognize --file sample.wav > result.json
 
@@ -135,13 +148,23 @@ jq .track.share.href result.json
 "https://www.shazam.com/track/5933917/stairway-to-heaven"
 ```
 
-##### - recognizing song from microphone
-* You can use [sox](http://sox.sourceforge.net/) or [FFmpeg](https://ffmpeg.org/) to print raw PCM data from **microphone**.
-
+##### Recognizing a song from a microphone
+* You can use [sox](http://sox.sourceforge.net/) or [FFmpeg](https://ffmpeg.org/) to capture raw PCM data from the **microphone**.
+* **sox**
 ```bash
 sox -d -t raw -b 24 -e signed-integer -r 44100 -c 1 - 2>/dev/null
 | vibra --recognize --seconds 5 --rate 44100 --channels 1 --bits 24 > result.json
+```
 
+* **FFmpeg**
+```bash
+ffmpeg -f avfoundation -i ":2" -f s32le -ar 44100 -ac 1 - 2>/dev/null
+| vibra --recognize --seconds 5 --rate 44100 --channels 1 --bits 32 > result.json
+# - "avfoundation" can be replaced depending on your system.
+# - Make sure to use the correct device index for your system.
+```
+* **output**
+```bash
 jq .track.title result.json
 "Bound 2"
 jq .track.subtitle result.json
@@ -155,9 +178,9 @@ jq .track.sections[1].text result.json
 ]
 ```
 
-##### - recognizing non-WAV files
-* You need to install FFmpeg on your system to decode non-WAV media files.
-* Vibra will try to locate FFmpeg in your PATH environment variable. Alternatively, you can specify the FFmpeg path by setting the `FFMPEG_PATH` environment variable.
+##### Recognizing non-WAV files
+* To decode non-WAV media files, FFmpeg must be installed on your system.
+* Vibra will attempt to locate FFmpeg in your system's PATH environment variable. If you prefer, you can explicitly specify the FFmpeg path by setting the `FFMPEG_PATH` environment variable.
 ```bash
 # Automatically find FFmpeg in PATH
 vibra --recognize --file out.mp3
