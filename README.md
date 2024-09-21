@@ -33,6 +33,7 @@
 * Target platforms:
     * Embedded devices (e.g., Raspberry Pi, Jetson Nano)
     * Desktop and server environments for high-performance audio recognition
+    * WebAssembly for web-based music recognition
 
 
 ### Platform Compatibility and Build Status
