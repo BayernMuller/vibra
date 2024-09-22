@@ -35,6 +35,11 @@ Follow these steps to build the WebAssembly version of Vibra:
    .rwxr-xr-x jayden staff 804 KB Wed Sep 11 23:07:52 2024 vibra.wasm
    ```
 
+##### If you can't build the WebAssembly version, you can download `vibra.wasm` and `vibra.js` from GitHub workflow artifacts.
+* https://github.com/BayernMuller/vibra/actions/workflows/wasm-build.yaml
+* Please download `vibra.wasm` and `vibra.js` from the latest successful run.
+* and put them in the `vibra/wasm/build` directory to run the demo Node.js app.
+
 ### 2. Running the Demo Node.js App "vibrajs"
 
 To run the demo Node.js application:
