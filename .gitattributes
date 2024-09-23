@@ -1,1 +1,3 @@
 *.html linguist-vendored
+*.js linguist-vendored
+*.h linguist-language=C++
