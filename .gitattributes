@@ -1,3 +1,5 @@
 *.html linguist-vendored
 *.js linguist-vendored
+CMakeLists.txt linguist-vendored
+Makefile linguist-vendored
 *.h linguist-language=C++
