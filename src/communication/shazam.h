@@ -12,7 +12,7 @@ class Shazam
 
 public:
     static std::string RequestMetadata(const Signature& signature);
-    static std::string GetRequestContent(const Signature& signature);
+    static std::string GetRequestContent(const std::string& uri, unsigned int sample_ms);
 
 private:
     static std::string getUserAgent();

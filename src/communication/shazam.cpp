@@ -1,8 +1,8 @@
 #include "shazam.h"
 #include "user_agents.h"
 #include "timezones.h"
-#include "../fingerprinting/utils/uuid4.h"
-#include "../fingerprinting/algorithm/signature.h"
+#include "../utils/uuid4.h"
+#include "../algorithm/signature.h"
 #include <random>
 #include <sstream>
 #include <curl/curl.h>
@@ -25,7 +25,9 @@ static size_t writeCallback(void* contents, size_t size, size_t nmemb, void* use
 
 std::string Shazam::RequestMetadata(const Signature& signature)
 {
-    auto content = getRequestContent(signature);
+    auto uri = signature.GetBase64Uri();
+    auto sample_ms = signature.NumberOfSamples() * 1000 / signature.SampleRate();
+    auto content = GetRequestContent(uri, sample_ms);
     auto user_agent = getUserAgent();
 
     std::string url = HOST + uuid4::generate() + "/" + uuid4::generate();
@@ -71,11 +73,11 @@ std::string Shazam::RequestMetadata(const Signature& signature)
     return read_buffer;
 }
 
-std::string Shazam::GetRequestContent(const Signature& signature)
+std::string Shazam::GetRequestContent(const std::string& uri, unsigned int sample_ms)
 {
     std::mt19937 gen(std::random_device{}());
     std::uniform_int_distribution<> dis_float(0.0, 1.0);
-    auto uri = signature.GetBase64Uri();
+    
     auto timezone = getTimezone(); 
     double fuzz = dis_float(gen) * 15.3 - 7.65;
     
@@ -87,7 +89,7 @@ std::string Shazam::GetRequestContent(const Signature& signature)
     json_buf << "\"longitude\":" << dis_float(gen) * 360 - 180 + fuzz;
     json_buf << "},";
     json_buf << "\"signature\":{";
-    json_buf << "\"samplems\":" << int(signature.NumberOfSamples() / signature.SampleRate() * 1000) << ",";
+    json_buf << "\"samplems\":" << sample_ms << ",";
     json_buf << "\"timestamp\":" << time(nullptr) * 1000ULL << ",";
     json_buf << "\"uri\":\"" << uri << "\"";
     json_buf << "},";
