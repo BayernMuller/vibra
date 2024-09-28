@@ -71,7 +71,7 @@ std::string Shazam::RequestMetadata(const Signature& signature)
     return read_buffer;
 }
 
-std::string Shazam::getRequestContent(const Signature& signature)
+std::string Shazam::GetRequestContent(const Signature& signature)
 {
     std::mt19937 gen(std::random_device{}());
     std::uniform_int_distribution<> dis_float(0.0, 1.0);
