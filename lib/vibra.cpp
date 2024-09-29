@@ -52,13 +52,15 @@ const char* vibra_get_shazam_request_json(const Fingerprint* fingerprint)
 
 const char* vibra_get_shazam_host()
 {
-    static std::string host = Shazam::GetShazamHost();
+    static std::string host;
+    host = Shazam::GetShazamHost();
     return host.c_str();
 }
 
 const char* vibra_get_shazam_random_user_agent()
 {
-    static std::string user_agent = Shazam::GetUserAgent();
+    static std::string user_agent;
+    user_agent = Shazam::GetUserAgent();
     return user_agent.c_str();
 }
 
