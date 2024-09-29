@@ -13,10 +13,4 @@ RUN wget http://www.fftw.org/fftw-${FFTW_VERSION}.tar.gz && \
     emmake make -j9 && \
     emmake make install
 
-COPY ../ /app
 WORKDIR /app
-
-CMD cd /app/wasm && \
-    make clean && \
-    emmake make -j9 && \
-    ls -l build/vibra.wasm build/vibra.js
