@@ -11,7 +11,11 @@ struct Fingerprint
     unsigned int sample_ms;
 };
 
-Fingerprint* vibra_get_fingerprint_from_wav(
+Fingerprint* vibra_get_fingerprint_from_music_file(
+    const char* music_file_path
+);
+
+Fingerprint* vibra_get_fingerprint_from_wav_data(
     const char* raw_wav,
     int wav_data_size
 );
@@ -33,8 +37,12 @@ unsigned int vibra_get_sample_ms_from_fingerprint(
 );
 
 const char* vibra_get_shazam_request_json(
-    Fingerprint* fingerprint
+    const Fingerprint* fingerprint
 );
+
+const char* vibra_get_shazam_host();
+
+const char* vibra_get_shazam_random_user_agent();
 
 } // extern "C"
 
