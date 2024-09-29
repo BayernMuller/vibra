@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 # build libvibra as wasm
 cd ..
 rm -rf build
@@ -17,7 +15,7 @@ make -j
 sudo make install
 
 # build the wasm module
-ls /usr/local/include
 cd ../wasm || exit 1
-pwd
+rm -rf build 
+mkdir -p build
 emmake make
