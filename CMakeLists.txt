@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -pedantic -O2")
 
 # build verbose output
-set(CMAKE_VERBOSE_MAKEFILE ON)
+# set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # enable profiling
 option(ENABLE_PROFILING "Enable profiling with -pg flag" OFF)
@@ -16,4 +16,8 @@ if(ENABLE_PROFILING)
 endif()
 
 add_subdirectory(lib)
-add_subdirectory(cli)
+
+option(LIBRARY_ONLY "Build only the library" OFF)
+if(NOT LIBRARY_ONLY)
+    add_subdirectory(cli)
+endif()
