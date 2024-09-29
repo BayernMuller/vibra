@@ -110,8 +110,6 @@ Fingerprint* CLI::getFingerprintFromStdin(int chunk_seconds, int sample_rate, in
 
 std::string CLI::getMetadataFromShazam(const Fingerprint* fingerprint)
 {
-    auto uri = fingerprint->uri;
-    auto sample_ms = fingerprint->sample_ms;
     auto content = vibra_get_shazam_request_json(fingerprint);
     auto user_agent = vibra_get_shazam_random_user_agent();
     std::string url = vibra_get_shazam_host();
