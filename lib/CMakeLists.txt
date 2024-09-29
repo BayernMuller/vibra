@@ -12,10 +12,15 @@ set(LIBVIBRA_SOURCES
 add_library(vibra_shared SHARED ${LIBVIBRA_SOURCES})
 add_library(vibra_static STATIC ${LIBVIBRA_SOURCES})
 
-# Find required libraries (FFTW3)
-find_library(FFTW3_LIBRARY NAMES fftw3)
+if (DEFINED FFTW3_PATH)
+    set(FFTW3_INCLUDE_DIR ${FFTW3_PATH}/include)
+    set(FFTW3_LIBRARY ${FFTW3_PATH}/lib/libfftw3.a)
+    target_include_directories(vibra_shared PRIVATE ${FFTW3_INCLUDE_DIR})
+    target_include_directories(vibra_static PRIVATE ${FFTW3_INCLUDE_DIR})
+else()
+    find_library(FFTW3_LIBRARY NAMES fftw3)
+endif()
 
-# Link FFTW3 library
 target_link_libraries(vibra_shared PRIVATE ${FFTW3_LIBRARY})
 target_link_libraries(vibra_static PRIVATE ${FFTW3_LIBRARY})
 
