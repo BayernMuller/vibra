@@ -189,11 +189,12 @@ jq .track.sections[1].text result.json
 * Vibra will attempt to locate FFmpeg in your system's PATH environment variable. If you prefer, you can explicitly specify the FFmpeg path by setting the `FFMPEG_PATH` environment variable.
 ```bash
 # Automatically find FFmpeg in PATH
-vibra --recognize --file out.mp3
+vibra --recognize --file sample.mp3
 
 # Specify the FFmpeg path
 export FFMPEG_PATH=/opt/homebrew/bin/ffmpeg
-vibra --recognize --file out.mp3
+vibra --recognize --file sample.mp3
+# You can use your own FFmpeg which is optimized for your system.
 ```
 * You can see the sample shazam result json file in [here](https://gist.github.com/BayernMuller/b92fd43eef4471b7016009196e62e4d2)
 
