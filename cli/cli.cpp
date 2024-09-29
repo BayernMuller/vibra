@@ -6,7 +6,7 @@
 
 static std::string read_buffer;
 
-static size_t writeCallback(void* contents, size_t size, size_t nmemb, void* userp)
+std::size_t writeCallback(void* contents, size_t size, size_t nmemb, void* userp)
 {
     (void)userp; // suppress warning (unused parameter)
     std::size_t realsize = size * nmemb;
@@ -144,7 +144,7 @@ std::string CLI::getMetadataFromShazam(const Fingerprint* fingerprint)
             std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
         }
 
-        int http_code = 0;
+        long http_code = 0;
         curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
         if (http_code != 200) 
         {
