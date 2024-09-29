@@ -4,6 +4,11 @@ project(vibra)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall  -Wextra -pedantic -O2")
+
+# build verbose output
+set(CMAKE_VERBOSE_MAKEFILE ON)
+
 # enable profiling
 option(ENABLE_PROFILING "Enable profiling with -pg flag" OFF)
 if(ENABLE_PROFILING)
