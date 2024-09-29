@@ -7,10 +7,10 @@ add_executable(vibra
 # Find libcurl
 find_library(CURL_LIBRARY NAMES curl)
 
-# Link the CLI with the static library and libcurl
+# Link the CLI with the static libvibra and libcurl
 target_link_libraries(vibra PRIVATE vibra_static ${CURL_LIBRARY})
 
-# Install the CLI binary to a system directory like /usr/local/bin
+# Install the CLI
 install(TARGETS vibra
     RUNTIME DESTINATION bin
 )
