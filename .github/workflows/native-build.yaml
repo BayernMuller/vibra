@@ -37,4 +37,4 @@ jobs:
       run: sudo make install -C build
 
     - name: Test CLI
-      run: bash ./tests/test.sh
+      run: vibra --recognize --file tests/sample.mp3 | jq .track.title -r | grep -q "Misty"
