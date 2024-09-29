@@ -215,10 +215,11 @@ vibra --recognize --file sample.mp3
 * vibra is about 2 times faster than the SongRec!
 
 ### Demo Video
-* Real time music tracker and lighting solution "Mooding", which uses vibra.
-* Click to view!
-
 [![Mooding](https://img.youtube.com/vi/f88EUEIohI4/maxresdefault.jpg)](https://www.youtube.com/watch?v=f88EUEIohI4)
+* Real time music tracker and lighting solution using vibra.
+* Click image to view the video!
+
+
 
 ### License
 * vibra is licensed under the GPLv3 license. See [LICENSE](LICENSE) for more details.
