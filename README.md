@@ -113,6 +113,8 @@
     * `mkdir build && cd build`
     * `cmake ..`
     * `make`
+    * `sudo make install` (Optional)
+      * Installs the libvibra static, shared libraries and the vibra command-line tool.
 
 #### Usage
 <details>

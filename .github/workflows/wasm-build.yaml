@@ -47,7 +47,7 @@ jobs:
 
       - name: Run Docker container for WASM build
         run: |
-          docker run --rm -v $(pwd)/wasm/build:/app/wasm/build vibra-wasm:latest
+          docker run --rm -v $(pwd):/app vibra-wasm:latest bash -c "cd wasm && ./build-wasm.sh"
 
       - name: Upload WASM artifacts
         uses: actions/upload-artifact@v3

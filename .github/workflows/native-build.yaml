@@ -25,10 +25,16 @@ jobs:
         submodules: recursive
 
     - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y cmake build-essential libfftw3-dev libcurl4-openssl-dev
+      run: sudo apt-get update && sudo apt-get install -y cmake build-essential libfftw3-dev libcurl4-openssl-dev ffmpeg jq yt-dlp
 
     - name: Configure CMake
       run: cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
 
     - name: Build
       run: cmake --build ${{ github.workspace }}/build --config ${{ matrix.build_type }}
+
+    - name: Install Executable file
+      run: sudo make install -C build
+
+    - name: Test CLI
+      run: vibra --recognize --file tests/sample.mp3 | jq .track.title -r | grep -q "Misty"
