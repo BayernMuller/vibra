@@ -20,11 +20,11 @@
 
 ### Overview
 
-* vibra is a C++ library and command-line tool for music recognition using the **unofficial** Shazam API.
+* vibra is a library and command-line tool for music recognition using the **unofficial** Shazam API.
 * It analyzes audio files, generates fingerprints, and queries the Shazam database to identify songs.
 * Key features:
     * **Fast and lightweight**: Optimized for various platforms, including embedded devices.
-    * **Cross-platform**: Supports Linux, Windows, macOS, and **WebAssembly**.
+    * **Cross-platform**: Supports Linux, Windows, macOS, **WebAssembly** and **FFI bindings** for other languages.
     * **Flexible input**: Processes WAV files natively, with optional FFmpeg support for other formats.
 * Based on Shazam's algorithm:
     * [An Industrial-Strength Audio Search Algorithm](https://www.ee.columbia.edu/~dpwe/papers/Wang03-shazam.pdf) - The original research paper.
@@ -34,6 +34,7 @@
     * Embedded devices (e.g., Raspberry Pi, Jetson Nano)
     * Desktop and server environments for high-performance audio recognition
     * WebAssembly for web-based music recognition
+    * And even more platforms such as iOS, Android, and other languages via FFI bindings!
 
 
 ### Platform Compatibility and Build Status
@@ -194,9 +195,14 @@ vibra --recognize --file out.mp3
 export FFMPEG_PATH=/opt/homebrew/bin/ffmpeg
 vibra --recognize --file out.mp3
 ```
-
-
 * You can see the sample shazam result json file in [here](https://gist.github.com/BayernMuller/b92fd43eef4471b7016009196e62e4d2)
+
+### FFI Bindings
+* vibra provides FFI bindings, allowing other languages to leverage its music recognition functionality.
+* After building vibra, the shared library `libvibra.so` will be located in the `build` directory.
+* This shared library can be integrated into languages such as Python or Swift using FFI mechanisms.
+* For detailed function signatures, please refer to the vibra header file [vibra.h](include/vibra.h).
+
 
 ### Performance comparison
 <p align="center">
