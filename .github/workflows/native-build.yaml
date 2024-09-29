@@ -37,4 +37,4 @@ jobs:
       run: sudo make install -C build
 
     - name: Test CLI
-      run: ./tests/test.sh
+      run: bash ./tests/test.sh
