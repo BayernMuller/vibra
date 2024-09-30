@@ -45,6 +45,10 @@ int CLI::Run(int argc, char** argv)
     args::ValueFlag<int> channels(raw_sources, "channels", "Channels", {'c', "channels"});
     args::ValueFlag<int> bits_per_sample(raw_sources, "bits", "Bits per sample", {'b', "bits"});
 
+    args::Group raw_source_type(raw_sources, "Raw source type:", args::Group::Validators::AtMostOne);
+    args::Flag signed_pcm(raw_source_type, "signed_pcm", "Signed PCM (default)", {"signed"});
+    args::Flag float_pcm(raw_source_type, "float_pcm", "Float32 PCM", {"float"});
+
     try
     {
         parser.ParseCLI(argc, argv);
@@ -67,13 +71,7 @@ int CLI::Run(int argc, char** argv)
     if (music_file)
     {
         std::string file = args::get(music_file);
-        if (std::ifstream(file).good() == false)
-        {
-            std::cerr << "File not found: " << file << std::endl;
-            return 1;
-        }
-
-        fingerprint = vibra_get_fingerprint_from_music_file(file.c_str());
+        fingerprint = getFingerprintFromMusicFile(file);
     }
     else if (chunk_seconds && sample_rate && channels && bits_per_sample)
     {
@@ -81,7 +79,9 @@ int CLI::Run(int argc, char** argv)
             args::get(chunk_seconds),
             args::get(sample_rate),
             args::get(channels),
-            args::get(bits_per_sample));
+            args::get(bits_per_sample),
+            float_pcm == false
+        );
     }
     else
     {
@@ -100,12 +100,35 @@ int CLI::Run(int argc, char** argv)
     return 0;
 }
 
-Fingerprint* CLI::getFingerprintFromStdin(int chunk_seconds, int sample_rate, int channels, int bits_per_sample)
+Fingerprint* CLI::getFingerprintFromMusicFile(const std::string& music_file)
+{
+    if (std::ifstream(music_file).good() == false)
+    {
+        std::cerr << "File not found: " << music_file << std::endl;
+        throw std::ifstream::failure("File not found");
+    }
+    return vibra_get_fingerprint_from_music_file(music_file.c_str());
+}
+
+Fingerprint* CLI::getFingerprintFromStdin(int chunk_seconds, int sample_rate,
+                            int channels, int bits_per_sample, bool signed_pcm)
 {
     std::size_t bytes = chunk_seconds * sample_rate * channels * (bits_per_sample / 8);
     std::vector<char> buffer(bytes);
     std::cin.read(buffer.data(), bytes);
-    return vibra_get_fingerprint_from_signed_pcm(buffer.data(), bytes, sample_rate, bits_per_sample, channels);
+    if (signed_pcm)
+    {
+        return vibra_get_fingerprint_from_signed_pcm(buffer.data(), bytes, sample_rate, bits_per_sample, channels);
+    }
+    else if (bits_per_sample == 32)
+    {
+        return vibra_get_fingerprint_from_float32_pcm(buffer.data(), bytes, sample_rate, channels);
+    }
+    else if (bits_per_sample == 64)
+    {
+        return vibra_get_fingerprint_from_float64_pcm(buffer.data(), bytes, sample_rate, channels);
+    }
+    throw std::runtime_error("Invalid PCM type");
 }
 
 std::string CLI::getMetadataFromShazam(const Fingerprint* fingerprint)

@@ -10,8 +10,11 @@ public:
     int Run(int argc, char** argv);
 
 private:
-    Fingerprint* getFingerprintFromStdin(int chunk_seconds, int sample_rate, int channels, int bits_per_sample);
+    Fingerprint* getFingerprintFromMusicFile(const std::string& music_file);
+    Fingerprint* getFingerprintFromStdin(int chunk_seconds, int sample_rate,
+                            int channels, int bits_per_sample, bool signed_pcm);
     std::string getMetadataFromShazam(const Fingerprint* fingerprint);
+
 };
 
 #endif // __CLI_H__
