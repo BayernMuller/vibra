@@ -66,8 +66,7 @@ const char* vibra_get_shazam_random_user_agent()
 
 Fingerprint* _get_fingerprint_from_wav(const Wav& wav)
 {
-    Raw16bitPCM pcm;
-    wav.GetLowQualityPCM(&pcm);
+    Raw16bitPCM pcm = wav.GetLowQualityPCM();
     return _get_fingerprint_from_low_quality_pcm(pcm);
 }
 

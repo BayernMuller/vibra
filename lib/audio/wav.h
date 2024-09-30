@@ -25,7 +25,7 @@ public:
     inline std::uint32_t GetBitPerSample() { return mBitPerSample; }
     inline std::uint32_t GetDataSize() { return mDataSize; }
     inline std::uint32_t GetFileSize() { return mFileSize; }
-    void GetLowQualityPCM(Raw16bitPCM* raw_pcm, std::int32_t start_sec = 0, std::int32_t end_sec = -1) const;
+    Raw16bitPCM GetLowQualityPCM(std::int32_t start_sec = 0, std::int32_t end_sec = -1) const;
 
 private:
     void readWavFile(const std::string& wav_file_path);
