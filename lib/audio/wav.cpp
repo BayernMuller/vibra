@@ -98,12 +98,13 @@ Raw16bitPCM Wav::GetLowQualityPCM(std::int32_t start_sec, std::int32_t end_sec) 
         getMonoSample = &Wav::stereoToMonoSample;
     } 
 
-    for (std::uint32_t i = 0, j = 0;
-        i < mDataSize && j < new_sample_count;
-        i += (width * mChannel) * downsample_ratio, j++)
+    std::uint32_t index = 0;
+    for (std::uint32_t i = 0; i < new_sample_count; i++)
     {
-        raw_pcm.at(j) = (this->*getMonoSample)(width, raw_data, i);
+        index = i * mSampleRate / LOW_QUALITY_SAMPLE_RATE;
+        raw_pcm.at(i) = (this->*getMonoSample)(width, raw_data, index * width * mChannel);
     }
+    
     return raw_pcm;
 }
 
