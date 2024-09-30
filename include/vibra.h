@@ -81,6 +81,7 @@ Fingerprint* vibra_get_fingerprint_from_pcm(
  * 
  * @note This function is thread-unsafe. The returned pointer should not be freed by the caller
  *       as it may be managed internally.
+ * @note This function supports s16le, s24le, s32le, f32le, and f64le PCM data.
  */
 Fingerprint* vibra_get_fingerprint_from_pcm(
     const char* raw_pcm,
