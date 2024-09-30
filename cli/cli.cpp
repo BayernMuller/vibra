@@ -45,10 +45,6 @@ int CLI::Run(int argc, char** argv)
     args::ValueFlag<int> channels(raw_sources, "channels", "Channels", {'c', "channels"});
     args::ValueFlag<int> bits_per_sample(raw_sources, "bits", "Bits per sample", {'b', "bits"});
 
-    args::Group raw_source_type(raw_sources, "Raw source type:", args::Group::Validators::AtMostOne);
-    args::Flag signed_pcm(raw_source_type, "signed_pcm", "Signed PCM (default)", {"signed"});
-    args::Flag float_pcm(raw_source_type, "float_pcm", "Float32 PCM", {"float"});
-
     try
     {
         parser.ParseCLI(argc, argv);
@@ -79,8 +75,7 @@ int CLI::Run(int argc, char** argv)
             args::get(chunk_seconds),
             args::get(sample_rate),
             args::get(channels),
-            args::get(bits_per_sample),
-            float_pcm == false
+            args::get(bits_per_sample)
         );
     }
     else
@@ -111,24 +106,12 @@ Fingerprint* CLI::getFingerprintFromMusicFile(const std::string& music_file)
 }
 
 Fingerprint* CLI::getFingerprintFromStdin(int chunk_seconds, int sample_rate,
-                            int channels, int bits_per_sample, bool signed_pcm)
+                            int channels, int bits_per_sample)
 {
     std::size_t bytes = chunk_seconds * sample_rate * channels * (bits_per_sample / 8);
     std::vector<char> buffer(bytes);
     std::cin.read(buffer.data(), bytes);
-    if (signed_pcm)
-    {
-        return vibra_get_fingerprint_from_signed_pcm(buffer.data(), bytes, sample_rate, bits_per_sample, channels);
-    }
-    else if (bits_per_sample == 32)
-    {
-        return vibra_get_fingerprint_from_float32_pcm(buffer.data(), bytes, sample_rate, channels);
-    }
-    else if (bits_per_sample == 64)
-    {
-        return vibra_get_fingerprint_from_float64_pcm(buffer.data(), bytes, sample_rate, channels);
-    }
-    throw std::runtime_error("Invalid PCM type");
+    return vibra_get_fingerprint_from_signed_pcm(buffer.data(), bytes, sample_rate, bits_per_sample, channels);
 }
 
 std::string CLI::getMetadataFromShazam(const Fingerprint* fingerprint)

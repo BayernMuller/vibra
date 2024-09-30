@@ -12,7 +12,7 @@ public:
 private:
     Fingerprint* getFingerprintFromMusicFile(const std::string& music_file);
     Fingerprint* getFingerprintFromStdin(int chunk_seconds, int sample_rate,
-                            int channels, int bits_per_sample, bool signed_pcm);
+                            int channels, int bits_per_sample);
     std::string getMetadataFromShazam(const Fingerprint* fingerprint);
 
 };
