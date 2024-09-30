@@ -9,7 +9,7 @@
 using Raw16bitPCM = std::vector<std::int16_t>;
 
 constexpr std::uint32_t LOW_QUALITY_SAMPLE_RATE = 16000;
-constexpr std::uint32_t LOW_QUALITY_SAMPLE_WIDTH = 16;
+constexpr std::uint32_t LOW_QUALITY_SAMPLE_WIDTH = sizeof(Raw16bitPCM::value_type) * 8;
 class Wav
 {
 public:
@@ -20,6 +20,10 @@ public:
     static Wav FromSignedPCM(const char* raw_pcm, std::uint32_t raw_pcm_size,
                         std::uint32_t sample_rate, std::uint32_t sample_width,
                         std::uint32_t channel_count);
+    static Wav FromFloat32PCM(const char* raw_pcm, std::uint32_t raw_pcm_size,
+                        std::uint32_t sample_rate, std::uint32_t channel_count);
+    static Wav FromFloat64PCM(const char* raw_pcm, std::uint32_t raw_pcm_size,
+                        std::uint32_t sample_rate, std::uint32_t channel_count);
     ~Wav();
 
     inline std::uint32_t GetAudioFormat() { return mAudioFormat; }
@@ -32,6 +36,10 @@ public:
 
 private:
     Wav() = default;
+
+    template <typename FloatType>
+    void readFloatPCM(const char* raw_pcm, std::uint32_t raw_pcm_size,
+                        std::uint32_t sample_rate, std::uint32_t channel_count);
 
     void readWavFile(const std::string& wav_file_path);
     void readWavBuffer(std::istream& stream);

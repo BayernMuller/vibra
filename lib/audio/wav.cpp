@@ -6,6 +6,7 @@
 #include <cmath>
 #include <memory.h>
 #include <sstream>  
+#include <algorithm>
 
 Wav Wav::FromFile(const std::string& wav_file_path)
 {
@@ -23,7 +24,9 @@ Wav Wav::FromRawWav(const char* raw_wav, std::uint32_t raw_wav_size)
     return wav;
 }
 
-Wav Wav::FromSignedPCM(const char* raw_pcm, std::uint32_t raw_pcm_size, std::uint32_t sample_rate, std::uint32_t sample_width, std::uint32_t channel_count)
+Wav Wav::FromSignedPCM(const char* raw_pcm, std::uint32_t raw_pcm_size,
+                    std::uint32_t sample_rate, std::uint32_t sample_width,
+                    std::uint32_t channel_count)
 {
     Wav wav;
     wav.mAudioFormat = 1;
@@ -34,6 +37,22 @@ Wav Wav::FromSignedPCM(const char* raw_pcm, std::uint32_t raw_pcm_size, std::uin
     wav.mFileSize = 44 + raw_pcm_size;
     wav.mData.reset(new std::uint8_t[raw_pcm_size]);
     ::memcpy(wav.mData.get(), raw_pcm, raw_pcm_size);
+    return wav;
+}
+
+Wav Wav::FromFloat32PCM(const char* raw_pcm, std::uint32_t raw_pcm_size,
+                    std::uint32_t sample_rate, std::uint32_t channel_count)
+{
+    Wav wav;
+    wav.readFloatPCM<float>(raw_pcm, raw_pcm_size, sample_rate, channel_count);
+    return wav;
+}
+
+Wav Wav::FromFloat64PCM(const char* raw_pcm, std::uint32_t raw_pcm_size,
+                    std::uint32_t sample_rate, std::uint32_t channel_count)
+{
+    Wav wav;
+    wav.readFloatPCM<double>(raw_pcm, raw_pcm_size, sample_rate, channel_count);
     return wav;
 }
 
@@ -86,6 +105,35 @@ Raw16bitPCM Wav::GetLowQualityPCM(std::int32_t start_sec, std::int32_t end_sec) 
         raw_pcm.at(j) = (this->*getMonoSample)(width, raw_data, i);
     }
     return raw_pcm;
+}
+
+template <typename FloatType>
+void Wav::readFloatPCM(const char* raw_pcm, std::uint32_t raw_pcm_size,
+                        std::uint32_t sample_rate, std::uint32_t channel_count)
+{
+    mAudioFormat = 1;
+    mChannel = channel_count;
+    mSampleRate = sample_rate;
+    mBitPerSample = LOW_QUALITY_SAMPLE_WIDTH;
+
+    std::uint32_t num_samples = raw_pcm_size / sizeof(FloatType);
+    mDataSize = num_samples * LOW_QUALITY_SAMPLE_WIDTH / 8;
+    mFileSize = 44 + mDataSize;
+    mData.reset(new std::uint8_t[mDataSize]);
+
+    std::int16_t* int16_data = reinterpret_cast<std::int16_t*>(mData.get());
+
+    const FloatType* float_data = reinterpret_cast<const FloatType*>(raw_pcm);
+    for (std::uint32_t i = 0; i < num_samples; i++)
+    {
+        FloatType sample = float_data[i];
+        // Clamp and convert the double [-1.0, 1.0] range to int16 [-32768, 32767]
+        sample = std::max(
+            static_cast<FloatType>(-1.0),
+            std::min(static_cast<FloatType>(1.0), sample)
+        );
+        int16_data[i] = static_cast<std::int16_t>(sample * 32767.0);
+    }
 }
 
 void Wav::readWavFile(const std::string& wav_file_path)
