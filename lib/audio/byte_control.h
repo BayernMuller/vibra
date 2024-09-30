@@ -8,11 +8,10 @@
         *(T *)((unsigned char *)(cp) + (i)) = (T)(val); \
     } while (0)
 
-
-#define GETINT8(cp, i)          GETINTX(signed char, (cp), (i))
-#define GETINT16(cp, i)         GETINTX(int16_t, (cp), (i))
-#define GETINT32(cp, i)         GETINTX(int32_t, (cp), (i))
-#define GETINT64(cp, i)         GETINTX(int64_t, (cp), (i))
+#define GETINT8(cp, i)          GETINTX(std::int8_t,  (cp), (i))
+#define GETINT16(cp, i)         GETINTX(std::int16_t, (cp), (i))
+#define GETINT32(cp, i)         GETINTX(std::int32_t, (cp), (i))
+#define GETINT64(cp, i)         GETINTX(std::int64_t, (cp), (i))
 
 #ifdef WORDS_BIGENDIAN
 #define GETINT24(cp, i)  (                              \
@@ -26,60 +25,11 @@
         (((signed char *)(cp) + (i))[2] * (1 << 16)) )
 #endif
 
-
-#define SETINT8(cp, i, val)     SETINTX(signed char, (cp), (i), (val))
-#define SETINT16(cp, i, val)    SETINTX(int16_t, (cp), (i), (val))
-#define SETINT32(cp, i, val)    SETINTX(int32_t, (cp), (i), (val))
-
-#ifdef WORDS_BIGENDIAN
-#define SETINT24(cp, i, val)  do {                              \
-        ((unsigned char *)(cp) + (i))[2] = (int)(val);          \
-        ((unsigned char *)(cp) + (i))[1] = (int)(val) >> 8;     \
-        ((signed char *)(cp) + (i))[0] = (int)(val) >> 16;      \
-    } while (0)
-#else
-#define SETINT24(cp, i, val)  do {                              \
-        ((unsigned char *)(cp) + (i))[0] = (int)(val);          \
-        ((unsigned char *)(cp) + (i))[1] = (int)(val) >> 8;     \
-        ((signed char *)(cp) + (i))[2] = (int)(val) >> 16;      \
-    } while (0)
-#endif
-
-
-#define GETRAWSAMPLE(size, cp, i)  (                    \
-        (size == 1) ? (int)GETINT8((cp), (i)) :         \
-        (size == 2) ? (int)GETINT16((cp), (i)) :        \
-        (size == 3) ? (int)GETINT24((cp), (i)) :        \
-                      (int)GETINT32((cp), (i)))
-
-#define SETRAWSAMPLE(size, cp, i, val)  do {    \
-        if (size == 1)                          \
-            SETINT8((cp), (i), (val));          \
-        else if (size == 2)                     \
-            SETINT16((cp), (i), (val));         \
-        else if (size == 3)                     \
-            SETINT24((cp), (i), (val));         \
-        else                                    \
-            SETINT32((cp), (i), (val));         \
-    } while(0)
-
-
 #define GETSAMPLE64(size, cp, i)  (                               \
-        ((size) == 1) ? (int64_t)GETINT8((cp), (i))  * (1LL << 56)  : \
-        ((size) == 2) ? (int64_t)GETINT16((cp), (i)) * (1LL << 48) : \
-        ((size) == 3) ? (int64_t)GETINT24((cp), (i)) * (1LL << 40) : \
-        ((size) == 4) ? (int64_t)GETINT32((cp), (i)) * (1LL << 32) : \
-                        (int64_t)GETINT64((cp), (i)) )
-
-#define SETSAMPLE32(size, cp, i, val)  do {     \
-        if (size == 1)                          \
-            SETINT8((cp), (i), (val) >> 24);    \
-        else if (size == 2)                     \
-            SETINT16((cp), (i), (val) >> 16);   \
-        else if (size == 3)                     \
-            SETINT24((cp), (i), (val) >> 8);    \
-        else                                    \
-            SETINT32((cp), (i), (val));         \
-    } while(0)
+        ((size) == 1) ? (std::int64_t)GETINT8((cp), (i))  * (1LL << 56)  : \
+        ((size) == 2) ? (std::int64_t)GETINT16((cp), (i)) * (1LL << 48) : \
+        ((size) == 3) ? (std::int64_t)GETINT24((cp), (i)) * (1LL << 40) : \
+        ((size) == 4) ? (std::int64_t)GETINT32((cp), (i)) * (1LL << 32) : \
+                        (std::int64_t)GETINT64((cp), (i)) )
 
 #endif // BYTE_CONTROL_H
