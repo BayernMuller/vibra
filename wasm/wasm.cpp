@@ -13,7 +13,7 @@ Fingerprint* EMSCRIPTEN_KEEPALIVE GetWavSignature(char* raw_wav, int wav_data_si
 
 Fingerprint* EMSCRIPTEN_KEEPALIVE GetPcmSignature(char* raw_pcm, int pcm_data_size, int sample_rate, int sample_width, int channel_count)
 {
-    return vibra_get_fingerprint_from_pcm(raw_pcm, pcm_data_size, sample_rate, sample_width, channel_count);
+    return vibra_get_fingerprint_from_signed_pcm(raw_pcm, pcm_data_size, sample_rate, sample_width, channel_count);
 }
 
 const char* EMSCRIPTEN_KEEPALIVE GetFingerprint(Fingerprint* signature)
