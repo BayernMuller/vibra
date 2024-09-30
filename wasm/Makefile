@@ -15,9 +15,7 @@ TARGET_JS := $(BUILD_DIR)/vibra.js
 WASM_SETTINGS := -s EXPORTED_FUNCTIONS="[ \
 						'_GetWavSignature', \
 						'_GetFingerprint', \
-						'_GetSignedPcmSignature', \
-						'_GetFloat32PcmSignature', \
-						'_GetFloat64PcmSignature', \
+						'_GetPcmSignature', \
 						'_GetSampleMs', \
 						'_malloc', \
 						'_free' \

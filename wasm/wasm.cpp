@@ -11,19 +11,9 @@ Fingerprint* EMSCRIPTEN_KEEPALIVE GetWavSignature(char* raw_wav, int wav_data_si
     return vibra_get_fingerprint_from_wav_data(raw_wav, wav_data_size);
 }
 
-Fingerprint* EMSCRIPTEN_KEEPALIVE GetSignedPcmSignature(char* raw_pcm, int pcm_data_size, int sample_rate, int sample_width, int channel_count)
+Fingerprint* EMSCRIPTEN_KEEPALIVE GetPcmSignature(char* raw_pcm, int pcm_data_size, int sample_rate, int sample_width, int channel_count)
 {
     return vibra_get_fingerprint_from_signed_pcm(raw_pcm, pcm_data_size, sample_rate, sample_width, channel_count);
-}
-
-Fingerprint* EMSCRIPTEN_KEEPALIVE GetFloat32PcmSignature(char* raw_pcm, int pcm_data_size, int sample_rate, int channel_count)
-{
-    return vibra_get_fingerprint_from_float32_pcm(raw_pcm, pcm_data_size, sample_rate, channel_count);
-}
-
-Fingerprint* EMSCRIPTEN_KEEPALIVE GetFloat64PcmSignature(char* raw_pcm, int pcm_data_size, int sample_rate, int channel_count)
-{
-    return vibra_get_fingerprint_from_float64_pcm(raw_pcm, pcm_data_size, sample_rate, channel_count);
 }
 
 const char* EMSCRIPTEN_KEEPALIVE GetFingerprint(Fingerprint* signature)
