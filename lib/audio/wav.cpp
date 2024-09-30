@@ -40,22 +40,6 @@ Wav Wav::FromSignedPCM(const char* raw_pcm, std::uint32_t raw_pcm_size,
     return wav;
 }
 
-Wav Wav::FromFloat32PCM(const char* raw_pcm, std::uint32_t raw_pcm_size,
-                    std::uint32_t sample_rate, std::uint32_t channel_count)
-{
-    Wav wav;
-    wav.readFloatPCM<float>(raw_pcm, raw_pcm_size, sample_rate, channel_count);
-    return wav;
-}
-
-Wav Wav::FromFloat64PCM(const char* raw_pcm, std::uint32_t raw_pcm_size,
-                    std::uint32_t sample_rate, std::uint32_t channel_count)
-{
-    Wav wav;
-    wav.readFloatPCM<double>(raw_pcm, raw_pcm_size, sample_rate, channel_count);
-    return wav;
-}
-
 Wav::~Wav()
 {
 }
@@ -106,35 +90,6 @@ Raw16bitPCM Wav::GetLowQualityPCM(std::int32_t start_sec, std::int32_t end_sec) 
     }
     
     return raw_pcm;
-}
-
-template <typename FloatType>
-void Wav::readFloatPCM(const char* raw_pcm, std::uint32_t raw_pcm_size,
-                        std::uint32_t sample_rate, std::uint32_t channel_count)
-{
-    mAudioFormat = 1;
-    mChannel = channel_count;
-    mSampleRate = sample_rate;
-    mBitPerSample = LOW_QUALITY_SAMPLE_WIDTH;
-
-    std::uint32_t num_samples = raw_pcm_size / sizeof(FloatType);
-    mDataSize = num_samples * LOW_QUALITY_SAMPLE_WIDTH / 8;
-    mFileSize = 44 + mDataSize;
-    mData.reset(new std::uint8_t[mDataSize]);
-
-    std::int16_t* int16_data = reinterpret_cast<std::int16_t*>(mData.get());
-
-    const FloatType* float_data = reinterpret_cast<const FloatType*>(raw_pcm);
-    for (std::uint32_t i = 0; i < num_samples; i++)
-    {
-        FloatType sample = float_data[i];
-        // Clamp and convert the double [-1.0, 1.0] range to int16 [-32768, 32767]
-        sample = std::max(
-            static_cast<FloatType>(-1.0),
-            std::min(static_cast<FloatType>(1.0), sample)
-        );
-        int16_data[i] = static_cast<std::int16_t>(sample * 32767.0);
-    }
 }
 
 void Wav::readWavFile(const std::string& wav_file_path)
@@ -210,7 +165,7 @@ std::int16_t Wav::getMonoSample(std::uint32_t width, const void* data, std::uint
     double collected_sample = 0;
     for (std::uint32_t k = 0; k < mChannel; k++)
     {
-        temp_sample = GETSAMPLE32(width, data, index + (width * k)) >> LOW_QUALITY_SAMPLE_WIDTH;
+        temp_sample = GETSAMPLE64(width, data, index + (width * k)) >> (64 - LOW_QUALITY_SAMPLE_WIDTH);
         collected_sample += temp_sample;
     }
     return std::int16_t(collected_sample / mChannel);
@@ -218,12 +173,12 @@ std::int16_t Wav::getMonoSample(std::uint32_t width, const void* data, std::uint
 
 std::int16_t Wav::monoToMonoSample(std::uint32_t width, const void* data, std::uint32_t index) const
 {
-    return GETSAMPLE32(width, data, index) >> LOW_QUALITY_SAMPLE_WIDTH;
+    return GETSAMPLE64(width, data, index) >> (64 - LOW_QUALITY_SAMPLE_WIDTH);
 }
 
 std::int16_t Wav::stereoToMonoSample(std::uint32_t width, const void* data, std::uint32_t index) const
 {
-    std::int16_t sample1 = GETSAMPLE32(width, data, index) >> LOW_QUALITY_SAMPLE_WIDTH;
-    std::int16_t sample2 = GETSAMPLE32(width, data, index + width) >> LOW_QUALITY_SAMPLE_WIDTH;
+    std::int16_t sample1 = GETSAMPLE64(width, data, index) >> (64 - LOW_QUALITY_SAMPLE_WIDTH);
+    std::int16_t sample2 = GETSAMPLE64(width, data, index + width) >> (64 - LOW_QUALITY_SAMPLE_WIDTH);
     return (sample1 + sample2) / 2;
 }

@@ -12,6 +12,7 @@
 #define GETINT8(cp, i)          GETINTX(signed char, (cp), (i))
 #define GETINT16(cp, i)         GETINTX(int16_t, (cp), (i))
 #define GETINT32(cp, i)         GETINTX(int32_t, (cp), (i))
+#define GETINT64(cp, i)         GETINTX(int64_t, (cp), (i))
 
 #ifdef WORDS_BIGENDIAN
 #define GETINT24(cp, i)  (                              \
@@ -63,11 +64,12 @@
     } while(0)
 
 
-#define GETSAMPLE32(size, cp, i)  (                           \
-        (size == 1) ? (int)GETINT8((cp), (i)) * (1 << 24) :   \
-        (size == 2) ? (int)GETINT16((cp), (i)) * (1 << 16) :  \
-        (size == 3) ? (int)GETINT24((cp), (i)) * (1 << 8) :   \
-                      (int)GETINT32((cp), (i)))
+#define GETSAMPLE64(size, cp, i)  (                               \
+        ((size) == 1) ? (int64_t)GETINT8((cp), (i))  * (1LL << 56)  : \
+        ((size) == 2) ? (int64_t)GETINT16((cp), (i)) * (1LL << 48) : \
+        ((size) == 3) ? (int64_t)GETINT24((cp), (i)) * (1LL << 40) : \
+        ((size) == 4) ? (int64_t)GETINT32((cp), (i)) * (1LL << 32) : \
+                        (int64_t)GETINT64((cp), (i)) )
 
 #define SETSAMPLE32(size, cp, i, val)  do {     \
         if (size == 1)                          \

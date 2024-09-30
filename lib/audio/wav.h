@@ -20,10 +20,6 @@ public:
     static Wav FromSignedPCM(const char* raw_pcm, std::uint32_t raw_pcm_size,
                         std::uint32_t sample_rate, std::uint32_t sample_width,
                         std::uint32_t channel_count);
-    static Wav FromFloat32PCM(const char* raw_pcm, std::uint32_t raw_pcm_size,
-                        std::uint32_t sample_rate, std::uint32_t channel_count);
-    static Wav FromFloat64PCM(const char* raw_pcm, std::uint32_t raw_pcm_size,
-                        std::uint32_t sample_rate, std::uint32_t channel_count);
     ~Wav();
 
     inline std::uint32_t GetAudioFormat() { return mAudioFormat; }
@@ -36,11 +32,6 @@ public:
 
 private:
     Wav() = default;
-
-    template <typename FloatType>
-    void readFloatPCM(const char* raw_pcm, std::uint32_t raw_pcm_size,
-                        std::uint32_t sample_rate, std::uint32_t channel_count);
-
     void readWavFile(const std::string& wav_file_path);
     void readWavBuffer(std::istream& stream);
 
