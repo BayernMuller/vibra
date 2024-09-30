@@ -33,18 +33,6 @@ Fingerprint* vibra_get_fingerprint_from_signed_pcm(const char* raw_pcm, int pcm_
     return _get_fingerprint_from_wav(wav);
 }
 
-Fingerprint* vibra_get_fingerprint_from_float32_pcm(const char* raw_pcm, int pcm_data_size, int sample_rate, int channel_count)
-{
-    Wav wav = Wav::FromFloat32PCM(raw_pcm, pcm_data_size, sample_rate, channel_count);
-    return _get_fingerprint_from_wav(wav);
-}
-
-Fingerprint* vibra_get_fingerprint_from_float64_pcm(const char* raw_pcm, int pcm_data_size, int sample_rate, int channel_count)
-{
-    Wav wav = Wav::FromFloat64PCM(raw_pcm, pcm_data_size, sample_rate, channel_count);
-    return _get_fingerprint_from_wav(wav);
-}
-
 const char* vibra_get_uri_from_fingerprint(Fingerprint* fingerprint)
 {
     return fingerprint->uri.c_str();
