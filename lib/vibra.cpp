@@ -12,7 +12,7 @@ Fingerprint* vibra_get_fingerprint_from_music_file(const char* music_file_path)
     std::string path = music_file_path;
     if (path.size() >= 4 && path.substr(path.size() - 4) == ".wav")
     {
-        Wav wav(music_file_path);
+        Wav wav = Wav::FromFile(path);
         return _get_fingerprint_from_wav(wav);
     }
 
@@ -23,13 +23,13 @@ Fingerprint* vibra_get_fingerprint_from_music_file(const char* music_file_path)
 
 Fingerprint* vibra_get_fingerprint_from_wav_data(const char* raw_wav, int wav_data_size)
 {
-    Wav wav(raw_wav, wav_data_size);
+    Wav wav = Wav::FromRawWav(raw_wav, wav_data_size);
     return _get_fingerprint_from_wav(wav);
 }
 
 Fingerprint* vibra_get_fingerprint_from_pcm(const char* raw_pcm, int pcm_data_size, int sample_rate, int sample_width, int channel_count)
 {
-    Wav wav(raw_pcm, pcm_data_size, sample_rate, sample_width, channel_count);
+    Wav wav = Wav::FromRawPCM(raw_pcm, pcm_data_size, sample_rate, sample_width, channel_count);
     return _get_fingerprint_from_wav(wav);
 }
 
