@@ -55,7 +55,7 @@ Fingerprint* vibra_get_fingerprint_from_wav_data(
  * 
  * @note This function is thread-unsafe and the returned pointer should not be freed.
  */
-Fingerprint* vibra_get_fingerprint_from_signed_pcm(
+Fingerprint* vibra_get_fingerprint_from_pcm(
     const char* raw_pcm,
     int pcm_data_size,
     int sample_rate,

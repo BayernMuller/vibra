@@ -111,7 +111,7 @@ Fingerprint* CLI::getFingerprintFromStdin(int chunk_seconds, int sample_rate,
     std::size_t bytes = chunk_seconds * sample_rate * channels * (bits_per_sample / 8);
     std::vector<char> buffer(bytes);
     std::cin.read(buffer.data(), bytes);
-    return vibra_get_fingerprint_from_signed_pcm(buffer.data(), bytes, sample_rate, bits_per_sample, channels);
+    return vibra_get_fingerprint_from_pcm(buffer.data(), bytes, sample_rate, bits_per_sample, channels);
 }
 
 std::string CLI::getMetadataFromShazam(const Fingerprint* fingerprint)
