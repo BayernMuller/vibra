@@ -82,8 +82,10 @@
 * The project is developed using the **C++11** standard.
 * vibra has the following dependencies:
     * [CMake](https://cmake.org/): A cross-platform build system generator.
-    * [libcurl](https://curl.se/libcurl/): A library for making HTTP requests to the Shazam API.
     * [libfftw3](http://www.fftw.org/): A library for computing Fast Fourier Transforms.
+    * [libcurl](https://curl.se/libcurl/) (CLI tool only): A library for transferring data with URLs.
+      * If you don't need CLI tool, libcurl is not required.
+      * You can disable it by setting the `-DLIBRARY_ONLY=ON` option in the CMake command.
     * [FFmpeg](https://ffmpeg.org/) (Optional): Provides support for audio formats other than WAV (e.g., MP3, FLAC).
         * Install FFmpeg if you need to process audio files in formats other than WAV.
 
