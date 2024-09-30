@@ -67,17 +67,20 @@ function test_raw_pcm() {
     for type in signed float; do
         for bit in 16 24 32 64; do
             for rate in 44100 48000; do
-                if [[ "$type" == "float" && "$bit" -lt 32 ]] || [[ "$type" == "signed" && "$bit" -gt 32 ]]; then
-                    continue 
-                fi
-                codec="${type:0:1}${bit}le"
-                info "   $codec $(echo $rate / 1000 | bc)kHz..."
+                for channels in 1 2; do
+                    if [[ "$type" == "float" && "$bit" -lt 32 ]] || [[ "$type" == "signed" && "$bit" -gt 32 ]]; then
+                        continue 
+                    fi
+                    codec="${type:0:1}${bit}le"
+                    info "   $codec $(echo $rate / 1000 | bc)kHz ${channels}ch..."
 
-                local title
-                title=$(ffmpeg -i "$file" -f "$codec" -ac 2 -ar $rate - 2>/dev/null | \
-                    $VIBRA_CLI --recognize --seconds 5 --rate $rate --channels 2 --bits $bit | \
-                    jq .track.title -r)
-                check_title "$expected_title" "$title"
+                    local title
+                    title=$(ffmpeg -i "$file" -f "$codec" -ac $channels -ar $rate - 2>/dev/null | \
+                        $VIBRA_CLI --recognize --seconds 5 --rate $rate --channels $channels --bits $bit | \
+                        jq .track.title -r)
+                    check_title "$expected_title" "$title"
+                    sleep 3
+                done
             done
         done
     done
