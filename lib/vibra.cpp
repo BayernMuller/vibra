@@ -29,7 +29,7 @@ Fingerprint* vibra_get_fingerprint_from_wav_data(const char* raw_wav, int wav_da
 
 Fingerprint* vibra_get_fingerprint_from_pcm(const char* raw_pcm, int pcm_data_size, int sample_rate, int sample_width, int channel_count)
 {
-    Wav wav = Wav::FromRawPCM(raw_pcm, pcm_data_size, sample_rate, sample_width, channel_count);
+    Wav wav = Wav::FromSignedPCM(raw_pcm, pcm_data_size, sample_rate, sample_width, channel_count);
     return _get_fingerprint_from_wav(wav);
 }
 

@@ -56,14 +56,14 @@ namespace ffmpeg
             throw std::runtime_error("popen() failed!");
         }
 
-        std::array<Sample, 4096> buffer;
+        std::array<std::int16_t, 4096> buffer;
         size_t bytes_read;
 
         pcm->reserve(EXPECTED_DURATION * LOW_QUALITY_SAMPLE_RATE);
 
         while ((bytes_read = fread(buffer.data(), 1, buffer.size(), pipe)) != 0) 
         {
-            pcm->insert(pcm->end(), buffer.begin(), buffer.begin() + (bytes_read / sizeof(Sample)));
+            pcm->insert(pcm->end(), buffer.begin(), buffer.begin() + (bytes_read / sizeof(std::int16_t)));
         }
 
         pclose(pipe);

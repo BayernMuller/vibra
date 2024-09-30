@@ -23,7 +23,7 @@ Wav Wav::FromRawWav(const char* raw_wav, std::uint32_t raw_wav_size)
     return wav;
 }
 
-Wav Wav::FromRawPCM(const char* raw_pcm, std::uint32_t raw_pcm_size, std::uint32_t sample_rate, std::uint32_t sample_width, std::uint32_t channel_count)
+Wav Wav::FromSignedPCM(const char* raw_pcm, std::uint32_t raw_pcm_size, std::uint32_t sample_rate, std::uint32_t sample_width, std::uint32_t channel_count)
 {
     Wav wav;
     wav.mAudioFormat = 1;
@@ -155,26 +155,26 @@ void Wav::readWavBuffer(std::istream& stream)
     assert(false); // read data failed   
 }
 
-Sample Wav::getMonoSample(std::uint32_t width, const void* data, std::uint32_t index) const
+std::int16_t Wav::getMonoSample(std::uint32_t width, const void* data, std::uint32_t index) const
 {
-    Sample temp_sample = 0;
+    std::int16_t temp_sample = 0;
     double collected_sample = 0;
     for (std::uint32_t k = 0; k < mChannel; k++)
     {
         temp_sample = GETSAMPLE32(width, data, index + (width * k)) >> LOW_QUALITY_SAMPLE_WIDTH;
         collected_sample += temp_sample;
     }
-    return Sample(collected_sample / mChannel);
+    return std::int16_t(collected_sample / mChannel);
 }
 
-Sample Wav::monoToMonoSample(std::uint32_t width, const void* data, std::uint32_t index) const
+std::int16_t Wav::monoToMonoSample(std::uint32_t width, const void* data, std::uint32_t index) const
 {
     return GETSAMPLE32(width, data, index) >> LOW_QUALITY_SAMPLE_WIDTH;
 }
 
-Sample Wav::stereoToMonoSample(std::uint32_t width, const void* data, std::uint32_t index) const
+std::int16_t Wav::stereoToMonoSample(std::uint32_t width, const void* data, std::uint32_t index) const
 {
-    Sample sample1 = GETSAMPLE32(width, data, index) >> LOW_QUALITY_SAMPLE_WIDTH;
-    Sample sample2 = GETSAMPLE32(width, data, index + width) >> LOW_QUALITY_SAMPLE_WIDTH;
+    std::int16_t sample1 = GETSAMPLE32(width, data, index) >> LOW_QUALITY_SAMPLE_WIDTH;
+    std::int16_t sample2 = GETSAMPLE32(width, data, index + width) >> LOW_QUALITY_SAMPLE_WIDTH;
     return (sample1 + sample2) / 2;
 }
