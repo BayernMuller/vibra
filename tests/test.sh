@@ -49,7 +49,8 @@ function test_audio_file() {
     info "Testing $format file..."
     download_audio "$url" "$format" "$file"
 
-    local title=$(recognize_audio "$file")
+    local title
+    title=$(recognize_audio "$file")
     check_title "$expected_title" "$title"
 }
 
