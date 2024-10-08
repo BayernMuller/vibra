@@ -28,7 +28,7 @@ private:
     void doPeakSpreadingAndRecoginzation();
     void doPeakSpreading();
     void doPeakRecognition();
-    void prepareInput();
+    void resetSignatureGenerater();
 
 private:
     Raw16bitPCM mInputPendingProcessing;

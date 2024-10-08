@@ -41,12 +41,7 @@ Signature SignatureGenerator::GetNextSignature()
     }
 
     Signature result = std::move(mNextSignature);
-    
-    mNextSignature = Signature(16000, 0);
-    mRingBufferOfSamples = RingBuffer<std::int16_t>(2048, 0);
-    mFFTOutputs = RingBuffer<fft::RealArray>(256, fft::RealArray(1025, 0.0));
-    mSpreadFFTsOutput = RingBuffer<fft::RealArray>(256, fft::RealArray(1025, 0.0));
-
+    resetSignatureGenerater();
     return result; // RVO
 }
 
@@ -84,8 +79,7 @@ void SignatureGenerator::doFFT(const Raw16bitPCM& input)
         excerpt_from_ring_buffer[i] *= HANNIG_MATRIX[i];
     }
 
-    fft::RealArray real;
-    fft::FFT::RFFT(excerpt_from_ring_buffer, &real);
+    fft::RealArray real = fft::FFT::RFFT(excerpt_from_ring_buffer);
     mFFTOutputs.Append(real);
 }
 
@@ -190,9 +184,9 @@ void SignatureGenerator::doPeakRecognition()
     }
 }
 
-void SignatureGenerator::prepareInput()
+void SignatureGenerator::resetSignatureGenerater()
 {
-    mNextSignature.Reset(LOW_QUALITY_SAMPLE_RATE, 0);
+    mNextSignature = Signature(16000, 0);
     mRingBufferOfSamples = RingBuffer<std::int16_t>(2048, 0);
     mFFTOutputs = RingBuffer<fft::RealArray>(256, fft::RealArray(1025, 0.0));
     mSpreadFFTsOutput = RingBuffer<fft::RealArray>(256, fft::RealArray(1025, 0.0));
