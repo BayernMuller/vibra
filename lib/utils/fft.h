@@ -50,6 +50,8 @@ namespace fft
 
         double real_val = 0.0;
         double imag_val = 0.0;
+        const double min_val = 0.0000000001;
+        const double scale_factor = 1.0 / (1 << 17);
 
         // do max((real^2 + imag^2) / (1 << 17), 0.0000000001)
         for (size_t i = 0; i < N/2 + 1; ++i)
@@ -57,13 +59,8 @@ namespace fft
             real_val = out[i][0];
             imag_val = out[i][1];
 
-            real_val *= real_val;
-            imag_val *= imag_val;
-
-            real_val += imag_val;
-            real_val /= (1 << 17);
-            real_val = real_val < 0.0000000001 ? 0.0000000001 : real_val;
-            (*real)[i] = real_val;
+            real_val = (real_val * real_val + imag_val * imag_val) * scale_factor;
+            (*real)[i] = (real_val < min_val) ? min_val : real_val;
         }
 
         // Clean up

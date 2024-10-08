@@ -67,13 +67,7 @@ int CLI::Run(int argc, char** argv)
     if (music_file)
     {
         std::string file = args::get(music_file);
-        if (std::ifstream(file).good() == false)
-        {
-            std::cerr << "File not found: " << file << std::endl;
-            return 1;
-        }
-
-        fingerprint = vibra_get_fingerprint_from_music_file(file.c_str());
+        fingerprint = getFingerprintFromMusicFile(file);
     }
     else if (chunk_seconds && sample_rate && channels && bits_per_sample)
     {
@@ -81,7 +75,8 @@ int CLI::Run(int argc, char** argv)
             args::get(chunk_seconds),
             args::get(sample_rate),
             args::get(channels),
-            args::get(bits_per_sample));
+            args::get(bits_per_sample)
+        );
     }
     else
     {
@@ -100,7 +95,18 @@ int CLI::Run(int argc, char** argv)
     return 0;
 }
 
-Fingerprint* CLI::getFingerprintFromStdin(int chunk_seconds, int sample_rate, int channels, int bits_per_sample)
+Fingerprint* CLI::getFingerprintFromMusicFile(const std::string& music_file)
+{
+    if (std::ifstream(music_file).good() == false)
+    {
+        std::cerr << "File not found: " << music_file << std::endl;
+        throw std::ifstream::failure("File not found");
+    }
+    return vibra_get_fingerprint_from_music_file(music_file.c_str());
+}
+
+Fingerprint* CLI::getFingerprintFromStdin(int chunk_seconds, int sample_rate,
+                            int channels, int bits_per_sample)
 {
     std::size_t bytes = chunk_seconds * sample_rate * channels * (bits_per_sample / 8);
     std::vector<char> buffer(bytes);

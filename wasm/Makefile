@@ -12,7 +12,14 @@ SOURCES := $(SRC_DIR)/wasm.cpp
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
 TARGET_JS := $(BUILD_DIR)/vibra.js
 
-WASM_SETTINGS := -s EXPORTED_FUNCTIONS="['_GetWavSignature', '_GetFingerprint', '_GetPcmSignature', '_GetSampleMs', '_malloc', '_free']" \
+WASM_SETTINGS := -s EXPORTED_FUNCTIONS="[ \
+						'_GetWavSignature', \
+						'_GetFingerprint', \
+						'_GetPcmSignature', \
+						'_GetSampleMs', \
+						'_malloc', \
+						'_free' \
+					]" \
                  -s EXPORTED_RUNTIME_METHODS="['ccall', 'cwrap']" \
                  -s ALLOW_MEMORY_GROWTH=1 \
                  -s WASM=1
