@@ -44,6 +44,26 @@ Fingerprint* vibra_get_fingerprint_from_wav_data(
 );
 
 /**
+ * @brief Generate a fingerprint from signed PCM data.
+ * 
+ * @param raw_pcm The raw PCM data.
+ * @param pcm_data_size The size of the PCM data in bytes.
+ * @param sample_rate The sample rate of the PCM data.
+ * @param sample_width The sample width (bits per sample) of the PCM data.
+ * @param channel_count The number of channels in the PCM data.
+ * @return Fingerprint* Pointer to the generated fingerprint.
+ * 
+ * @note This function is thread-unsafe and the returned pointer should not be freed.
+ */
+Fingerprint* vibra_get_fingerprint_from_signed_pcm(
+    const char* raw_pcm,
+    int pcm_data_size,
+    int sample_rate,
+    int sample_width,
+    int channel_count
+);
+
+/**
  * @brief Generate a fingerprint from PCM data.
  * 
  * @param raw_pcm The raw PCM data.
@@ -55,7 +75,7 @@ Fingerprint* vibra_get_fingerprint_from_wav_data(
  * 
  * @note This function is thread-unsafe and the returned pointer should not be freed.
  */
-Fingerprint* vibra_get_fingerprint_from_pcm(
+Fingerprint* vibra_get_fingerprint_from_float_pcm(
     const char* raw_pcm,
     int pcm_data_size,
     int sample_rate,
