@@ -5,6 +5,7 @@ set(LIBVIBRA_SOURCES
     algorithm/frequency.cpp
     algorithm/signature_generator.cpp
     audio/wav.cpp
+    audio/downsampler.cpp
     communication/shazam.cpp
 )
 

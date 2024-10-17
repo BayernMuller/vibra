@@ -61,58 +61,6 @@ Wav::~Wav()
 {
 }
 
-Raw16bitPCM Wav::GetLowQualityPCM(std::int32_t start_sec, std::int32_t end_sec) const
-{
-    Raw16bitPCM raw_pcm;
-
-    if (mFmt.num_channels == 1 && 
-        mFmt.sample_rate == LOW_QUALITY_SAMPLE_RATE && 
-        mFmt.bits_per_sample == 16 && 
-        start_sec == 0 && 
-        end_sec == -1)
-    {
-        // no need to convert low quality pcm. just copy raw data
-        raw_pcm.resize(mDataSize);
-        ::memcpy(raw_pcm.data(), mData.get(), mDataSize);
-        return raw_pcm;
-    }
-    
-    
-    double downsample_ratio = mFmt.sample_rate / (double)LOW_QUALITY_SAMPLE_RATE;
-    std::uint32_t width = mFmt.bits_per_sample / 8;
-    std::uint32_t sample_count = mDataSize / width;
-
-    const void* raw_data = mData.get() + (start_sec * mFmt.sample_rate * width * mFmt.num_channels);
-
-    std::uint32_t new_sample_count = sample_count / mFmt.num_channels / downsample_ratio;
-
-    if (end_sec != -1)
-    {
-        new_sample_count = (end_sec - start_sec) * LOW_QUALITY_SAMPLE_RATE;
-    }
-
-    raw_pcm.resize(new_sample_count);
-
-    auto getMonoSample = &Wav::getMonoSample;
-    if (mFmt.num_channels == 1)
-    {
-        getMonoSample = &Wav::monoToMonoSample;
-    }
-    else if (mFmt.num_channels == 2)
-    {
-        getMonoSample = &Wav::stereoToMonoSample;
-    } 
-
-    std::uint32_t index = 0;
-    for (std::uint32_t i = 0; i < new_sample_count; i++)
-    {
-        index = i * mFmt.sample_rate / LOW_QUALITY_SAMPLE_RATE;
-        raw_pcm.at(i) = (this->*getMonoSample)(width, raw_data, index * width * mFmt.num_channels);
-    }
-    
-    return raw_pcm;
-}
-
 Wav Wav::fromPCM(const char* raw_pcm, std::uint32_t raw_pcm_size, 
                 AudioFormat audio_format, std::uint32_t sample_rate,
                 std::uint32_t sample_width, std::uint32_t channel_count)
@@ -176,26 +124,3 @@ void Wav::readWavFileBuffer(std::istream& stream)
     }
 }
 
-std::int16_t Wav::getMonoSample(std::uint32_t width, const void* data, std::uint32_t index) const
-{
-    std::int16_t temp_sample = 0;
-    double collected_sample = 0;
-    for (std::uint32_t k = 0; k < mFmt.num_channels; k++)
-    {
-        temp_sample = GETSAMPLE64(width, data, index + (width * k)) >> (64 - LOW_QUALITY_SAMPLE_WIDTH);
-        collected_sample += temp_sample;
-    }
-    return std::int16_t(collected_sample / mFmt.num_channels);
-}
-
-std::int16_t Wav::monoToMonoSample(std::uint32_t width, const void* data, std::uint32_t index) const
-{
-    return GETSAMPLE64(width, data, index) >> (64 - LOW_QUALITY_SAMPLE_WIDTH);
-}
-
-std::int16_t Wav::stereoToMonoSample(std::uint32_t width, const void* data, std::uint32_t index) const
-{
-    std::int16_t sample1 = GETSAMPLE64(width, data, index) >> (64 - LOW_QUALITY_SAMPLE_WIDTH);
-    std::int16_t sample2 = GETSAMPLE64(width, data, index + width) >> (64 - LOW_QUALITY_SAMPLE_WIDTH);
-    return (sample1 + sample2) / 2;
-}

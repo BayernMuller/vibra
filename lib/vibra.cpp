@@ -1,11 +1,13 @@
 #include "../include/vibra.h"
 #include "communication/shazam.h"
 #include "algorithm/signature_generator.h"
+#include "audio/downsampler.h"
+#include "audio/wav.h"
 #include "utils/ffmpeg.h"
 
 Fingerprint* _get_fingerprint_from_wav(const Wav& wav);
 
-Fingerprint* _get_fingerprint_from_low_quality_pcm(const Raw16bitPCM& pcm);
+Fingerprint* _get_fingerprint_from_low_quality_pcm(const LowQualityTrack& pcm);
 
 Fingerprint* vibra_get_fingerprint_from_music_file(const char* music_file_path)
 {
@@ -16,7 +18,7 @@ Fingerprint* vibra_get_fingerprint_from_music_file(const char* music_file_path)
         return _get_fingerprint_from_wav(wav);
     }
 
-    Raw16bitPCM pcm;
+    LowQualityTrack pcm;
     ffmpeg::FFmpegWrapper::convertToWav(path, &pcm);
     return _get_fingerprint_from_low_quality_pcm(pcm);
 }
@@ -66,11 +68,11 @@ const char* vibra_get_shazam_random_user_agent()
 
 Fingerprint* _get_fingerprint_from_wav(const Wav& wav)
 {
-    Raw16bitPCM pcm = wav.GetLowQualityPCM();
+    LowQualityTrack pcm = Downsampler::GetLowQualityPCM(wav);
     return _get_fingerprint_from_low_quality_pcm(pcm);
 }
 
-Fingerprint* _get_fingerprint_from_low_quality_pcm(const Raw16bitPCM& pcm)
+Fingerprint* _get_fingerprint_from_low_quality_pcm(const LowQualityTrack& pcm)
 {
     SignatureGenerator generator;
     generator.FeedInput(pcm);

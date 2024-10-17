@@ -4,7 +4,7 @@
 
 #include "signature.h"
 #include "../utils/ring_buffer.h"
-#include "../audio/wav.h"
+#include "../audio/downsampler.h"
 #include "../utils/fft.h"
 
 constexpr auto MAX_PEAKS = 255u;
@@ -13,7 +13,7 @@ class SignatureGenerator
 {
 public:
     SignatureGenerator();
-    void FeedInput(const Raw16bitPCM& input);
+    void FeedInput(const LowQualityTrack& input);
     Signature GetNextSignature();
 
     inline void AddSampleProcessed(std::uint32_t sampleProcessed)
@@ -23,15 +23,15 @@ public:
     { mMaxTimeSeconds = maxTimeSeconds; }
 
 private:
-    void processInput(const Raw16bitPCM& input);
-    void doFFT(const Raw16bitPCM& input);
+    void processInput(const LowQualityTrack& input);
+    void doFFT(const LowQualityTrack& input);
     void doPeakSpreadingAndRecoginzation();
     void doPeakSpreading();
     void doPeakRecognition();
     void resetSignatureGenerater();
 
 private:
-    Raw16bitPCM mInputPendingProcessing;
+    LowQualityTrack mInputPendingProcessing;
     std::uint32_t mSampleProcessed;
     double mMaxTimeSeconds;
 

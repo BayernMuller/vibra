@@ -26,10 +26,7 @@ enum class AudioFormat {
     PCM_FLOAT = 3,
 };
 
-using Raw16bitPCM = std::vector<std::int16_t>;
 
-constexpr std::uint32_t LOW_QUALITY_SAMPLE_RATE = 16000;
-constexpr std::uint32_t LOW_QUALITY_SAMPLE_WIDTH = sizeof(Raw16bitPCM::value_type) * 8;
 class Wav
 {
 public:
@@ -45,13 +42,13 @@ public:
                         std::uint32_t channel_count);
     ~Wav();
 
-    inline std::uint16_t GetAudioFormat() { return mFmt.audio_format; }
-    inline std::uint16_t GetChannel() { return mFmt.num_channels; }
-    inline std::uint32_t GetSampleRate() { return mFmt.sample_rate; }
-    inline std::uint32_t GetBitPerSample() { return mFmt.bits_per_sample; }
-    inline std::uint32_t GetDataSize() { return mDataSize; }
-    inline std::uint32_t GetFileSize() { return mHeader.file_size; }
-    Raw16bitPCM GetLowQualityPCM(std::int32_t start_sec = 0, std::int32_t end_sec = -1) const;
+    inline std::uint16_t GetAudioFormat() const { return mFmt.audio_format; }
+    inline std::uint16_t GetChannel() const { return mFmt.num_channels; }
+    inline std::uint32_t GetSampleRate() const { return mFmt.sample_rate; }
+    inline std::uint32_t GetBitPerSample() const { return mFmt.bits_per_sample; }
+    inline std::uint32_t GetDataSize() const { return mDataSize; }
+    inline std::uint32_t GetFileSize() const { return mHeader.file_size; }
+    inline const std::unique_ptr<std::uint8_t[]>& GetData() const { return mData; }
 
 private:
     Wav() = default;

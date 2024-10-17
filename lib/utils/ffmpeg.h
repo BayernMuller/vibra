@@ -7,7 +7,7 @@
 #include <fstream>
 #include <sstream>
 #include <array>
-#include "../audio/wav.h"
+#include "../audio/downsampler.h"
 
 namespace ffmpeg
 {
@@ -19,7 +19,7 @@ namespace ffmpeg
     {
     public:
         FFmpegWrapper() = delete;
-        static int convertToWav(const std::string &input_file, Raw16bitPCM* pcm);
+        static int convertToWav(const std::string &input_file, LowQualityTrack* pcm);
 
     private:
         static std::string getFFmpegPath();
@@ -31,7 +31,7 @@ namespace ffmpeg
 
     std::string FFmpegWrapper::ffmpeg_path_; // static member initialization
  
-    int FFmpegWrapper::convertToWav(const std::string &input_file, Raw16bitPCM* pcm)
+    int FFmpegWrapper::convertToWav(const std::string &input_file, LowQualityTrack* pcm)
     {
         std::string ffmpeg_path = FFmpegWrapper::getFFmpegPath();
         if (ffmpeg_path.empty())
@@ -44,8 +44,8 @@ namespace ffmpeg
         std::stringstream ss;
         ss << ffmpeg_path;
         ss << " -i "        << input_file;
-        ss << " -f "        << "s" << LOW_QUALITY_SAMPLE_WIDTH << "le";
-        ss << " -acodec "   << "pcm_s" << LOW_QUALITY_SAMPLE_WIDTH << "le";
+        ss << " -f "        << "s" << LOW_QUALITY_SAMPLE_BIT_WIDTH << "le";
+        ss << " -acodec "   << "pcm_s" << LOW_QUALITY_SAMPLE_BIT_WIDTH << "le";
         ss << " -ar "       << LOW_QUALITY_SAMPLE_RATE;
         ss << " -ac "       << 1;
         ss << " - 2>/dev/null"; // suppress std
@@ -63,7 +63,7 @@ namespace ffmpeg
 
         while ((bytes_read = fread(buffer.data(), 1, buffer.size(), pipe)) != 0) 
         {
-            pcm->insert(pcm->end(), buffer.begin(), buffer.begin() + (bytes_read / sizeof(std::int16_t)));
+            pcm->insert(pcm->end(), buffer.begin(), buffer.begin() + (bytes_read / sizeof(LowQualitySample)));
         }
 
         pclose(pipe);
