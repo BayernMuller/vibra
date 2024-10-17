@@ -28,48 +28,48 @@ private:
     static void signedStereoToMono(
         LowQualityTrack* dst,
         const void* src,
+        double downsample_ratio,
         std::uint32_t new_sample_count,
-        std::uint32_t sample_rate,
         std::uint32_t width,
         std::uint32_t channels
     );
     static void signedMonoToMono(
         LowQualityTrack* dst,
         const void* src,
+        double downsample_ratio,
         std::uint32_t new_sample_count,
-        std::uint32_t sample_rate,
         std::uint32_t width,
         std::uint32_t channels
     );
     static void signedMultiToMono(
         LowQualityTrack* dst,
         const void* src,
+        double downsample_ratio,
         std::uint32_t new_sample_count,
-        std::uint32_t sample_rate,
         std::uint32_t width,
         std::uint32_t channels
     );
     static void floatStereoToMono(
         LowQualityTrack* dst,
         const void* src,
+        double downsample_ratio,
         std::uint32_t new_sample_count,
-        std::uint32_t sample_rate,
         std::uint32_t width,
         std::uint32_t channels
     );
     static void floatMonoToMono(
         LowQualityTrack* dst,
         const void* src,
+        double downsample_ratio,
         std::uint32_t new_sample_count,
-        std::uint32_t sample_rate,
         std::uint32_t width,
         std::uint32_t channels
     );
     static void floatMultiToMono(
         LowQualityTrack* dst,
         const void* src,
+        double downsample_ratio,
         std::uint32_t new_sample_count,
-        std::uint32_t sample_rate,
         std::uint32_t width,
         std::uint32_t channels
     );

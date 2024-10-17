@@ -81,8 +81,8 @@ LowQualityTrack Downsampler::GetLowQualityPCM(const Wav& wav, std::int32_t start
     downsample_func(
         &low_quality_pcm,
         src_raw_data,
+        downsample_ratio,
         new_sample_count,
-        sample_rate,
         width,
         channels
     );
@@ -93,15 +93,15 @@ LowQualityTrack Downsampler::GetLowQualityPCM(const Wav& wav, std::int32_t start
 void Downsampler::signedMonoToMono(
     LowQualityTrack* dst,
     const void* src,
+    double downsample_ratio,
     std::uint32_t new_sample_count,
-    std::uint32_t sample_rate,
     std::uint32_t width,
     std::uint32_t channels)
 {
     std::uint32_t index = 0;
     for (std::uint32_t i = 0; i < new_sample_count; i++)
     {
-        index = std::uint32_t(i * sample_rate / LOW_QUALITY_SAMPLE_RATE) * width * channels;
+        index = std::uint32_t(i * downsample_ratio) * width * channels;
         dst->at(i) = GETSAMPLE64(width, src, index) >> (64 - LOW_QUALITY_SAMPLE_BIT_WIDTH);
     }
 }
@@ -109,15 +109,15 @@ void Downsampler::signedMonoToMono(
 void Downsampler::signedStereoToMono(
     LowQualityTrack* dst,
     const void* src,
+    double downsample_ratio,
     std::uint32_t new_sample_count,
-    std::uint32_t sample_rate,
     std::uint32_t width,
     std::uint32_t channels)
 {
     std::uint32_t index = 0;
     for (std::uint32_t i = 0; i < new_sample_count; i++)
     {
-        index = std::uint32_t(i * sample_rate / LOW_QUALITY_SAMPLE_RATE) * width * channels;
+        index = std::uint32_t(i * downsample_ratio) * width * channels;
         LowQualitySample sample1 = GETSAMPLE64(width, src, index) >> (64 - LOW_QUALITY_SAMPLE_BIT_WIDTH);
         LowQualitySample sample2 = GETSAMPLE64(width, src, index + width) >> (64 - LOW_QUALITY_SAMPLE_BIT_WIDTH);
         dst->at(i) = (sample1 + sample2) / 2;
@@ -127,8 +127,8 @@ void Downsampler::signedStereoToMono(
 void Downsampler::signedMultiToMono(
     LowQualityTrack* dst,
     const void* src,
+    double downsample_ratio,
     std::uint32_t new_sample_count,
-    std::uint32_t sample_rate,
     std::uint32_t width,
     std::uint32_t channels)
 {
@@ -139,7 +139,7 @@ void Downsampler::signedMultiToMono(
         collected_sample = 0;
         for (std::uint32_t k = 0; k < channels; k++)
         {
-            index = std::uint32_t(i * sample_rate / LOW_QUALITY_SAMPLE_RATE) * width * channels;
+            index = std::uint32_t(i * downsample_ratio) * width * channels;
             collected_sample += GETSAMPLE64(width, src, index + k * width) >> (64 - LOW_QUALITY_SAMPLE_BIT_WIDTH);
         }
         dst->at(i) = LowQualitySample(collected_sample / channels);
@@ -149,8 +149,8 @@ void Downsampler::signedMultiToMono(
 void Downsampler::floatMonoToMono(
     LowQualityTrack* dst,
     const void* src,
+    double downsample_ratio,
     std::uint32_t new_sample_count,
-    std::uint32_t sample_rate,
     std::uint32_t width,
     std::uint32_t channels)
 {
@@ -159,7 +159,7 @@ void Downsampler::floatMonoToMono(
     std::uint32_t index = 0;
     for (std::uint32_t i = 0; i < new_sample_count; i++)
     {
-        index = std::uint32_t(i * sample_rate / LOW_QUALITY_SAMPLE_RATE) * width * channels;
+        index = std::uint32_t(i * downsample_ratio) * width * channels;
         temp_sample = GETSAMPLE64(width, src, index);
         temp_float_sample = *reinterpret_cast<double*>(&temp_sample);
         dst->at(i) = LowQualitySample(temp_float_sample * LOW_QUALITY_SAMPLE_MAX);
@@ -169,8 +169,8 @@ void Downsampler::floatMonoToMono(
 void Downsampler::floatStereoToMono(
     LowQualityTrack* dst,
     const void* src,
+    double downsample_ratio,
     std::uint32_t new_sample_count,
-    std::uint32_t sample_rate,
     std::uint32_t width,
     std::uint32_t channels)
 {
@@ -182,7 +182,7 @@ void Downsampler::floatStereoToMono(
     std::uint32_t index = 0;
     for (std::uint32_t i = 0; i < new_sample_count; i++)
     {
-        index = std::uint32_t(i * sample_rate / LOW_QUALITY_SAMPLE_RATE) * width * channels;
+        index = std::uint32_t(i * downsample_ratio) * width * channels;
         temp_sample1 = GETSAMPLE64(width, src, index);
         temp_sample2 = GETSAMPLE64(width, src, index + width);
         temp_float_sample1 = *reinterpret_cast<double*>(&temp_sample1);
@@ -194,8 +194,8 @@ void Downsampler::floatStereoToMono(
 void Downsampler::floatMultiToMono(
     LowQualityTrack* dst,
     const void* src,
+    double downsample_ratio,
     std::uint32_t new_sample_count,
-    std::uint32_t sample_rate,
     std::uint32_t width,
     std::uint32_t channels)
 {
@@ -206,7 +206,7 @@ void Downsampler::floatMultiToMono(
         std::uint32_t index = 0;
         for (std::uint32_t k = 0; k < channels; k++)
         {
-            index = std::uint32_t(i * sample_rate / LOW_QUALITY_SAMPLE_RATE) * width * channels;
+            index = std::uint32_t(i * downsample_ratio) * width * channels;
             temp_sample = GETSAMPLE64(width, src, index + k * width);
             collected_sample = *reinterpret_cast<double*>(&temp_sample);
         }
