@@ -57,11 +57,6 @@ private:
                         std::uint32_t channel_count);
     void readWavFileBuffer(std::istream& stream);
 
-    inline std::int16_t stereoToMonoSample(std::uint32_t width, const void* data, std::uint32_t index) const;
-    inline std::int16_t monoToMonoSample(std::uint32_t width, const void* data, std::uint32_t index) const;
-    inline std::int16_t getMonoSample(std::uint32_t width, const void* data, std::uint32_t index) const;
-
-
 private:
     WavHeader mHeader;
     FmtSubchunk mFmt;
