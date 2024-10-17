@@ -20,22 +20,26 @@
 
 ### Overview
 
-* vibra is a library and command-line tool for music recognition using the **unofficial** Shazam API.
-* It analyzes audio files, generates fingerprints, and queries the Shazam database to identify songs.
-* Key features:
-    * **Fast and lightweight**: Optimized for various platforms, including embedded devices.
-    * **Cross-platform**: Supports Linux, Windows, macOS, **WebAssembly** and **FFI bindings** for other languages.
-    * **Flexible input**: Processes WAV files natively, with optional FFmpeg support for other formats.
-* Based on Shazam's algorithm:
-    * [An Industrial-Strength Audio Search Algorithm](https://www.ee.columbia.edu/~dpwe/papers/Wang03-shazam.pdf) - The original research paper.
-    * [How does Shazam work](https://www.cameronmacleod.com/blog/how-does-shazam-work) - A detailed explanation of the algorithm.
-* Implementation inspired by [SongRec](https://github.com/marin-m/SongRec/tree/master), adapted to C++ 11.
-* Target platforms:
+* **vibra** is a library and CLI tool for music recognition using the **unofficial** Shazam API.
+* It analyzes audio files, generates fingerprints, and queries Shazam's database for song identification.
+* **Key features**:
+    * Fast and lightweight, optimized for various platforms, including embedded devices.
+    * Cross-platform support: Linux, Windows, macOS, **WebAssembly**, and **FFI bindings** for other languages.
+    * Flexible input processing: native support for WAV files, optional FFmpeg for other formats.
+* **Based on Shazam's algorithm**:
+    * [An Industrial-Strength Audio Search Algorithm](https://www.ee.columbia.edu/~dpwe/papers/Wang03-shazam.pdf)
+    * [How does Shazam work](https://www.cameronmacleod.com/blog/how-does-shazam-work)
+* **Inspired by** [SongRec](https://github.com/marin-m/SongRec/tree/master), adapted to C++ 11.
+* **Target platforms**:
     * Embedded devices (e.g., Raspberry Pi, Jetson Nano)
-    * Desktop and server environments for high-performance audio recognition
-    * WebAssembly for web-based music recognition
-    * And even more platforms such as iOS, Android, and other languages via FFI bindings!
+    * Desktop and server environments for high-performance recognition
+    * WebAssembly for web-based use
+    * Additional support for iOS, Android, and other languages via FFI bindings
 
+### Live Demo
+
+* You can try the music recognition with the **[WebAssembly version of vibra here](https://bayernmuller.github.io/vibra-libve-demo/)**
+* The source code for the demo is available at [vibra-live-demo](https://github.com/bayernmuller/vibra-libve-demo)
 
 ### Platform Compatibility and Build Status
 
