@@ -4,10 +4,6 @@
 #include <cstdint>
 
 #define GETINTX(T, cp, i)  (*(T *)((unsigned char *)(cp) + (i)))
-#define SETINTX(T, cp, i, val)  do {                    \
-        *(T *)((unsigned char *)(cp) + (i)) = (T)(val); \
-    } while (0)
-
 #define GETINT8(cp, i)          GETINTX(std::int8_t,  (cp), (i))
 #define GETINT16(cp, i)         GETINTX(std::int16_t, (cp), (i))
 #define GETINT32(cp, i)         GETINTX(std::int32_t, (cp), (i))
