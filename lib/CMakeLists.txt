@@ -5,6 +5,7 @@ set(LIBVIBRA_SOURCES
     algorithm/frequency.cpp
     algorithm/signature_generator.cpp
     audio/wav.cpp
+    audio/downsampler.cpp
     communication/shazam.cpp
 )
 
@@ -23,6 +24,10 @@ endif()
 
 target_link_libraries(vibra_shared PRIVATE ${FFTW3_LIBRARY})
 target_link_libraries(vibra_static PRIVATE ${FFTW3_LIBRARY})
+
+# Set C++11 standard
+set_target_properties(vibra_shared PROPERTIES CXX_STANDARD 11)
+set_target_properties(vibra_static PROPERTIES CXX_STANDARD 11)
 
 # Set output names
 set_target_properties(vibra_shared PROPERTIES OUTPUT_NAME "vibra")

@@ -77,7 +77,7 @@ function test_raw_pcm() {
 
                     local title
                     title=$(ffmpeg -i "$file" -f "$codec" -ac $channels -ar $rate - 2>/dev/null | \
-                        $VIBRA_CLI --recognize --seconds 5 --rate $rate --channels $channels --bits $bit | \
+                        $VIBRA_CLI --recognize --seconds 5 --rate $rate --channels $channels --bits $bit --$type | \
                         jq .track.title -r)
                     check_title "$expected_title" "$title"
                     sleep 3

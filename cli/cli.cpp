@@ -44,6 +44,10 @@ int CLI::Run(int argc, char** argv)
     args::ValueFlag<int> sample_rate(raw_sources, "rate", "Sample rate", {'r', "rate"});
     args::ValueFlag<int> channels(raw_sources, "channels", "Channels", {'c', "channels"});
     args::ValueFlag<int> bits_per_sample(raw_sources, "bits", "Bits per sample", {'b', "bits"});
+    
+    args::Group source_type(raw_sources, "Source type:", args::Group::Validators::AtMostOne);
+    args::Flag signed_pcm(source_type, "signed", "Signed PCM (default)", {'S', "signed"});
+    args::Flag float_pcm(source_type, "float", "Float PCM", {'D', "float"});
 
     try
     {
@@ -71,11 +75,13 @@ int CLI::Run(int argc, char** argv)
     }
     else if (chunk_seconds && sample_rate && channels && bits_per_sample)
     {
+        bool is_signed = signed_pcm || !float_pcm;
         fingerprint = getFingerprintFromStdin(
             args::get(chunk_seconds),
             args::get(sample_rate),
             args::get(channels),
-            args::get(bits_per_sample)
+            args::get(bits_per_sample),
+            is_signed
         );
     }
     else
@@ -106,12 +112,16 @@ Fingerprint* CLI::getFingerprintFromMusicFile(const std::string& music_file)
 }
 
 Fingerprint* CLI::getFingerprintFromStdin(int chunk_seconds, int sample_rate,
-                            int channels, int bits_per_sample)
+                            int channels, int bits_per_sample, bool is_signed)
 {
     std::size_t bytes = chunk_seconds * sample_rate * channels * (bits_per_sample / 8);
     std::vector<char> buffer(bytes);
     std::cin.read(buffer.data(), bytes);
-    return vibra_get_fingerprint_from_pcm(buffer.data(), bytes, sample_rate, bits_per_sample, channels);
+    if (is_signed)
+    {
+        return vibra_get_fingerprint_from_signed_pcm(buffer.data(), bytes, sample_rate, bits_per_sample, channels);
+    }
+    return vibra_get_fingerprint_from_float_pcm(buffer.data(), bytes, sample_rate, bits_per_sample, channels);
 }
 
 std::string CLI::getMetadataFromShazam(const Fingerprint* fingerprint)

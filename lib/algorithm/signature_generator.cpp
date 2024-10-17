@@ -15,7 +15,7 @@ SignatureGenerator::SignatureGenerator()
 {
 }
 
-void SignatureGenerator::FeedInput(const Raw16bitPCM& input)
+void SignatureGenerator::FeedInput(const LowQualityTrack& input)
 {
     mInputPendingProcessing.reserve(mInputPendingProcessing.size() + input.size());
     mInputPendingProcessing.insert(mInputPendingProcessing.end(), input.begin(), input.end());
@@ -32,7 +32,7 @@ Signature SignatureGenerator::GetNextSignature()
         ((double)mNextSignature.NumberOfSamples() / mNextSignature.SampleRate() < mMaxTimeSeconds ||
         mNextSignature.SumOfPeaksLength() < MAX_PEAKS))
     {
-        Raw16bitPCM input(mInputPendingProcessing.begin() + mSampleProcessed,
+        LowQualityTrack input(mInputPendingProcessing.begin() + mSampleProcessed,
             mInputPendingProcessing.begin() + mSampleProcessed + 128);
         
         processInput(input);
@@ -45,19 +45,19 @@ Signature SignatureGenerator::GetNextSignature()
     return result; // RVO
 }
 
-void SignatureGenerator::processInput(const Raw16bitPCM& input)
+void SignatureGenerator::processInput(const LowQualityTrack& input)
 {
     mNextSignature.AddNumberOfSamples(input.size());
     for (std::size_t chunk = 0; chunk < input.size(); chunk += 128)
     {
-        Raw16bitPCM chunk_input(input.begin() + chunk, input.begin() + chunk + 128);
+        LowQualityTrack chunk_input(input.begin() + chunk, input.begin() + chunk + 128);
 
         doFFT(chunk_input);
         doPeakSpreadingAndRecoginzation();
     }
 }
 
-void SignatureGenerator::doFFT(const Raw16bitPCM& input)
+void SignatureGenerator::doFFT(const LowQualityTrack& input)
 {
     std::copy(input.begin(), input.end(),
         mRingBufferOfSamples.begin() + mRingBufferOfSamples.Position());
