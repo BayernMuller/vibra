@@ -4,9 +4,8 @@
 #include <iostream>
 #include <string>
 #include <cmath>
-#include <memory.h>
+#include <cstring>
 #include <sstream>  
-#include <algorithm>
 
 Wav Wav::FromFile(const std::string& wav_file_path)
 {
@@ -75,7 +74,7 @@ Wav Wav::fromPCM(const char* raw_pcm, std::uint32_t raw_pcm_size,
     wav.mFmt.bits_per_sample = sample_width;
     wav.mDataSize = raw_pcm_size;
     wav.mData.reset(new std::uint8_t[raw_pcm_size]);
-    ::memcpy(wav.mData.get(), raw_pcm, raw_pcm_size);
+    std::memcpy(wav.mData.get(), raw_pcm, raw_pcm_size);
     return wav;
 }
 
