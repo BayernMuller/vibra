@@ -1,9 +1,10 @@
 #include "downsampler.h"
 #include "byte_control.h"
 #include "wav.h"
+#include <algorithm>
+#include <cstring>
 #include <map>
 #include <tuple>
-#include <algorithm>
 
 LowQualityTrack Downsampler::GetLowQualityPCM(const Wav& wav, std::int32_t start_sec, std::int32_t end_sec)
 {
@@ -24,7 +25,7 @@ LowQualityTrack Downsampler::GetLowQualityPCM(const Wav& wav, std::int32_t start
     {
         // no need to convert low quality pcm. just copy raw data
         low_quality_pcm.resize(data_size);
-        ::memcpy(low_quality_pcm.data(), wav.GetData().get(), data_size);
+        std::memcpy(low_quality_pcm.data(), wav.GetData().get(), data_size);
         return low_quality_pcm;
     }
     
