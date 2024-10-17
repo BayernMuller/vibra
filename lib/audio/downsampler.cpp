@@ -1,6 +1,9 @@
 #include "downsampler.h"
 #include "byte_control.h"
 #include "wav.h"
+#include <map>
+#include <tuple>
+#include <algorithm>
 
 LowQualityTrack Downsampler::GetLowQualityPCM(const Wav& wav, std::int32_t start_sec, std::int32_t end_sec)
 {
@@ -44,61 +47,7 @@ LowQualityTrack Downsampler::GetLowQualityPCM(const Wav& wav, std::int32_t start
     auto downsample_func = &Downsampler::signedMonoToMono;
     bool is_signed = audio_format == 1;
 
-    if (channels == 1)
-    {
-        if (is_signed)
-        {
-            downsample_func = &Downsampler::signedMonoToMono;
-        }
-        else
-        {
-            if (bits_per_sample == 32)
-            {
-                downsample_func = &Downsampler::floatMonoToMono<float>;
-            }
-            else if (bits_per_sample == 64)
-            {
-                downsample_func = &Downsampler::floatMonoToMono<double>;
-            }
-        }
-    }
-    else if (channels == 2)
-    {
-        if (is_signed)
-        {
-            downsample_func = &Downsampler::signedStereoToMono;
-        }
-        else
-        {
-            if (bits_per_sample == 32)
-            {
-                downsample_func = &Downsampler::floatStereoToMono<float>;
-            }
-            else if (bits_per_sample == 64)
-            {
-                downsample_func = &Downsampler::floatStereoToMono<double>;
-            }
-        }
-    }
-    else
-    {
-        if (is_signed)
-        {
-            downsample_func = &Downsampler::signedMultiToMono;
-        }
-        else
-        {
-            if (bits_per_sample == 32)
-            {
-                downsample_func = &Downsampler::floatMultiToMono<float>;
-            }
-            else if (bits_per_sample == 64)
-            {
-                downsample_func = &Downsampler::floatMultiToMono<double>;
-            }
-        }
-    }
-
+    downsample_func = getDownsampleFunc(is_signed, bits_per_sample, channels);
     downsample_func(
         &low_quality_pcm,
         src_raw_data,
@@ -109,6 +58,33 @@ LowQualityTrack Downsampler::GetLowQualityPCM(const Wav& wav, std::int32_t start
     );
     
     return low_quality_pcm;
+}
+
+#include <iostream>
+
+DownsampleFunc Downsampler::getDownsampleFunc(
+    bool is_signed,
+    std::uint32_t width,
+    std::uint32_t channels)
+{
+    channels = std::min(channels, 3u);
+    width = is_signed ? 0 : width;
+
+    static std::map<
+        std::tuple<bool, std::uint32_t, std::uint32_t>,
+        DownsampleFunc> 
+    func_map{
+        {std::make_tuple(true, 0, 1), &Downsampler::signedMonoToMono},
+        {std::make_tuple(true, 0, 2), &Downsampler::signedStereoToMono},
+        {std::make_tuple(true, 0, 3), &Downsampler::signedMultiToMono},
+        {std::make_tuple(false, 32, 1), &Downsampler::floatMonoToMono<float>},
+        {std::make_tuple(false, 32, 2), &Downsampler::floatStereoToMono<float>},
+        {std::make_tuple(false, 32, 3), &Downsampler::floatMultiToMono<float>},
+        {std::make_tuple(false, 64, 1), &Downsampler::floatMonoToMono<double>},
+        {std::make_tuple(false, 64, 2), &Downsampler::floatStereoToMono<double>},
+        {std::make_tuple(false, 64, 3), &Downsampler::floatMultiToMono<double>},
+    };
+    return func_map.at(std::make_tuple(is_signed, width, channels));
 }
 
 void Downsampler::signedMonoToMono(

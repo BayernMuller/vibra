@@ -15,6 +15,8 @@ constexpr std::uint32_t LOW_QUALITY_SAMPLE_RATE = 16000;
 constexpr std::uint32_t LOW_QUALITY_SAMPLE_BIT_WIDTH = sizeof(LowQualitySample) * 8;
 constexpr std::uint32_t LOW_QUALITY_SAMPLE_MAX = std::numeric_limits<LowQualitySample>::max();
 
+using DownsampleFunc = void(*)(LowQualityTrack*, const void*, double, std::uint32_t, std::uint32_t, std::uint32_t);
+
 class Downsampler
 {
 public:
@@ -25,6 +27,12 @@ public:
     );
 
 private:
+    static DownsampleFunc getDownsampleFunc(
+        bool is_signed,
+        std::uint32_t width,
+        std::uint32_t channels
+    );
+
     static void signedStereoToMono(
         LowQualityTrack* dst,
         const void* src,
