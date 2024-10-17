@@ -49,6 +49,8 @@ private:
         std::uint32_t width,
         std::uint32_t channels
     );
+
+    template <typename T>
     static void floatStereoToMono(
         LowQualityTrack* dst,
         const void* src,
@@ -57,6 +59,7 @@ private:
         std::uint32_t width,
         std::uint32_t channels
     );
+    template <typename T>
     static void floatMonoToMono(
         LowQualityTrack* dst,
         const void* src,
@@ -65,6 +68,7 @@ private:
         std::uint32_t width,
         std::uint32_t channels
     );
+    template <typename T>
     static void floatMultiToMono(
         LowQualityTrack* dst,
         const void* src,

@@ -52,7 +52,14 @@ LowQualityTrack Downsampler::GetLowQualityPCM(const Wav& wav, std::int32_t start
         }
         else
         {
-            downsample_func = &Downsampler::floatMonoToMono;
+            if (bits_per_sample == 32)
+            {
+                downsample_func = &Downsampler::floatMonoToMono<float>;
+            }
+            else if (bits_per_sample == 64)
+            {
+                downsample_func = &Downsampler::floatMonoToMono<double>;
+            }
         }
     }
     else if (channels == 2)
@@ -63,7 +70,14 @@ LowQualityTrack Downsampler::GetLowQualityPCM(const Wav& wav, std::int32_t start
         }
         else
         {
-            downsample_func = &Downsampler::floatStereoToMono;
+            if (bits_per_sample == 32)
+            {
+                downsample_func = &Downsampler::floatStereoToMono<float>;
+            }
+            else if (bits_per_sample == 64)
+            {
+                downsample_func = &Downsampler::floatStereoToMono<double>;
+            }
         }
     }
     else
@@ -74,7 +88,14 @@ LowQualityTrack Downsampler::GetLowQualityPCM(const Wav& wav, std::int32_t start
         }
         else
         {
-            downsample_func = &Downsampler::floatMultiToMono;
+            if (bits_per_sample == 32)
+            {
+                downsample_func = &Downsampler::floatMultiToMono<float>;
+            }
+            else if (bits_per_sample == 64)
+            {
+                downsample_func = &Downsampler::floatMultiToMono<double>;
+            }
         }
     }
 
@@ -146,6 +167,7 @@ void Downsampler::signedMultiToMono(
     }
 }
 
+template <typename T>
 void Downsampler::floatMonoToMono(
     LowQualityTrack* dst,
     const void* src,
@@ -154,18 +176,19 @@ void Downsampler::floatMonoToMono(
     std::uint32_t width,
     std::uint32_t channels)
 {
-    double temp_float_sample = 0;
+    T temp_float_sample = 0;
     std::uint64_t temp_sample = 0;
     std::uint32_t index = 0;
     for (std::uint32_t i = 0; i < new_sample_count; i++)
     {
         index = std::uint32_t(i * downsample_ratio) * width * channels;
-        temp_sample = GETSAMPLE64(width, src, index);
-        temp_float_sample = *reinterpret_cast<double*>(&temp_sample);
+        temp_sample = GETSAMPLE64(width, src, index) >> (64 - sizeof(T) * 8);
+        temp_float_sample = *reinterpret_cast<T*>(&temp_sample);
         dst->at(i) = LowQualitySample(temp_float_sample * LOW_QUALITY_SAMPLE_MAX);
     }
 }
 
+template <typename T>
 void Downsampler::floatStereoToMono(
     LowQualityTrack* dst,
     const void* src,
@@ -174,23 +197,23 @@ void Downsampler::floatStereoToMono(
     std::uint32_t width,
     std::uint32_t channels)
 {
-
     std::uint64_t temp_sample1 = 0;
     std::uint64_t temp_sample2 = 0;
-    double temp_float_sample1 = 0;
-    double temp_float_sample2 = 0;
+    T temp_float_sample1 = 0;
+    T temp_float_sample2 = 0;
     std::uint32_t index = 0;
     for (std::uint32_t i = 0; i < new_sample_count; i++)
     {
         index = std::uint32_t(i * downsample_ratio) * width * channels;
-        temp_sample1 = GETSAMPLE64(width, src, index);
-        temp_sample2 = GETSAMPLE64(width, src, index + width);
-        temp_float_sample1 = *reinterpret_cast<double*>(&temp_sample1);
-        temp_float_sample2 = *reinterpret_cast<double*>(&temp_sample2);
+        temp_sample1 = GETSAMPLE64(width, src, index) >> (64 - sizeof(T) * 8);
+        temp_sample2 = GETSAMPLE64(width, src, index + width) >> (64 - sizeof(T) * 8);
+        temp_float_sample1 = *reinterpret_cast<T*>(&temp_sample1);
+        temp_float_sample2 = *reinterpret_cast<T*>(&temp_sample2);
         dst->at(i) = LowQualitySample((temp_float_sample1 + temp_float_sample2) / 2 * LOW_QUALITY_SAMPLE_MAX);
     }
 }
 
+template <typename T>
 void Downsampler::floatMultiToMono(
     LowQualityTrack* dst,
     const void* src,
@@ -199,16 +222,17 @@ void Downsampler::floatMultiToMono(
     std::uint32_t width,
     std::uint32_t channels)
 {
+    std::uint32_t index = 0;
+    T collected_sample = 0;
     std::uint64_t temp_sample = 0;
     for (std::uint32_t i = 0; i < new_sample_count; i++)
     {
-        double collected_sample = 0;
-        std::uint32_t index = 0;
+        collected_sample = 0;
+        index = std::uint32_t(i * downsample_ratio) * width * channels;
         for (std::uint32_t k = 0; k < channels; k++)
         {
-            index = std::uint32_t(i * downsample_ratio) * width * channels;
-            temp_sample = GETSAMPLE64(width, src, index + k * width);
-            collected_sample = *reinterpret_cast<double*>(&temp_sample);
+            temp_sample = GETSAMPLE64(width, src, index + k * width) >> (64 - sizeof(T) * 8);
+            collected_sample += *reinterpret_cast<T*>(&temp_sample);
         }
         dst->at(i) = LowQualitySample(collected_sample / channels * LOW_QUALITY_SAMPLE_MAX);
     }
