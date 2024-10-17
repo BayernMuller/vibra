@@ -38,8 +38,8 @@
 
 ### Live Demo
 
-* You can try the music recognition with the **[WebAssembly version of vibra here](https://bayernmuller.github.io/vibra-libve-demo/)**
-* The source code for the demo is available at [vibra-live-demo](https://github.com/bayernmuller/vibra-libve-demo)
+* You can try the music recognition with the **[WebAssembly version of vibra here](https://bayernmuller.github.io/vibra-live-demo/)**
+* The source code for the demo is available at [vibra-live-demo](https://github.com/bayernmuller/vibra-live-demo)
 
 ### Platform Compatibility and Build Status
 
