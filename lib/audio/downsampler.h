@@ -13,7 +13,7 @@ using LowQualityTrack = std::vector<LowQualitySample>;
 
 constexpr std::uint32_t LOW_QUALITY_SAMPLE_RATE = 16000;
 constexpr std::uint32_t LOW_QUALITY_SAMPLE_BIT_WIDTH = sizeof(LowQualitySample) * 8;
-constexpr std::uint32_t LOW_QUALITY_SAMPLE_MAX = std::numeric_limits<LowQualitySample>::max();
+constexpr std::uint32_t LOW_QUALITY_SAMPLE_MAX = 32767;
 
 using DownsampleFunc = void(*)(LowQualityTrack*, const void*, double, std::uint32_t, std::uint32_t, std::uint32_t);
 
