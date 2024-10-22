@@ -1,11 +1,10 @@
-#include "frequency.h"
+#include "algorithm/frequency.h"
 #include <cmath>
 
-FrequancyPeak::FrequancyPeak(std::uint32_t fft_pass_number, std::uint32_t peak_magnitude, std::uint32_t corrected_peak_frequency_bin, std::uint32_t sample_rate)
-    : mFFTPassNumber(fft_pass_number)
-    , mPeakMagnitude(peak_magnitude)
-    , mCorrectedPeakFrequencyBin(corrected_peak_frequency_bin)
-    , mSampleRate(sample_rate)
+FrequancyPeak::FrequancyPeak(std::uint32_t fft_pass_number, std::uint32_t peak_magnitude,
+                             std::uint32_t corrected_peak_frequency_bin, std::uint32_t sample_rate)
+    : fft_pass_number_(fft_pass_number), peak_magnitude_(peak_magnitude),
+      corrected_peak_frequency_bin_(corrected_peak_frequency_bin), sample_rate_(sample_rate)
 {
 }
 
@@ -13,17 +12,17 @@ FrequancyPeak::~FrequancyPeak()
 {
 }
 
-double FrequancyPeak::GetFrequencyHz() const
+double FrequancyPeak::ComputeFrequency() const
 {
-    return mCorrectedPeakFrequencyBin * ((double)mSampleRate / 2. / 1024. / 64.);
-}
-    
-double FrequancyPeak::GetAmplitudePCM() const
-{
-    return std::sqrt(std::exp((mPeakMagnitude - 6144) / 1477.3) * (1 << 17) / 2.) / 1024.;
+    return corrected_peak_frequency_bin_ * (static_cast<double>(sample_rate_) / 2. / 1024. / 64.);
 }
 
-double FrequancyPeak::GetSeconds() const
+double FrequancyPeak::ComputeAmplitudePCM() const
 {
-    return (double)mFFTPassNumber * 128. / (double)mSampleRate;
+    return std::sqrt(std::exp((peak_magnitude_ - 6144) / 1477.3) * (1 << 17) / 2.) / 1024.;
+}
+
+double FrequancyPeak::ComputeElapsedSeconds() const
+{
+    return static_cast<double>(fft_pass_number_) * 128. / static_cast<double>(sample_rate_);
 }

@@ -1,5 +1,5 @@
-#ifndef FREQUENCY_H
-#define FREQUENCY_H
+#ifndef LIB_ALGORITHM_FREQUENCY_H_
+#define LIB_ALGORITHM_FREQUENCY_H_
 
 #include <cstdint>
 
@@ -14,22 +14,32 @@ enum class FrequancyBand
 
 class FrequancyPeak
 {
-public:
-    FrequancyPeak(std::uint32_t fft_pass_number, std::uint32_t peak_magnitude, std::uint32_t corrected_peak_frequency_bin, std::uint32_t sample_rate);
+  public:
+    FrequancyPeak(std::uint32_t fft_pass_number, std::uint32_t peak_magnitude,
+                  std::uint32_t corrected_peak_frequency_bin, std::uint32_t sample_rate);
     ~FrequancyPeak();
 
-    inline std::uint32_t GetFFTPassNumber() const { return mFFTPassNumber; }
-    inline std::uint32_t GetPeakMagnitude() const { return mPeakMagnitude; }
-    inline std::uint32_t GetCorrectedPeakFrequencyBin() const { return mCorrectedPeakFrequencyBin; }
-    double GetFrequencyHz() const;
-    double GetAmplitudePCM() const;
-    double GetSeconds() const;
+    inline std::uint32_t fft_pass_number() const
+    {
+        return fft_pass_number_;
+    }
+    inline std::uint32_t peak_magnitude() const
+    {
+        return peak_magnitude_;
+    }
+    inline std::uint32_t corrected_peak_frequency_bin() const
+    {
+        return corrected_peak_frequency_bin_;
+    }
+    inline double ComputeFrequency() const;
+    inline double ComputeAmplitudePCM() const;
+    inline double ComputeElapsedSeconds() const;
 
-private:
-    std::uint32_t mFFTPassNumber;
-    std::uint32_t mPeakMagnitude;
-    std::uint32_t mCorrectedPeakFrequencyBin;
-    std::uint32_t mSampleRate;
+  private:
+    std::uint32_t fft_pass_number_;
+    std::uint32_t peak_magnitude_;
+    std::uint32_t corrected_peak_frequency_bin_;
+    std::uint32_t sample_rate_;
 };
 
-#endif // FREQUENCY_H
+#endif // LIB_ALGORITHM_FREQUENCY_H_

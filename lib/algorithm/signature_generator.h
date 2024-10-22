@@ -1,44 +1,47 @@
-#ifndef SIGNATURE_GENERATOR_H
-#define SIGNATURE_GENERATOR_H
+#ifndef LIB_ALGORITHM_SIGNATURE_GENERATOR_H_
+#define LIB_ALGORITHM_SIGNATURE_GENERATOR_H_
 
-
-#include "signature.h"
-#include "../utils/ring_buffer.h"
-#include "../audio/downsampler.h"
-#include "../utils/fft.h"
+#include "algorithm/signature.h"
+#include "audio/downsampler.h"
+#include "utils/fft.h"
+#include "utils/ring_buffer.h"
 
 constexpr auto MAX_PEAKS = 255u;
 
 class SignatureGenerator
 {
-public:
+  public:
     SignatureGenerator();
-    void FeedInput(const LowQualityTrack& input);
+    void FeedInput(const LowQualityTrack &input);
     Signature GetNextSignature();
 
-    inline void AddSampleProcessed(std::uint32_t sampleProcessed)
-    { mSampleProcessed += sampleProcessed;}
+    inline void AddSampleProcessed(std::uint32_t sample_processed)
+    {
+        sample_processed_ += sample_processed;
+    }
 
-    inline void SetMaxTimeSeconds(double maxTimeSeconds)
-    { mMaxTimeSeconds = maxTimeSeconds; }
+    inline void set_max_time_seconds(double max_time_seconds)
+    {
+        max_time_seconds_ = max_time_seconds;
+    }
 
-private:
-    void processInput(const LowQualityTrack& input);
-    void doFFT(const LowQualityTrack& input);
+  private:
+    void processInput(const LowQualityTrack &input);
+    void doFFT(const LowQualityTrack &input);
     void doPeakSpreadingAndRecoginzation();
     void doPeakSpreading();
     void doPeakRecognition();
     void resetSignatureGenerater();
 
-private:
-    LowQualityTrack mInputPendingProcessing;
-    std::uint32_t mSampleProcessed;
-    double mMaxTimeSeconds;
+  private:
+    LowQualityTrack input_pending_processing_;
+    std::uint32_t sample_processed_;
+    double max_time_seconds_;
 
-    Signature mNextSignature;
-    RingBuffer<std::int16_t> mRingBufferOfSamples;
-    RingBuffer<fft::RealArray> mFFTOutputs;
-    RingBuffer<fft::RealArray> mSpreadFFTsOutput;    
+    Signature next_signature_;
+    RingBuffer<std::int16_t> samples_ring_buffer_;
+    RingBuffer<fft::RealArray> fft_outputs_;
+    RingBuffer<fft::RealArray> spread_ffts_output_;
 };
 
-#endif // SIGNATURE_GENERATOR_H
+#endif // LIB_ALGORITHM_SIGNATURE_GENERATOR_H_

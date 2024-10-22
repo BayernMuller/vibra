@@ -1,17 +1,19 @@
-#ifndef SIGNATURE_H
-#define SIGNATURE_H
+#ifndef LIB_ALGORITHM_SIGNATURE_H_
+#define LIB_ALGORITHM_SIGNATURE_H_
 
-#include <map>
 #include <list>
+#include <map>
 #include <memory>
 #include <sstream>
-#include "frequency.h"
+#include <string>
+#include "algorithm/frequency.h"
 
 // Prevent Structure Padding
 #ifdef _MSC_VER
-    #pragma pack(push, 1)
+#pragma pack(push, 1)
 #endif
-struct RawSignatureHeader {
+struct RawSignatureHeader
+{
     uint32_t magic1;
     uint32_t crc32;
     uint32_t size_minus_header;
@@ -21,30 +23,43 @@ struct RawSignatureHeader {
     uint32_t void2[2];
     uint32_t number_samples_plus_divided_sample_rate;
     uint32_t fixed_value;
-} 
+}
 #ifdef _MSC_VER
-    #pragma pack(pop)
+#pragma pack(pop)
 #else
-    __attribute__((packed)); 
+__attribute__((packed));
 #endif
 
 class Signature
 {
-public:
-    Signature(std::uint32_t sampleRate, std::uint32_t numberOfSamples);
+  public:
+    Signature(std::uint32_t sample_rate, std::uint32_t num_samples);
     ~Signature();
-    void Reset(std::uint32_t sampleRate, std::uint32_t numberOfSamples);
+    void Reset(std::uint32_t sampleRate, std::uint32_t num_samples);
 
-    inline void AddNumberOfSamples(std::uint32_t numberOfSamples) { mNumberOfSamples += numberOfSamples; }
-    inline std::uint32_t SampleRate() const { return mSampleRate; }
-    inline std::uint32_t NumberOfSamples() const { return mNumberOfSamples; }
-    inline std::map<FrequancyBand, std::list<FrequancyPeak>>& FrequancyBandToPeaks() { return mFrequancyBandToPeaks; }
+    inline void Addnum_samples(std::uint32_t num_samples)
+    {
+        num_samples_ += num_samples;
+    }
+    inline std::uint32_t sample_rate() const
+    {
+        return sample_rate_;
+    }
+    inline std::uint32_t num_samples() const
+    {
+        return num_samples_;
+    }
+    inline std::map<FrequancyBand, std::list<FrequancyPeak>> &frequancy_band_to_peaks()
+    {
+        return frequancy_band_to_peaks_;
+    }
     std::uint32_t SumOfPeaksLength() const;
-    std::string GetBase64Uri() const;
+    std::string EncodeBase64() const;
 
-private:
+  private:
     template <typename T>
-    std::stringstream& writeLittleEndian(std::stringstream& stream, const T&& value, size_t size = sizeof(T)) const
+    std::stringstream &write_little_endian(std::stringstream &stream, const T &&value,
+                                         size_t size = sizeof(T)) const
     {
         for (size_t i = 0; i < size; ++i)
         {
@@ -53,11 +68,10 @@ private:
         return stream;
     }
 
-private:
-    std::uint32_t mSampleRate;
-    std::uint32_t mNumberOfSamples;
-    std::map<FrequancyBand, std::list<FrequancyPeak>> mFrequancyBandToPeaks;
+  private:
+    std::uint32_t sample_rate_;
+    std::uint32_t num_samples_;
+    std::map<FrequancyBand, std::list<FrequancyPeak>> frequancy_band_to_peaks_;
 };
 
-#endif // SIGNATURE_Hs
-    
+#endif // LIB_ALGORITHM_SIGNATURE_H_

@@ -1,23 +1,19 @@
-#ifndef __SHAZAM_H__
-#define __SHAZAM_H__
+#ifndef LIB_COMMUNICATION_SHAZAM_H_
+#define LIB_COMMUNICATION_SHAZAM_H_
 
 #include <string>
 
-// forward declaration
-class Signature;
-
-class Shazam 
+class Shazam
 {
     static constexpr char HOST[] = "https://amp.shazam.com/discovery/v5/fr/FR/android/-/tag/";
 
-public:
+  public:
     static std::string GetShazamHost();
     static std::string GetUserAgent();
-    static std::string GetRequestContent(const std::string& uri, unsigned int sample_ms);
+    static std::string GetRequestContent(const std::string &uri, unsigned int sample_ms);
 
-private:
+  private:
     static std::string getTimezone();
 };
 
-
-#endif // __SHAZAM_H__
+#endif // LIB_COMMUNICATION_SHAZAM_H_

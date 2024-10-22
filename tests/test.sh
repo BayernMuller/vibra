@@ -2,7 +2,10 @@
 
 set -e
 
+TEST_TARGET=sample.mp3
+TEST_TARGET_TITLE="Misty"
 VIBRA_CLI=vibra
+SHAZAM_REQUEST_DELAY=${1:-3}
 FAILED=0
 
 function pass() {
@@ -18,16 +21,10 @@ function info() {
     printf " - %s\t" "$1"
 }
 
-function download_audio() {
-    local url=$1
-    local format=$2
-    local output=$3
-    yt-dlp -x --audio-format "$format" -o "$output" "$url" > /dev/null
-}
-
 function recognize_audio() {
     local file=$1
     $VIBRA_CLI --recognize --file "$file" | jq .track.title -r
+    sleep "$SHAZAM_REQUEST_DELAY"
 }
 
 function check_title() {
@@ -41,16 +38,16 @@ function check_title() {
 }
 
 function test_audio_file() {
-    local url=$1
-    local format=$2
+    local extension=$1
+    local file=$2
     local expected_title=$3
-    local file="/tmp/test.$format"
 
-    info "Testing $format file..."
-    download_audio "$url" "$format" "$file"
+    local temp_file="/tmp/test.$extension"
+    ffmpeg -y -i "$file" -f "$extension" "$temp_file" > /dev/null 2>&1
 
+    info "Testing $temp_file..."
     local title
-    title=$(recognize_audio "$file")
+    title=$(recognize_audio "$temp_file")
     check_title "$expected_title" "$title"
 }
 
@@ -58,12 +55,8 @@ function test_raw_pcm() {
     info "Testing raw PCM data..."
     echo
 
-    local url=$1
-    local format=$2
-    local expected_title=$3
-    local file="/tmp/test_stdin.$format"
-
-    download_audio "$url" "$format" "$file"
+    local file=$1
+    local expected_title=$2
 
     for type in signed float; do
         for bit in 16 24 32 64; do
@@ -80,7 +73,7 @@ function test_raw_pcm() {
                         $VIBRA_CLI --recognize --seconds 5 --rate $rate --channels $channels --bits $bit --$type | \
                         jq .track.title -r)
                     check_title "$expected_title" "$title"
-                    sleep 3
+                    sleep "$SHAZAM_REQUEST_DELAY"
                 done
             done
         done
@@ -93,10 +86,10 @@ function run_tests() {
     echo "Running vibra tests..."
     echo
 
-    test_audio_file "https://www.youtube.com/watch?v=QkF3oxziUI4" "wav" "Stairway to Heaven"
-    test_audio_file "https://www.youtube.com/watch?v=n4RjJKxsamQ" "mp3" "Wind of Change"
-    test_audio_file "https://www.youtube.com/watch?v=qQzdAsjWGPg" "flac" "My Way"
-    test_raw_pcm "https://www.youtube.com/watch?v=mQER0A0ej0M" "wav" "Hey Jude"
+    test_audio_file "wav" "$TEST_TARGET" "$TEST_TARGET_TITLE"
+    test_audio_file "mp3" "$TEST_TARGET" "$TEST_TARGET_TITLE"
+    test_audio_file "flac" "$TEST_TARGET" "$TEST_TARGET_TITLE"
+    test_raw_pcm "$TEST_TARGET" "$TEST_TARGET_TITLE"
     
     echo
     if [ $FAILED -eq 1 ]; then

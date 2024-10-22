@@ -1,32 +1,45 @@
-#ifndef RING_BUFFER_H
-#define RING_BUFFER_H
+#ifndef LIB_UTILS_RING_BUFFER_H_
+#define LIB_UTILS_RING_BUFFER_H_
 
 #include <vector>
 
-template <typename T>
-class RingBuffer : private std::vector<T>
+template <typename T> class RingBuffer : private std::vector<T>
 {
-public:
-    RingBuffer(std::size_t size, T&& defaultValue = T());
+  public:
+    explicit RingBuffer(std::size_t size, T &&default_value = T());
     virtual ~RingBuffer();
 
-    void Append(const T& value);
-    std::uint32_t Size() const { return std::vector<T>::size(); }
-    std::uint32_t& NumWritten() { return mNumWritten; }
-    std::uint32_t& Position() { return mPosition; }
+    void Append(const T &value);
+    std::uint32_t size() const
+    {
+        return std::vector<T>::size();
+    }
+    std::uint32_t &num_written()
+    {
+        return num_written_;
+    }
+    std::uint32_t &position()
+    {
+        return position_;
+    }
 
-    T& operator[](std::int32_t index);
-    
-    typename std::vector<T>::iterator begin() { return std::vector<T>::begin(); }
-    typename std::vector<T>::iterator end() { return std::vector<T>::end(); }
+    T &operator[](std::int32_t index);
 
-private:
-    std::uint32_t mNumWritten;
-    std::uint32_t mPosition;
+    typename std::vector<T>::iterator begin()
+    {
+        return std::vector<T>::begin();
+    }
+    typename std::vector<T>::iterator end()
+    {
+        return std::vector<T>::end();
+    }
+
+  private:
+    std::uint32_t num_written_;
+    std::uint32_t position_;
 };
 
-template<typename T>
-T& RingBuffer<T>::operator[](std::int32_t index)
+template <typename T> T &RingBuffer<T>::operator[](std::int32_t index)
 {
     if (index < 0)
     {
@@ -37,24 +50,20 @@ T& RingBuffer<T>::operator[](std::int32_t index)
 }
 
 template <typename T>
-RingBuffer<T>::RingBuffer(std::size_t size, T&& defaultValue)
-    : std::vector<T>(size, defaultValue)
-    , mNumWritten(0)
-    , mPosition(0)
+RingBuffer<T>::RingBuffer(std::size_t size, T &&default_value)
+    : std::vector<T>(size, default_value), num_written_(0), position_(0)
 {
 }
 
-template <typename T>
-RingBuffer<T>::~RingBuffer()
+template <typename T> RingBuffer<T>::~RingBuffer()
 {
 }
 
-template <typename T>
-void RingBuffer<T>::Append(const T& value)
+template <typename T> void RingBuffer<T>::Append(const T &value)
 {
-    this->operator[](mPosition) = value;
-    mPosition = (mPosition + 1) % std::vector<T>::size();
-    mNumWritten++;
+    this->operator[](position_) = value;
+    position_ = (position_ + 1) % std::vector<T>::size();
+    num_written_++;
 }
 
-#endif // RING_BUFFER_H
+#endif // LIB_UTILS_RING_BUFFER_H_
