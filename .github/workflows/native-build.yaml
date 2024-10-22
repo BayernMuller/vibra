@@ -40,4 +40,4 @@ jobs:
       run: sudo make install -C build
 
     - name: Test CLI
-      run: cd tests && ./test.sh
+      run: cd tests && ./test.sh 5

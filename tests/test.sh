@@ -4,8 +4,8 @@ set -e
 
 TEST_TARGET=sample.mp3
 TEST_TARGET_TITLE="Misty"
-
 VIBRA_CLI=vibra
+SHAZAM_REQUEST_DELAY=${1:-3}
 FAILED=0
 
 function pass() {
@@ -24,6 +24,7 @@ function info() {
 function recognize_audio() {
     local file=$1
     $VIBRA_CLI --recognize --file "$file" | jq .track.title -r
+    sleep "$SHAZAM_REQUEST_DELAY"
 }
 
 function check_title() {
@@ -72,7 +73,7 @@ function test_raw_pcm() {
                         $VIBRA_CLI --recognize --seconds 5 --rate $rate --channels $channels --bits $bit --$type | \
                         jq .track.title -r)
                     check_title "$expected_title" "$title"
-                    sleep 3
+                    sleep "$SHAZAM_REQUEST_DELAY"
                 done
             done
         done
