@@ -33,32 +33,32 @@ __attribute__((packed));
 class Signature
 {
   public:
-    Signature(std::uint32_t sampleRate, std::uint32_t numberOfSamples);
+    Signature(std::uint32_t sample_rate, std::uint32_t num_samples);
     ~Signature();
-    void Reset(std::uint32_t sampleRate, std::uint32_t numberOfSamples);
+    void Reset(std::uint32_t sampleRate, std::uint32_t num_samples);
 
-    inline void AddNumberOfSamples(std::uint32_t numberOfSamples)
+    inline void Addnum_samples(std::uint32_t num_samples)
     {
-        mNumberOfSamples += numberOfSamples;
+        num_samples_ += num_samples;
     }
-    inline std::uint32_t SampleRate() const
+    inline std::uint32_t sample_rate() const
     {
-        return mSampleRate;
+        return sample_rate_;
     }
-    inline std::uint32_t NumberOfSamples() const
+    inline std::uint32_t num_samples() const
     {
-        return mNumberOfSamples;
+        return num_samples_;
     }
-    inline std::map<FrequancyBand, std::list<FrequancyPeak>> &FrequancyBandToPeaks()
+    inline std::map<FrequancyBand, std::list<FrequancyPeak>> &frequancy_band_to_peaks()
     {
-        return mFrequancyBandToPeaks;
+        return frequancy_band_to_peaks_;
     }
     std::uint32_t SumOfPeaksLength() const;
-    std::string GetBase64Uri() const;
+    std::string EncodeBase64() const;
 
   private:
     template <typename T>
-    std::stringstream &writeLittleEndian(std::stringstream &stream, const T &&value,
+    std::stringstream &write_little_endian(std::stringstream &stream, const T &&value,
                                          size_t size = sizeof(T)) const
     {
         for (size_t i = 0; i < size; ++i)
@@ -69,9 +69,9 @@ class Signature
     }
 
   private:
-    std::uint32_t mSampleRate;
-    std::uint32_t mNumberOfSamples;
-    std::map<FrequancyBand, std::list<FrequancyPeak>> mFrequancyBandToPeaks;
+    std::uint32_t sample_rate_;
+    std::uint32_t num_samples_;
+    std::map<FrequancyBand, std::list<FrequancyPeak>> frequancy_band_to_peaks_;
 };
 
 #endif // LIB_ALGORITHM_SIGNATURE_H_

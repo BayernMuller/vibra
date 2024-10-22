@@ -15,14 +15,14 @@ class SignatureGenerator
     void FeedInput(const LowQualityTrack &input);
     Signature GetNextSignature();
 
-    inline void AddSampleProcessed(std::uint32_t sampleProcessed)
+    inline void AddSampleProcessed(std::uint32_t sample_processed)
     {
-        mSampleProcessed += sampleProcessed;
+        sample_processed_ += sample_processed;
     }
 
-    inline void SetMaxTimeSeconds(double maxTimeSeconds)
+    inline void set_max_time_seconds(double max_time_seconds)
     {
-        mMaxTimeSeconds = maxTimeSeconds;
+        max_time_seconds_ = max_time_seconds;
     }
 
   private:
@@ -34,14 +34,14 @@ class SignatureGenerator
     void resetSignatureGenerater();
 
   private:
-    LowQualityTrack mInputPendingProcessing;
-    std::uint32_t mSampleProcessed;
-    double mMaxTimeSeconds;
+    LowQualityTrack input_pending_processing_;
+    std::uint32_t sample_processed_;
+    double max_time_seconds_;
 
-    Signature mNextSignature;
-    RingBuffer<std::int16_t> mRingBufferOfSamples;
-    RingBuffer<fft::RealArray> mFFTOutputs;
-    RingBuffer<fft::RealArray> mSpreadFFTsOutput;
+    Signature next_signature_;
+    RingBuffer<std::int16_t> samples_ring_buffer_;
+    RingBuffer<fft::RealArray> fft_outputs_;
+    RingBuffer<fft::RealArray> spread_ffts_output_;
 };
 
 #endif // LIB_ALGORITHM_SIGNATURE_GENERATOR_H_

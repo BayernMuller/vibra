@@ -19,7 +19,7 @@ Fingerprint *vibra_get_fingerprint_from_music_file(const char *music_file_path)
     }
 
     LowQualityTrack pcm;
-    ffmpeg::FFmpegWrapper::convertToWav(path, &pcm);
+    ffmpeg::FFmpegWrapper::ConvertToWav(path, &pcm);
     return _get_fingerprint_from_low_quality_pcm(pcm);
 }
 
@@ -86,12 +86,12 @@ Fingerprint *_get_fingerprint_from_low_quality_pcm(const LowQualityTrack &pcm)
 {
     SignatureGenerator generator;
     generator.FeedInput(pcm);
-    generator.SetMaxTimeSeconds(12);
+    generator.set_max_time_seconds(12);
 
     Signature signature = generator.GetNextSignature();
 
     static Fingerprint fingerprint;
-    fingerprint.uri = signature.GetBase64Uri();
-    fingerprint.sample_ms = signature.NumberOfSamples() * 1000 / signature.SampleRate();
+    fingerprint.uri = signature.EncodeBase64();
+    fingerprint.sample_ms = signature.num_samples() * 1000 / signature.sample_rate();
     return &fingerprint;
 }

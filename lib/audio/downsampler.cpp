@@ -11,19 +11,19 @@ LowQualityTrack Downsampler::GetLowQualityPCM(const Wav &wav, std::int32_t start
 {
     LowQualityTrack low_quality_pcm;
 
-    const auto channels = wav.GetChannel();
-    const auto sample_rate = wav.GetSampleRate();
-    const auto bits_per_sample = wav.GetBitPerSample();
-    const auto data_size = wav.GetDataSize();
-    const auto audio_format = wav.GetAudioFormat();
-    const std::uint8_t *pcm_data = wav.GetData().get();
+    const auto channels = wav.num_channels();
+    const auto sample_rate = wav.sample_rate_();
+    const auto bits_per_sample = wav.bits_per_sample();
+    const auto data_size = wav.data_size();
+    const auto audio_format = wav.audio_format();
+    const std::uint8_t *pcm_data = wav.data().get();
 
     if (channels == 1 && sample_rate == LOW_QUALITY_SAMPLE_RATE &&
         bits_per_sample == LOW_QUALITY_SAMPLE_BIT_WIDTH && start_sec == 0 && end_sec == -1)
     {
         // no need to convert low quality pcm. just copy raw data
         low_quality_pcm.resize(data_size);
-        std::memcpy(low_quality_pcm.data(), wav.GetData().get(), data_size);
+        std::memcpy(low_quality_pcm.data(), wav.data().get(), data_size);
         return low_quality_pcm;
     }
 

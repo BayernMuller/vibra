@@ -43,33 +43,33 @@ class Wav
                             std::uint32_t channel_count);
     ~Wav();
 
-    inline std::uint16_t GetAudioFormat() const
+    inline std::uint16_t audio_format() const
     {
-        return mFmt.audio_format;
+        return fmt_.audio_format;
     }
-    inline std::uint16_t GetChannel() const
+    inline std::uint16_t num_channels() const
     {
-        return mFmt.num_channels;
+        return fmt_.num_channels;
     }
-    inline std::uint32_t GetSampleRate() const
+    inline std::uint32_t sample_rate_() const
     {
-        return mFmt.sample_rate;
+        return fmt_.sample_rate;
     }
-    inline std::uint32_t GetBitPerSample() const
+    inline std::uint32_t bits_per_sample() const
     {
-        return mFmt.bits_per_sample;
+        return fmt_.bits_per_sample;
     }
-    inline std::uint32_t GetDataSize() const
+    inline std::uint32_t data_size() const
     {
-        return mDataSize;
+        return data_size_;
     }
-    inline std::uint32_t GetFileSize() const
+    inline std::uint32_t file_size() const
     {
-        return mHeader.file_size;
+        return header_.file_size;
     }
-    inline const std::unique_ptr<std::uint8_t[]> &GetData() const
+    inline const std::unique_ptr<std::uint8_t[]> &data() const
     {
-        return mData;
+        return data_;
     }
 
   private:
@@ -80,11 +80,11 @@ class Wav
     void readWavFileBuffer(std::istream &stream);
 
   private:
-    WavHeader mHeader;
-    FmtSubchunk mFmt;
-    std::string mWavFilePath;
-    std::uint32_t mDataSize;
-    std::unique_ptr<std::uint8_t[]> mData;
+    WavHeader header_;
+    FmtSubchunk fmt_;
+    std::string wav_file_path_;
+    std::uint32_t data_size_;
+    std::unique_ptr<std::uint8_t[]> data_;
 };
 
 #endif // LIB_AUDIO_WAV_H_

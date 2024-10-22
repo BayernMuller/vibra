@@ -20,7 +20,7 @@ class FFmpegWrapper
 {
   public:
     FFmpegWrapper() = delete;
-    static int convertToWav(const std::string &input_file, LowQualityTrack *pcm);
+    static int ConvertToWav(const std::string &input_file, LowQualityTrack *pcm);
 
   private:
     static std::string getFFmpegPath();
@@ -32,7 +32,7 @@ class FFmpegWrapper
 
 std::string FFmpegWrapper::ffmpeg_path_; // NOLINT
 
-int FFmpegWrapper::convertToWav(const std::string &input_file, LowQualityTrack *pcm)
+int FFmpegWrapper::ConvertToWav(const std::string &input_file, LowQualityTrack *pcm)
 {
     std::string ffmpeg_path = FFmpegWrapper::getFFmpegPath();
     if (ffmpeg_path.empty())

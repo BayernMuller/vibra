@@ -19,27 +19,27 @@ class FrequancyPeak
                   std::uint32_t corrected_peak_frequency_bin, std::uint32_t sample_rate);
     ~FrequancyPeak();
 
-    inline std::uint32_t GetFFTPassNumber() const
+    inline std::uint32_t fft_pass_number() const
     {
-        return mFFTPassNumber;
+        return fft_pass_number_;
     }
-    inline std::uint32_t GetPeakMagnitude() const
+    inline std::uint32_t peak_magnitude() const
     {
-        return mPeakMagnitude;
+        return peak_magnitude_;
     }
-    inline std::uint32_t GetCorrectedPeakFrequencyBin() const
+    inline std::uint32_t corrected_peak_frequency_bin() const
     {
-        return mCorrectedPeakFrequencyBin;
+        return corrected_peak_frequency_bin_;
     }
-    double GetFrequencyHz() const;
-    double GetAmplitudePCM() const;
-    double GetSeconds() const;
+    inline double ComputeFrequency() const;
+    inline double ComputeAmplitudePCM() const;
+    inline double ComputeElapsedSeconds() const;
 
   private:
-    std::uint32_t mFFTPassNumber;
-    std::uint32_t mPeakMagnitude;
-    std::uint32_t mCorrectedPeakFrequencyBin;
-    std::uint32_t mSampleRate;
+    std::uint32_t fft_pass_number_;
+    std::uint32_t peak_magnitude_;
+    std::uint32_t corrected_peak_frequency_bin_;
+    std::uint32_t sample_rate_;
 };
 
 #endif // LIB_ALGORITHM_FREQUENCY_H_
