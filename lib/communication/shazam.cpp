@@ -1,11 +1,11 @@
 #include "communication/shazam.h"
+#include <algorithm>
 #include <random>
 #include <sstream>
-#include <algorithm>
-#include "communication/user_agents.h"
-#include "communication/timezones.h"
-#include "utils/uuid4.h"
 #include "algorithm/signature.h"
+#include "communication/timezones.h"
+#include "communication/user_agents.h"
+#include "utils/uuid4.h"
 
 // static variables initialization
 constexpr char Shazam::HOST[];
@@ -23,7 +23,7 @@ std::string Shazam::GetShazamHost()
     return host;
 }
 
-std::string Shazam::GetRequestContent(const std::string& uri, unsigned int sample_ms)
+std::string Shazam::GetRequestContent(const std::string &uri, unsigned int sample_ms)
 {
     std::mt19937 gen(std::random_device{}());
     std::uniform_int_distribution<> dis_float(0.0, 1.0);
@@ -44,7 +44,8 @@ std::string Shazam::GetRequestContent(const std::string& uri, unsigned int sampl
     json_buf << "\"uri\":\"" << uri << "\"";
     json_buf << "},";
     json_buf << "\"timestamp\":" << time(nullptr) * 1000ULL << ",";
-    json_buf << "\"timezone\":" << "\"" << timezone << "\"";
+    json_buf << "\"timezone\":"
+             << "\"" << timezone << "\"";
     json_buf << "}";
     std::string content = json_buf.str();
     return content;

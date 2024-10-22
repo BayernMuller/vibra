@@ -2,37 +2,37 @@
 #define LIB_UTILS_FFMPEG_H_
 
 #include <cstdlib>
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <sstream>
 #include <array>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <string>
 #include "audio/downsampler.h"
 
 namespace ffmpeg
 {
 
-constexpr const char* DEFAULT_FFMPEG_PATHS[] = {"ffmpeg", "ffmpeg.exe"};
+constexpr const char *DEFAULT_FFMPEG_PATHS[] = {"ffmpeg", "ffmpeg.exe"};
 constexpr const char FFMPEG_PATH_ENV[] = "FFMPEG_PATH";
 constexpr int EXPECTED_DURATION = 5 * 60; // 5 minutes
 
 class FFmpegWrapper
 {
-public:
+  public:
     FFmpegWrapper() = delete;
-    static int convertToWav(const std::string &input_file, LowQualityTrack* pcm);
+    static int convertToWav(const std::string &input_file, LowQualityTrack *pcm);
 
-private:
+  private:
     static std::string getFFmpegPath();
     static bool isWindows();
 
-private:
+  private:
     static std::string ffmpeg_path_;
 };
 
 std::string FFmpegWrapper::ffmpeg_path_; // NOLINT
 
-int FFmpegWrapper::convertToWav(const std::string &input_file, LowQualityTrack* pcm)
+int FFmpegWrapper::convertToWav(const std::string &input_file, LowQualityTrack *pcm)
 {
     std::string ffmpeg_path = FFmpegWrapper::getFFmpegPath();
     if (ffmpeg_path.empty())
@@ -44,11 +44,13 @@ int FFmpegWrapper::convertToWav(const std::string &input_file, LowQualityTrack* 
 
     std::stringstream ss;
     ss << ffmpeg_path;
-    ss << " -i "        << input_file;
-    ss << " -f "        << "s" << LOW_QUALITY_SAMPLE_BIT_WIDTH << "le";
-    ss << " -acodec "   << "pcm_s" << LOW_QUALITY_SAMPLE_BIT_WIDTH << "le";
-    ss << " -ar "       << LOW_QUALITY_SAMPLE_RATE;
-    ss << " -ac "       << 1;
+    ss << " -i " << input_file;
+    ss << " -f "
+       << "s" << LOW_QUALITY_SAMPLE_BIT_WIDTH << "le";
+    ss << " -acodec "
+       << "pcm_s" << LOW_QUALITY_SAMPLE_BIT_WIDTH << "le";
+    ss << " -ar " << LOW_QUALITY_SAMPLE_RATE;
+    ss << " -ac " << 1;
     ss << " - 2>/dev/null"; // suppress std
 
     std::FILE *pipe = popen(ss.str().c_str(), "r");
@@ -64,11 +66,8 @@ int FFmpegWrapper::convertToWav(const std::string &input_file, LowQualityTrack* 
 
     while ((bytes_read = fread(buffer.data(), 1, buffer.size(), pipe)) != 0)
     {
-        pcm->insert(
-            pcm->end(),
-            buffer.begin(),
-            buffer.begin() + (bytes_read / sizeof(LowQualitySample))
-        );
+        pcm->insert(pcm->end(), buffer.begin(),
+                    buffer.begin() + (bytes_read / sizeof(LowQualitySample)));
     }
 
     pclose(pipe);
@@ -82,7 +81,7 @@ std::string FFmpegWrapper::getFFmpegPath()
         return FFmpegWrapper::ffmpeg_path_;
     }
 
-    const char* ffmpeg_env = std::getenv(FFMPEG_PATH_ENV);
+    const char *ffmpeg_env = std::getenv(FFMPEG_PATH_ENV);
     if (ffmpeg_env)
     {
         FFmpegWrapper::ffmpeg_path_ = ffmpeg_env;
@@ -95,7 +94,7 @@ std::string FFmpegWrapper::getFFmpegPath()
     char delimiter = isWindows() ? ';' : ':';
     while (std::getline(ss, token, delimiter))
     {
-        for (const char* ffmpeg_path : DEFAULT_FFMPEG_PATHS)
+        for (const char *ffmpeg_path : DEFAULT_FFMPEG_PATHS)
         {
             std::string full_path = token + "/" + ffmpeg_path;
             if (std::ifstream(full_path).good())
@@ -110,9 +109,9 @@ std::string FFmpegWrapper::getFFmpegPath()
 
 bool FFmpegWrapper::isWindows()
 {
-    #if defined(_WIN32) || defined(_WIN64)
-        return true;
-    #endif // _WIN32
+#if defined(_WIN32) || defined(_WIN64)
+    return true;
+#endif // _WIN32
 
     return false;
 }

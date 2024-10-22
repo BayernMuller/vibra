@@ -1,18 +1,19 @@
 #ifndef LIB_ALGORITHM_SIGNATURE_H_
 #define LIB_ALGORITHM_SIGNATURE_H_
 
-#include <map>
 #include <list>
+#include <map>
 #include <memory>
-#include <string>
 #include <sstream>
+#include <string>
 #include "algorithm/frequency.h"
 
 // Prevent Structure Padding
 #ifdef _MSC_VER
-    #pragma pack(push, 1)
+#pragma pack(push, 1)
 #endif
-struct RawSignatureHeader {
+struct RawSignatureHeader
+{
     uint32_t magic1;
     uint32_t crc32;
     uint32_t size_minus_header;
@@ -24,33 +25,41 @@ struct RawSignatureHeader {
     uint32_t fixed_value;
 }
 #ifdef _MSC_VER
-    #pragma pack(pop)
+#pragma pack(pop)
 #else
-    __attribute__((packed));
+__attribute__((packed));
 #endif
 
 class Signature
 {
-public:
+  public:
     Signature(std::uint32_t sampleRate, std::uint32_t numberOfSamples);
     ~Signature();
     void Reset(std::uint32_t sampleRate, std::uint32_t numberOfSamples);
 
     inline void AddNumberOfSamples(std::uint32_t numberOfSamples)
-        { mNumberOfSamples += numberOfSamples; }
-    inline std::uint32_t SampleRate() const { return mSampleRate; }
-    inline std::uint32_t NumberOfSamples() const { return mNumberOfSamples; }
-    inline std::map<FrequancyBand, std::list<FrequancyPeak>>& FrequancyBandToPeaks()
-        { return mFrequancyBandToPeaks; }
+    {
+        mNumberOfSamples += numberOfSamples;
+    }
+    inline std::uint32_t SampleRate() const
+    {
+        return mSampleRate;
+    }
+    inline std::uint32_t NumberOfSamples() const
+    {
+        return mNumberOfSamples;
+    }
+    inline std::map<FrequancyBand, std::list<FrequancyPeak>> &FrequancyBandToPeaks()
+    {
+        return mFrequancyBandToPeaks;
+    }
     std::uint32_t SumOfPeaksLength() const;
     std::string GetBase64Uri() const;
 
-private:
+  private:
     template <typename T>
-    std::stringstream& writeLittleEndian(
-        std::stringstream& stream,
-        const T&& value,
-        size_t size = sizeof(T)) const
+    std::stringstream &writeLittleEndian(std::stringstream &stream, const T &&value,
+                                         size_t size = sizeof(T)) const
     {
         for (size_t i = 0; i < size; ++i)
         {
@@ -59,7 +68,7 @@ private:
         return stream;
     }
 
-private:
+  private:
     std::uint32_t mSampleRate;
     std::uint32_t mNumberOfSamples;
     std::map<FrequancyBand, std::list<FrequancyPeak>> mFrequancyBandToPeaks;

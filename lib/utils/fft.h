@@ -1,10 +1,10 @@
 #ifndef LIB_UTILS_FFT_H_
 #define LIB_UTILS_FFT_H_
 
-#include <fftw3.h>
 #include <cmath>
-#include <vector>
 #include <algorithm>
+#include <fftw3.h> // NOLINT [include_order]
+#include <vector>
 
 namespace fft
 {
@@ -13,9 +13,8 @@ using RealArray = std::vector<long double>;
 
 class FFT
 {
-public:
-    template <typename Iterable>
-    static RealArray RFFT(const Iterable& input)
+  public:
+    template <typename Iterable> static RealArray RFFT(const Iterable &input)
     {
         // If input size is 0, return false.
         if (input.empty())
@@ -26,8 +25,8 @@ public:
         std::size_t input_size = input.size();
         RealArray real_output(input_size / 2 + 1);
 
-        double* in = fftw_alloc_real(input_size);
-        fftw_complex* out = fftw_alloc_complex(input_size / 2 + 1);
+        double *in = fftw_alloc_real(input_size);
+        fftw_complex *out = fftw_alloc_complex(input_size / 2 + 1);
 
         // Copy and convert the input data to double
         for (std::size_t i = 0; i < input_size; i++)

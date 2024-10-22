@@ -1,0 +1,39 @@
+# Language
+Language:        Cpp
+
+# Style
+BasedOnStyle:    Microsoft
+
+# No indent for extern block and namespace
+IndentExternBlock: NoIndent
+NamespaceIndentation: None
+
+# Header files order
+IncludeIsMainRegex: ".*" # 1. main file
+IncludeCategories:
+  - Regex:           '^<c.*>'
+    Priority:        1
+    SortPriority:    0
+  - Regex:           '^<.*>'
+    Priority:        2
+    SortPriority:    0
+  - Regex:           '.*'
+    Priority:        3
+    SortPriority:    0
+
+# Indentation
+IndentWidth: 4
+
+# Line length
+ColumnLimit: 100
+
+# Break before braces
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: true
+  AfterControlStatement: true
+  AfterFunction: true
+  AfterNamespace: true
+
+
+KeepEmptyLinesAtTheStartOfBlocks: false

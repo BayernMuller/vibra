@@ -1,15 +1,10 @@
 #include "algorithm/frequency.h"
 #include <cmath>
 
-FrequancyPeak::FrequancyPeak(
-    std::uint32_t fft_pass_number,
-    std::uint32_t peak_magnitude,
-    std::uint32_t corrected_peak_frequency_bin,
-    std::uint32_t sample_rate)
-    : mFFTPassNumber(fft_pass_number)
-    , mPeakMagnitude(peak_magnitude)
-    , mCorrectedPeakFrequencyBin(corrected_peak_frequency_bin)
-    , mSampleRate(sample_rate)
+FrequancyPeak::FrequancyPeak(std::uint32_t fft_pass_number, std::uint32_t peak_magnitude,
+                             std::uint32_t corrected_peak_frequency_bin, std::uint32_t sample_rate)
+    : mFFTPassNumber(fft_pass_number), mPeakMagnitude(peak_magnitude),
+      mCorrectedPeakFrequencyBin(corrected_peak_frequency_bin), mSampleRate(sample_rate)
 {
 }
 
