@@ -1,10 +1,10 @@
-#ifndef __CLI_H__
-#define __CLI_H__
+#ifndef CLI_CLI_H_
+#define CLI_CLI_H_
 
 #include <string>
 #include "../include/vibra.h"
 
-class CLI 
+class CLI
 {
 public:
     int Run(int argc, char** argv);
@@ -14,7 +14,6 @@ private:
     Fingerprint* getFingerprintFromStdin(int chunk_seconds, int sample_rate,
                             int channels, int bits_per_sample, bool is_signed);
     std::string getMetadataFromShazam(const Fingerprint* fingerprint);
-
 };
 
-#endif // __CLI_H__
+#endif // CLI_CLI_H_

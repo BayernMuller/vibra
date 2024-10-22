@@ -1,5 +1,5 @@
-#ifndef RING_BUFFER_H
-#define RING_BUFFER_H
+#ifndef LIB_UTILS_RING_BUFFER_H_
+#define LIB_UTILS_RING_BUFFER_H_
 
 #include <vector>
 
@@ -7,7 +7,7 @@ template <typename T>
 class RingBuffer : private std::vector<T>
 {
 public:
-    RingBuffer(std::size_t size, T&& defaultValue = T());
+    explicit RingBuffer(std::size_t size, T&& defaultValue = T());
     virtual ~RingBuffer();
 
     void Append(const T& value);
@@ -16,7 +16,7 @@ public:
     std::uint32_t& Position() { return mPosition; }
 
     T& operator[](std::int32_t index);
-    
+
     typename std::vector<T>::iterator begin() { return std::vector<T>::begin(); }
     typename std::vector<T>::iterator end() { return std::vector<T>::end(); }
 
@@ -57,4 +57,4 @@ void RingBuffer<T>::Append(const T& value)
     mNumWritten++;
 }
 
-#endif // RING_BUFFER_H
+#endif // LIB_UTILS_RING_BUFFER_H_

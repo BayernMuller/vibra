@@ -1,5 +1,5 @@
-#ifndef __UUID4_H__
-#define __UUID4_H__
+#ifndef LIB_UTILS_UUID4_H_
+#define LIB_UTILS_UUID4_H_
 
 #include <iostream>
 #include <random>
@@ -45,6 +45,6 @@ namespace uuid4
 
         return ss.str(); // RVO. Guaranteed copy elision since C++17
     }
-}
+} // namespace uuid4
 
-#endif // __UUID4_H__
+#endif // LIB_UTILS_UUID4_H_

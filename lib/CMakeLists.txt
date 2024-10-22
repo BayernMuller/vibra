@@ -13,6 +13,9 @@ set(LIBVIBRA_SOURCES
 add_library(vibra_shared SHARED ${LIBVIBRA_SOURCES})
 add_library(vibra_static STATIC ${LIBVIBRA_SOURCES})
 
+target_include_directories(vibra_shared PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(vibra_static PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
 if (DEFINED FFTW3_PATH)
     set(FFTW3_INCLUDE_DIR ${FFTW3_PATH}/include)
     set(FFTW3_LIBRARY ${FFTW3_PATH}/lib/libfftw3.a)

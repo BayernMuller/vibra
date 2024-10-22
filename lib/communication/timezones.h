@@ -1,5 +1,5 @@
-#ifndef __TIMEZONES_H__
-#define __TIMEZONES_H__
+#ifndef LIB_COMMUNICATION_TIMEZONES_H_
+#define LIB_COMMUNICATION_TIMEZONES_H_
 
 static constexpr const char* EUROPE_TIMEZONES[] = {
     "Europe/Amsterdam",
@@ -64,6 +64,7 @@ static constexpr const char* EUROPE_TIMEZONES[] = {
     "Europe/Zurich"
 };
 
-const static unsigned int EUROPE_TIMEZONES_SIZE = sizeof(EUROPE_TIMEZONES) / sizeof(EUROPE_TIMEZONES[0]);
+constexpr unsigned int EUROPE_TIMEZONES_SIZE =
+    sizeof(EUROPE_TIMEZONES) / sizeof(EUROPE_TIMEZONES[0]);
 
-#endif // __TIMEZONES_H__
+#endif // LIB_COMMUNICATION_TIMEZONES_H_

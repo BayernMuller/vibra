@@ -1,5 +1,5 @@
-#ifndef FREQUENCY_H
-#define FREQUENCY_H
+#ifndef LIB_ALGORITHM_FREQUENCY_H_
+#define LIB_ALGORITHM_FREQUENCY_H_
 
 #include <cstdint>
 
@@ -15,7 +15,11 @@ enum class FrequancyBand
 class FrequancyPeak
 {
 public:
-    FrequancyPeak(std::uint32_t fft_pass_number, std::uint32_t peak_magnitude, std::uint32_t corrected_peak_frequency_bin, std::uint32_t sample_rate);
+    FrequancyPeak(
+        std::uint32_t fft_pass_number,
+        std::uint32_t peak_magnitude,
+        std::uint32_t corrected_peak_frequency_bin,
+        std::uint32_t sample_rate);
     ~FrequancyPeak();
 
     inline std::uint32_t GetFFTPassNumber() const { return mFFTPassNumber; }
@@ -32,4 +36,4 @@ private:
     std::uint32_t mSampleRate;
 };
 
-#endif // FREQUENCY_H
+#endif // LIB_ALGORITHM_FREQUENCY_H_

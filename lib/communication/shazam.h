@@ -1,12 +1,9 @@
-#ifndef __SHAZAM_H__
-#define __SHAZAM_H__
+#ifndef LIB_COMMUNICATION_SHAZAM_H_
+#define LIB_COMMUNICATION_SHAZAM_H_
 
 #include <string>
 
-// forward declaration
-class Signature;
-
-class Shazam 
+class Shazam
 {
     static constexpr char HOST[] = "https://amp.shazam.com/discovery/v5/fr/FR/android/-/tag/";
 
@@ -20,4 +17,4 @@ private:
 };
 
 
-#endif // __SHAZAM_H__
+#endif // LIB_COMMUNICATION_SHAZAM_H_

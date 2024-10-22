@@ -1,10 +1,9 @@
-#ifndef WAV_H
-#define WAV_H
+#ifndef LIB_AUDIO_WAV_H_
+#define LIB_AUDIO_WAV_H_
 
 #include <string>
-#include <vector>
 #include <memory>
-#include "byte_control.h"
+#include "audio/byte_control.h"
 
 struct WavHeader {
     char riff_header[4]; // "RIFF"
@@ -65,4 +64,4 @@ private:
     std::unique_ptr<std::uint8_t[]> mData;
 };
 
-#endif // WAV_H
+#endif // LIB_AUDIO_WAV_H_

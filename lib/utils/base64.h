@@ -1,5 +1,5 @@
-#ifndef __BASE64_H__
-#define __BASE64_H__
+#ifndef LIB_UTILS_BASE64_H_
+#define LIB_UTILS_BASE64_H_
 
 #include <string>
 
@@ -52,7 +52,6 @@ namespace base64
 
         return ret;
     }
+} // namespace base64
 
-}
-
-#endif // __BASE64_H__
+#endif // LIB_UTILS_BASE64_H_

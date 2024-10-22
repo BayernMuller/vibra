@@ -1,11 +1,10 @@
-#ifndef SIGNATURE_GENERATOR_H
-#define SIGNATURE_GENERATOR_H
+#ifndef LIB_ALGORITHM_SIGNATURE_GENERATOR_H_
+#define LIB_ALGORITHM_SIGNATURE_GENERATOR_H_
 
-
-#include "signature.h"
-#include "../utils/ring_buffer.h"
-#include "../audio/downsampler.h"
-#include "../utils/fft.h"
+#include "algorithm/signature.h"
+#include "audio/downsampler.h"
+#include "utils/ring_buffer.h"
+#include "utils/fft.h"
 
 constexpr auto MAX_PEAKS = 255u;
 
@@ -38,7 +37,7 @@ private:
     Signature mNextSignature;
     RingBuffer<std::int16_t> mRingBufferOfSamples;
     RingBuffer<fft::RealArray> mFFTOutputs;
-    RingBuffer<fft::RealArray> mSpreadFFTsOutput;    
+    RingBuffer<fft::RealArray> mSpreadFFTsOutput;
 };
 
-#endif // SIGNATURE_GENERATOR_H
+#endif // LIB_ALGORITHM_SIGNATURE_GENERATOR_H_

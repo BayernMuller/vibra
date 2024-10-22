@@ -1,5 +1,5 @@
-#ifndef __VIBRA_H__
-#define __VIBRA_H__
+#ifndef INCLUDE_VIBRA_H_
+#define INCLUDE_VIBRA_H_
 
 #include <string>
 
@@ -139,4 +139,4 @@ const char* vibra_get_shazam_random_user_agent();
 
 } // extern "C"
 
-#endif // __VIBRA_H__
+#endif // INCLUDE_VIBRA_H_

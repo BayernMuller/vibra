@@ -1,8 +1,9 @@
-#include "signature.h"
-#include "../utils/crc32.h"
-#include "../utils/base64.h"
+#include "algorithm/signature.h"
 #include <sstream>
+#include <string>
 #include <algorithm>
+#include "utils/crc32.h"
+#include "utils/base64.h"
 
 Signature::Signature(std::uint32_t sampleRate, std::uint32_t numberOfSamples)
     : mSampleRate(sampleRate)
@@ -34,7 +35,8 @@ std::string Signature::GetBase64Uri() const
     header.magic2 = 0x94119c00;
     header.shifted_sample_rate_id = 3 << 27;
     header.fixed_value = ((15 << 19) + 0x40000);
-    header.number_samples_plus_divided_sample_rate = static_cast<std::uint32_t>(mNumberOfSamples + mSampleRate * 0.24);
+    header.number_samples_plus_divided_sample_rate =
+        static_cast<std::uint32_t>(mNumberOfSamples + mSampleRate * 0.24);
     std::stringstream contents;
     for (const auto& pair : mFrequancyBandToPeaks)
     {
@@ -45,7 +47,7 @@ std::string Signature::GetBase64Uri() const
         std::size_t fft_pass_number = 0;
 
         for (const auto& peak : peaks)
-        {            
+        {
             if (peak.GetFFTPassNumber() - fft_pass_number >= 255)
             {
                 peak_buf << "\xff";
@@ -54,7 +56,7 @@ std::string Signature::GetBase64Uri() const
             }
 
             peak_buf << static_cast<char>(peak.GetFFTPassNumber() - fft_pass_number);
-            writeLittleEndian(peak_buf, peak.GetPeakMagnitude(), 2); 
+            writeLittleEndian(peak_buf, peak.GetPeakMagnitude(), 2);
             writeLittleEndian(peak_buf, peak.GetCorrectedPeakFrequencyBin(), 2);
 
             fft_pass_number = peak.GetFFTPassNumber();
@@ -69,7 +71,7 @@ std::string Signature::GetBase64Uri() const
     }
 
     header.size_minus_header = contents.str().size() + 8;
-    
+
     std::stringstream header_buf;
     header_buf.write(reinterpret_cast<const char*>(&header), sizeof(header));
 
@@ -85,7 +87,7 @@ std::string Signature::GetBase64Uri() const
     header_buf.write(reinterpret_cast<const char*>(&header), sizeof(header));
 
     std::string header_string = header_buf.str();
-    
+
     std::string base64Uri;
     base64Uri += "data:audio/vnd.shazam.sig;base64,";
     base64Uri += base64::encode(header_string.c_str(), header_string.size());

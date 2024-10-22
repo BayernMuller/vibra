@@ -1,5 +1,5 @@
-#ifndef DOWNSAMPLER_H
-#define DOWNSAMPLER_H
+#ifndef LIB_AUDIO_DOWNSAMPLER_H_
+#define LIB_AUDIO_DOWNSAMPLER_H_
 
 #include <cstdint>
 #include <vector>
@@ -15,7 +15,14 @@ constexpr std::uint32_t LOW_QUALITY_SAMPLE_RATE = 16000;
 constexpr std::uint32_t LOW_QUALITY_SAMPLE_BIT_WIDTH = sizeof(LowQualitySample) * 8;
 constexpr std::uint32_t LOW_QUALITY_SAMPLE_MAX = 32767;
 
-using DownsampleFunc = void(*)(LowQualityTrack*, const void*, double, std::uint32_t, std::uint32_t, std::uint32_t);
+using DownsampleFunc = void(*)(
+    LowQualityTrack*,
+    const void*,
+    double,
+    std::uint32_t,
+    std::uint32_t,
+    std::uint32_t
+);
 
 class Downsampler
 {
@@ -87,4 +94,4 @@ private:
     );
 };
 
-#endif // DOWNSAMPLER_H
+#endif // LIB_AUDIO_DOWNSAMPLER_H_

@@ -1,9 +1,9 @@
-#ifndef BYTE_CONTROL_H
-#define BYTE_CONTROL_H
+#ifndef LIB_AUDIO_BYTE_CONTROL_H_
+#define LIB_AUDIO_BYTE_CONTROL_H_
 
 #include <cstdint>
 
-#define GETINTX(T, cp, i)  (*(T *)((unsigned char *)(cp) + (i)))
+#define GETINTX(T, cp, i)  (*(T *)((unsigned char *)(cp) + (i))) // NOLINT [readability-casting]
 #define GETINT8(cp, i)          GETINTX(std::int8_t,  (cp), (i))
 #define GETINT16(cp, i)         GETINTX(std::int16_t, (cp), (i))
 #define GETINT32(cp, i)         GETINTX(std::int32_t, (cp), (i))
@@ -28,4 +28,4 @@
         ((size) == 4) ? (std::int64_t)GETINT32((cp), (i)) * (1LL << 32) : \
                         (std::int64_t)GETINT64((cp), (i)) )
 
-#endif // BYTE_CONTROL_H
+#endif // LIB_AUDIO_BYTE_CONTROL_H_

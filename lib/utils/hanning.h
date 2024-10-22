@@ -1,5 +1,5 @@
-#ifndef HANNING_H
-#define HANNING_H
+#ifndef LIB_UTILS_HANNING_H_
+#define LIB_UTILS_HANNING_H_
 
 constexpr double HANNIG_MATRIX[] =
     {
@@ -2053,4 +2053,4 @@ constexpr double HANNIG_MATRIX[] =
         0.0000023508
 };
 
-#endif // HANNING_H
+#endif // LIB_UTILS_HANNING_H_

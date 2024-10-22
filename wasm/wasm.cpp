@@ -1,5 +1,4 @@
 #include <emscripten/emscripten.h>
-#include <iostream>
 #include <vibra.h>
 
 #ifdef __cplusplus

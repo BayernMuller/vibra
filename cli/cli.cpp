@@ -1,16 +1,16 @@
+#include "../cli/cli.h"
+#include <curl/curl.h>
 #include <iostream>
 #include <fstream>
-#include <curl/curl.h>
-#include "cli.h"
+#include <vector>
 #include "args/args.hxx"
 
-static std::string read_buffer;
+static std::string read_buffer; // NOLINT
 
-std::size_t writeCallback(void* contents, size_t size, size_t nmemb, void* userp)
+std::size_t writeCallback(void* contents, size_t size, size_t nmemb, void*)
 {
-    (void)userp; // suppress warning (unused parameter)
     std::size_t realsize = size * nmemb;
-    read_buffer.append((char*)contents, realsize);
+    read_buffer.append(reinterpret_cast<char*>(contents), realsize);
     return realsize;
 }
 
@@ -28,23 +28,25 @@ int CLI::Run(int argc, char** argv)
     parser.helpParams.showValueName = false;
     parser.helpParams.optionsString = "Options:";
     parser.helpParams.proglineOptions = "{COMMAND} [OPTIONS]";
-    
+
     args::Group actions(parser, "Commands:", args::Group::Validators::Xor);
-    args::Flag fingerprint_only(actions, "fingerprint", "Generate a fingerprint", {'F', "fingerprint"});
+    args::Flag fingerprint_only(actions, "fingerprint",
+        "Generate a fingerprint", {'F', "fingerprint"});
     args::Flag recognize(actions, "recognize", "Recognize a song", {'R', "recognize"});
     args::HelpFlag help(actions, "help", "Display this help menu", {'h', "help"});
-   
+
     args::Group sources(parser, "Sources:", args::Group::Validators::Xor);
 
     args::Group file_sources(sources, "File sources:", args::Group::Validators::Xor);
-    args::ValueFlag<std::string> music_file(file_sources, "file", "FFmpeg required for non-wav files", {'f', "file"});
-    
+    args::ValueFlag<std::string> music_file(file_sources, "file",
+        "FFmpeg required for non-wav files", {'f', "file"});
+
     args::Group raw_sources(sources, "Raw PCM sources:", args::Group::Validators::All);
     args::ValueFlag<int> chunk_seconds(raw_sources, "seconds", "Chunk seconds", {'s', "seconds"});
     args::ValueFlag<int> sample_rate(raw_sources, "rate", "Sample rate", {'r', "rate"});
     args::ValueFlag<int> channels(raw_sources, "channels", "Channels", {'c', "channels"});
     args::ValueFlag<int> bits_per_sample(raw_sources, "bits", "Bits per sample", {'b', "bits"});
-    
+
     args::Group source_type(raw_sources, "Source type:", args::Group::Validators::AtMostOne);
     args::Flag signed_pcm(source_type, "signed", "Signed PCM (default)", {'S', "signed"});
     args::Flag float_pcm(source_type, "float", "Float PCM", {'D', "float"});
@@ -87,9 +89,9 @@ int CLI::Run(int argc, char** argv)
     else
     {
         std::cerr << "Invalid arguments" << std::endl;
-        return 1;   
+        return 1;
     }
-    
+
     if (fingerprint_only)
     {
         std::cout << fingerprint->uri << std::endl;
@@ -119,9 +121,21 @@ Fingerprint* CLI::getFingerprintFromStdin(int chunk_seconds, int sample_rate,
     std::cin.read(buffer.data(), bytes);
     if (is_signed)
     {
-        return vibra_get_fingerprint_from_signed_pcm(buffer.data(), bytes, sample_rate, bits_per_sample, channels);
+        return vibra_get_fingerprint_from_signed_pcm(
+            buffer.data(),
+            bytes,
+            sample_rate,
+            bits_per_sample,
+            channels
+        );
     }
-    return vibra_get_fingerprint_from_float_pcm(buffer.data(), bytes, sample_rate, bits_per_sample, channels);
+    return vibra_get_fingerprint_from_float_pcm(
+        buffer.data(),
+        bytes,
+        sample_rate,
+        bits_per_sample,
+        channels
+    );
 }
 
 std::string CLI::getMetadataFromShazam(const Fingerprint* fingerprint)
@@ -133,7 +147,7 @@ std::string CLI::getMetadataFromShazam(const Fingerprint* fingerprint)
     CURL* curl = curl_easy_init();
     read_buffer.clear();
 
-    if (curl) 
+    if (curl)
     {
         struct curl_slist* headers = nullptr;
         headers = curl_slist_append(headers, "Accept-Encoding: gzip, deflate, br");
@@ -148,19 +162,26 @@ std::string CLI::getMetadataFromShazam(const Fingerprint* fingerprint)
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &read_buffer);
-        
+
         curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "gzip, deflate, br");
         curl_easy_setopt(curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-        
+
         CURLcode res = curl_easy_perform(curl);
-        if (res != CURLE_OK) 
+        if (res != CURLE_OK)
         {
             std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
         }
 
-        long http_code = 0;
+        long http_code = 0; // NOLINT 
+        /*
+        Jayden:
+        
+        I don't know why, if type of http_code is std::int32_t,
+        it will cause a double free corrupt error. 
+        */
+
         curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
-        if (http_code != 200) 
+        if (http_code != 200)
         {
             std::cerr << "HTTP code: " << http_code << std::endl;
         }

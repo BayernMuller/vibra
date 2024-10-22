@@ -1,8 +1,10 @@
-#include "signature_generator.h"
-#include "../utils/hanning.h"
+#include "algorithm/signature_generator.h"
 #include <algorithm>
 #include <numeric>
 #include <iostream>
+#include <utility>
+#include <list>
+#include "utils/hanning.h"
 
 SignatureGenerator::SignatureGenerator()
     : mInputPendingProcessing()
@@ -28,16 +30,17 @@ Signature SignatureGenerator::GetNextSignature()
         throw std::runtime_error("Not enough input to generate signature");
     }
 
+    double num_samples = static_cast<double>(mNextSignature.NumberOfSamples());
     while (mInputPendingProcessing.size() - mSampleProcessed >= 128 &&
-        ((double)mNextSignature.NumberOfSamples() / mNextSignature.SampleRate() < mMaxTimeSeconds ||
-        mNextSignature.SumOfPeaksLength() < MAX_PEAKS))
+        (num_samples / mNextSignature.SampleRate() < mMaxTimeSeconds ||
+         mNextSignature.SumOfPeaksLength() < MAX_PEAKS))
     {
         LowQualityTrack input(mInputPendingProcessing.begin() + mSampleProcessed,
             mInputPendingProcessing.begin() + mSampleProcessed + 128);
-        
+
         processInput(input);
         mSampleProcessed += 128;
-
+        num_samples = static_cast<double>(mNextSignature.NumberOfSamples());
     }
 
     Signature result = std::move(mNextSignature);
@@ -68,10 +71,13 @@ void SignatureGenerator::doFFT(const LowQualityTrack& input)
 
     fft::RealArray excerpt_from_ring_buffer(2048, 0.0);
 
-    std::copy(mRingBufferOfSamples.begin() + mRingBufferOfSamples.Position(), mRingBufferOfSamples.end(),
+    std::copy(mRingBufferOfSamples.begin() + mRingBufferOfSamples.Position(),
+        mRingBufferOfSamples.end(),
         excerpt_from_ring_buffer.begin());
 
-    std::copy(mRingBufferOfSamples.begin(), mRingBufferOfSamples.begin() + mRingBufferOfSamples.Position(),
+    std::copy(
+        mRingBufferOfSamples.begin(),
+        mRingBufferOfSamples.begin() + mRingBufferOfSamples.Position(),
         excerpt_from_ring_buffer.begin() + 2048 - mRingBufferOfSamples.Position());
 
     for (int i = 0; i < 2048; ++i)
@@ -96,7 +102,7 @@ void SignatureGenerator::doPeakSpreadingAndRecoginzation()
 void SignatureGenerator::doPeakSpreading()
 {
     auto spread_last_fft = mFFTOutputs[mFFTOutputs.Position() - 1];
-    
+
     for (auto position = 0u; position < 1025; ++position)
     {
         if (position < 1023)
@@ -104,12 +110,15 @@ void SignatureGenerator::doPeakSpreading()
             spread_last_fft[position] = *std::max_element(spread_last_fft.begin() + position,
                 spread_last_fft.begin() + position + 3);
         }
-            
+
         auto max_value = spread_last_fft[position];
         for (auto former_fft_num : {-1, -3, -6})
         {
-            auto& former_fft_ouput = mSpreadFFTsOutput[(mSpreadFFTsOutput.Position() + former_fft_num) % mSpreadFFTsOutput.Size()];
-            former_fft_ouput[position] = max_value = std::max(max_value, former_fft_ouput[position]);
+            auto& former_fft_ouput = mSpreadFFTsOutput[
+                (mSpreadFFTsOutput.Position() + former_fft_num) % mSpreadFFTsOutput.Size()
+            ];
+            former_fft_ouput[position] = max_value =
+                std::max(max_value, former_fft_ouput[position]);
         }
     }
     mSpreadFFTsOutput.Append(spread_last_fft);
@@ -118,8 +127,10 @@ void SignatureGenerator::doPeakSpreading()
 void SignatureGenerator::doPeakRecognition()
 {
     const auto& fft_minus_46 = mFFTOutputs[(mFFTOutputs.Position() - 46) % mFFTOutputs.Size()];
-    const auto& fft_minus_49 = mSpreadFFTsOutput[(mSpreadFFTsOutput.Position() - 49) % mSpreadFFTsOutput.Size()];
+    const auto& fft_minus_49 = mSpreadFFTsOutput[
+        (mSpreadFFTsOutput.Position() - 49) % mSpreadFFTsOutput.Size()];
 
+    auto other_offsets = {-53, -45, 165, 172, 179, 186, 193, 200, 214, 221, 228, 235, 242, 249};
     for (auto bin_position = 10u; bin_position < 1025; ++bin_position)
     {
         if (fft_minus_46[bin_position] >= 1.0 / 64.0 &&
@@ -135,25 +146,32 @@ void SignatureGenerator::doPeakRecognition()
             if (fft_minus_46[bin_position] > max_neighbor_in_fft_minus_49)
             {
                 auto max_neighbor_in_other_adjacent_ffts = max_neighbor_in_fft_minus_49;
-                for (auto other_offset : {-53, -45, 165, 172, 179, 186, 193, 200, 214, 221, 228, 235, 242, 249})
+                for (auto other_offset : other_offsets)
                 {
                     max_neighbor_in_other_adjacent_ffts = std::max(
                         max_neighbor_in_other_adjacent_ffts,
-                        mSpreadFFTsOutput[(mSpreadFFTsOutput.Position() + other_offset) % mSpreadFFTsOutput.Size()][bin_position -1]);
+                        mSpreadFFTsOutput[(mSpreadFFTsOutput.Position() + other_offset) %
+                        mSpreadFFTsOutput.Size()][bin_position - 1]);
                 }
 
                 if (fft_minus_46[bin_position] > max_neighbor_in_other_adjacent_ffts)
                 {
                     auto fft_number = mSpreadFFTsOutput.NumWritten() - 46;
-                    auto peak_magnitude = std::log(std::max(1.0l / 64, fft_minus_46[bin_position])) * 1477.3 + 6144;
-                    auto peak_magnitude_before = std::log(std::max(1.0l / 64, fft_minus_46[bin_position - 1])) * 1477.3 + 6144;
-                    auto peak_magnitude_after = std::log(std::max(1.0l / 64, fft_minus_46[bin_position + 1])) * 1477.3 + 6144;
+                    auto peak_magnitude = std::log(
+                        std::max(1.0l / 64, fft_minus_46[bin_position])) * 1477.3 + 6144;
+                    auto peak_magnitude_before = std::log(std::max(1.0l / 64,
+                        fft_minus_46[bin_position - 1])) * 1477.3 + 6144;
+                    auto peak_magnitude_after = std::log(std::max(1.0l / 64,
+                        fft_minus_46[bin_position + 1])) * 1477.3 + 6144;
 
-                    auto peak_variation_1 = peak_magnitude * 2 - peak_magnitude_before - peak_magnitude_after;
-                    auto peak_variation_2 = (peak_magnitude_after - peak_magnitude_before) * 32 / peak_variation_1;
+                    auto peak_variation_1 = peak_magnitude * 2 - peak_magnitude_before -
+                        peak_magnitude_after;
+                    auto peak_variation_2 = (peak_magnitude_after - peak_magnitude_before) *
+                        32 / peak_variation_1;
 
                     auto corrected_peak_frequency_bin = bin_position * 64.0 + peak_variation_2;
-                    auto frequency_hz = corrected_peak_frequency_bin * (16000.0l / 2. / 1024. / 64.);
+                    auto frequency_hz = corrected_peak_frequency_bin *
+                        (16000.0l / 2. / 1024. / 64.);
 
                     auto band = FrequancyBand();
                     if (frequency_hz < 250)
@@ -176,7 +194,10 @@ void SignatureGenerator::doPeakRecognition()
                     }
 
                     band_to_sound_peaks[band].push_back(
-                        FrequancyPeak(fft_number, int(peak_magnitude), int(corrected_peak_frequency_bin), LOW_QUALITY_SAMPLE_RATE)
+                        FrequancyPeak(
+                            fft_number, static_cast<std::int32_t>(peak_magnitude),
+                            static_cast<std::int32_t>(corrected_peak_frequency_bin),
+                            LOW_QUALITY_SAMPLE_RATE)
                     );
                 }
             }

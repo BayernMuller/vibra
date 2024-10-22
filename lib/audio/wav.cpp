@@ -1,11 +1,11 @@
-#include "wav.h"
+#include "audio/wav.h"
+#include <cmath>
 #include <cassert>
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <cmath>
 #include <cstring>
-#include <sstream>  
+#include <sstream>
 
 Wav Wav::FromFile(const std::string& wav_file_path)
 {
@@ -60,7 +60,7 @@ Wav::~Wav()
 {
 }
 
-Wav Wav::fromPCM(const char* raw_pcm, std::uint32_t raw_pcm_size, 
+Wav Wav::fromPCM(const char* raw_pcm, std::uint32_t raw_pcm_size,
                 AudioFormat audio_format, std::uint32_t sample_rate,
                 std::uint32_t sample_width, std::uint32_t channel_count)
 {
@@ -90,12 +90,12 @@ void Wav::readWavFileBuffer(std::istream& stream)
     {
         char subchunk_id[4];
         stream.read(subchunk_id, 4);
-    
+
         std::uint32_t subchunk_size;
         stream.read(reinterpret_cast<char*>(&subchunk_size), 4);
 
         if (strncmp(subchunk_id, "data", 4) == 0)
-        {    
+        {
             mDataSize = subchunk_size;
             mData.reset(new std::uint8_t[mDataSize]);
             stream.read(reinterpret_cast<char*>(mData.get()), mDataSize);
@@ -116,10 +116,9 @@ void Wav::readWavFileBuffer(std::istream& stream)
             return; // read wav successfully
         }
     }
-    
+
     if (!data_chunk_found || !fmt_chunk_found)
     {
         throw std::runtime_error("Invalid WAV file");
     }
 }
-

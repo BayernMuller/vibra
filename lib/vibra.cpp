@@ -23,19 +23,31 @@ Fingerprint* vibra_get_fingerprint_from_music_file(const char* music_file_path)
     return _get_fingerprint_from_low_quality_pcm(pcm);
 }
 
-Fingerprint* vibra_get_fingerprint_from_wav_data(const char* raw_wav, int wav_data_size)
+Fingerprint* vibra_get_fingerprint_from_wav_data(
+    const char* raw_wav,
+    int wav_data_size)
 {
     Wav wav = Wav::FromRawWav(raw_wav, wav_data_size);
     return _get_fingerprint_from_wav(wav);
 }
 
-Fingerprint* vibra_get_fingerprint_from_signed_pcm(const char* raw_pcm, int pcm_data_size, int sample_rate, int sample_width, int channel_count)
+Fingerprint* vibra_get_fingerprint_from_signed_pcm(
+    const char* raw_pcm,
+    int pcm_data_size,
+    int sample_rate,
+    int sample_width,
+    int channel_count)
 {
     Wav wav = Wav::FromSignedPCM(raw_pcm, pcm_data_size, sample_rate, sample_width, channel_count);
     return _get_fingerprint_from_wav(wav);
 }
 
-Fingerprint* vibra_get_fingerprint_from_float_pcm(const char* raw_pcm, int pcm_data_size, int sample_rate, int sample_width, int channel_count)
+Fingerprint* vibra_get_fingerprint_from_float_pcm(
+    const char* raw_pcm,
+    int pcm_data_size,
+    int sample_rate,
+    int sample_width,
+    int channel_count)
 {
     Wav wav = Wav::FromFloatPCM(raw_pcm, pcm_data_size, sample_rate, sample_width, channel_count);
     return _get_fingerprint_from_wav(wav);
@@ -85,7 +97,7 @@ Fingerprint* _get_fingerprint_from_low_quality_pcm(const LowQualityTrack& pcm)
     generator.SetMaxTimeSeconds(12);
 
     Signature signature = generator.GetNextSignature();
-    
+
     static Fingerprint fingerprint;
     fingerprint.uri = signature.GetBase64Uri();
     fingerprint.sample_ms = signature.NumberOfSamples() * 1000 / signature.SampleRate();

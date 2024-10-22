@@ -1,7 +1,5 @@
-#ifndef __CRC32_H__
-#define __CRC32_H__
-
-#include <iostream> 
+#ifndef LIB_UTILS_CRC32_H_
+#define LIB_UTILS_CRC32_H_
 
 namespace crc32
 {
@@ -10,7 +8,7 @@ namespace crc32
         std::uint32_t crc_table[256];
         std::uint32_t crc;
         std::size_t i, j;
-        
+
         for (i = 0; i < 256; i++)
         {
             crc = i;
@@ -18,14 +16,13 @@ namespace crc32
                 crc = crc & 1 ? (crc >> 1) ^ 0xEDB88320UL : crc >> 1;
             crc_table[i] = crc;
         };
-        
         crc = 0xFFFFFFFFUL;
-        
+
         while (len--)
             crc = crc_table[(crc ^ *buf++) & 0xFF] ^ (crc >> 8);
-        
+
         return crc ^ 0xFFFFFFFFUL;
     }
-}
+} // namespace crc32
 
-#endif // __CRC32_H__
+#endif // LIB_UTILS_CRC32_H_
