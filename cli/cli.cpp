@@ -158,14 +158,7 @@ std::string CLI::getMetadataFromShazam(const Fingerprint *fingerprint)
             std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
         }
 
-        long http_code = 0; // NOLINT
-        /*
-        Jayden:
-
-        I don't know why, if type of http_code is std::int32_t,
-        it will cause a double free corrupt error.
-        */
-
+        std::int64_t http_code = 0;
         curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
         if (http_code != 200)
         {
