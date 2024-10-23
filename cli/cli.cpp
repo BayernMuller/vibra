@@ -5,12 +5,11 @@
 #include <vector>
 #include "args/args.hxx"
 
-static std::string read_buffer; // NOLINT
-
-std::size_t writeCallback(void *contents, size_t size, size_t nmemb, void *)
+std::size_t writeCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
+    std::string *buffer = reinterpret_cast<std::string *>(userp);
     std::size_t realsize = size * nmemb;
-    read_buffer.append(reinterpret_cast<char *>(contents), realsize);
+    buffer->append(reinterpret_cast<char *>(contents), realsize);
     return realsize;
 }
 
@@ -131,7 +130,7 @@ std::string CLI::getMetadataFromShazam(const Fingerprint *fingerprint)
     std::string url = vibra_get_shazam_host();
 
     CURL *curl = curl_easy_init();
-    read_buffer.clear();
+    std::string read_buffer;
 
     if (curl)
     {
