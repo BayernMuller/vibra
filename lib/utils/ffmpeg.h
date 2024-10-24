@@ -25,16 +25,11 @@ class FFmpegWrapper
   private:
     static std::string getFFmpegPath();
     static bool isWindows();
-
-  private:
-    static std::string ffmpeg_path_;
 };
-
-std::string FFmpegWrapper::ffmpeg_path_; // NOLINT
 
 int FFmpegWrapper::ConvertToWav(const std::string &input_file, LowQualityTrack *pcm)
 {
-    std::string ffmpeg_path = FFmpegWrapper::getFFmpegPath();
+    static std::string ffmpeg_path = FFmpegWrapper::getFFmpegPath();
     if (ffmpeg_path.empty())
     {
         std::cerr << "FFmpeg not found on system. Please install FFmpeg or set the ";
@@ -76,15 +71,9 @@ int FFmpegWrapper::ConvertToWav(const std::string &input_file, LowQualityTrack *
 
 std::string FFmpegWrapper::getFFmpegPath()
 {
-    if (!FFmpegWrapper::ffmpeg_path_.empty())
-    {
-        return FFmpegWrapper::ffmpeg_path_;
-    }
-
     const char *ffmpeg_env = std::getenv(FFMPEG_PATH_ENV);
     if (ffmpeg_env)
     {
-        FFmpegWrapper::ffmpeg_path_ = ffmpeg_env;
         return ffmpeg_env;
     }
 
@@ -99,7 +88,6 @@ std::string FFmpegWrapper::getFFmpegPath()
             std::string full_path = token + "/" + ffmpeg_path;
             if (std::ifstream(full_path).good())
             {
-                FFmpegWrapper::ffmpeg_path_ = full_path;
                 return full_path;
             }
         }
