@@ -170,28 +170,28 @@ void SignatureGenerator::doPeakRecognition()
                     auto frequency_hz =
                         corrected_peak_frequency_bin * (16000.0l / 2. / 1024. / 64.);
 
-                    auto band = FrequancyBand();
+                    auto band = FrequencyBand();
                     if (frequency_hz < 250)
                         continue;
                     else if (frequency_hz < 520)
-                        band = FrequancyBand::_250_520;
+                        band = FrequencyBand::_250_520;
                     else if (frequency_hz < 1450)
-                        band = FrequancyBand::_520_1450;
+                        band = FrequencyBand::_520_1450;
                     else if (frequency_hz < 3500)
-                        band = FrequancyBand::_1450_3500;
+                        band = FrequencyBand::_1450_3500;
                     else if (frequency_hz <= 5500)
-                        band = FrequancyBand::_3500_5500;
+                        band = FrequencyBand::_3500_5500;
                     else
                         continue;
 
-                    auto &band_to_sound_peaks = next_signature_.frequancy_band_to_peaks();
+                    auto &band_to_sound_peaks = next_signature_.frequency_band_to_peaks();
                     if (band_to_sound_peaks.find(band) == band_to_sound_peaks.end())
                     {
-                        band_to_sound_peaks[band] = std::list<FrequancyPeak>();
+                        band_to_sound_peaks[band] = std::list<FrequencyPeak>();
                     }
 
                     band_to_sound_peaks[band].push_back(
-                        FrequancyPeak(fft_number, static_cast<std::int32_t>(peak_magnitude),
+                        FrequencyPeak(fft_number, static_cast<std::int32_t>(peak_magnitude),
                                       static_cast<std::int32_t>(corrected_peak_frequency_bin),
                                       LOW_QUALITY_SAMPLE_RATE));
                 }
