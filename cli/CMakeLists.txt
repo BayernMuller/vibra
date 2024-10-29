@@ -1,8 +1,20 @@
+# Fetch the args header-only library
+include(FetchContent)
+FetchContent_Declare(
+    args
+    GIT_REPOSITORY https://github.com/Taywee/args.git
+    GIT_TAG        master
+)
+FetchContent_Populate(args)
+
 # Add the executable for the CLI
 add_executable(vibra
     main.cpp
     cli.cpp
 )
+
+# Add the args include directory to the target
+target_include_directories(vibra PRIVATE ${args_SOURCE_DIR})
 
 # Find libcurl
 find_library(CURL_LIBRARY NAMES curl)
