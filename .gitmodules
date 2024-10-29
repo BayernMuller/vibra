@@ -1,3 +1,0 @@
-[submodule "cli/args"]
-	path = cli/args
-	url = https://github.com/Taywee/args
