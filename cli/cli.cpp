@@ -3,7 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
-#include "args/args.hxx"
+#include <args.hxx>
 
 std::size_t writeCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
