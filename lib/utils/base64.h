@@ -8,7 +8,7 @@ namespace base64
 static const char base64_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                    "abcdefghijklmnopqrstuvwxyz"
                                    "0123456789+/";
-std::string encode(const char *bytes_to_encode, unsigned int in_len)
+inline std::string encode(const char *bytes_to_encode, unsigned int in_len)
 {
     std::string ret;
     int i = 0;

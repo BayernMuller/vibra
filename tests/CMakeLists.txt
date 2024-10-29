@@ -7,8 +7,12 @@ find_library(GTEST_LIBRARY NAMES gtest REQUIRED)
 find_library(GTEST_MAIN_LIBRARY NAMES gtest_main REQUIRED)
 
 add_executable(all_tests
-    ${CMAKE_CURRENT_SOURCE_DIR}/lib_test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/unit_test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../lib/algorithm/frequency.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../lib/algorithm/signature.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../lib/algorithm/signature_generator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../lib/audio/wav.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../lib/audio/downsampler.cpp
 )
 
 target_include_directories(all_tests PRIVATE 
