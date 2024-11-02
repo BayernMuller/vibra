@@ -1,5 +1,5 @@
-#ifndef LIB_COMMUNICATION_USER_AGENTS_H_
-#define LIB_COMMUNICATION_USER_AGENTS_H_
+#ifndef CLI_COMMUNICATION_USER_AGENTS_H_
+#define CLI_COMMUNICATION_USER_AGENTS_H_
 
 //
 // https://github.com/SaswatPadhi/FlashProfileDemo/blob/c1e3f05d09f6443568a606dc0a439d6ebb057ae1/tests/hetero/user_agents.json
@@ -109,4 +109,4 @@ static constexpr const char *USER_AGENTS[] = {
 
 constexpr unsigned int USER_AGENTS_SIZE = sizeof(USER_AGENTS) / sizeof(USER_AGENTS[0]);
 
-#endif // LIB_COMMUNICATION_USER_AGENTS_H_
+#endif // CLI_COMMUNICATION_USER_AGENTS_H_

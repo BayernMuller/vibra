@@ -2,7 +2,6 @@
 #include "algorithm/signature_generator.h"
 #include "audio/downsampler.h"
 #include "audio/wav.h"
-#include "communication/shazam.h"
 #include "utils/ffmpeg.h"
 
 Fingerprint *_get_fingerprint_from_wav(const Wav &wav);
@@ -53,27 +52,6 @@ const char *vibra_get_uri_from_fingerprint(Fingerprint *fingerprint)
 unsigned int vibra_get_sample_ms_from_fingerprint(Fingerprint *fingerprint)
 {
     return fingerprint->sample_ms;
-}
-
-const char *vibra_get_shazam_request_json(const Fingerprint *fingerprint)
-{
-    static std::string content;
-    content = Shazam::GetRequestContent(fingerprint->uri, fingerprint->sample_ms);
-    return content.c_str();
-}
-
-const char *vibra_get_shazam_host()
-{
-    static std::string host;
-    host = Shazam::GetShazamHost();
-    return host.c_str();
-}
-
-const char *vibra_get_shazam_random_user_agent()
-{
-    static std::string user_agent;
-    user_agent = Shazam::GetUserAgent();
-    return user_agent.c_str();
 }
 
 Fingerprint *_get_fingerprint_from_wav(const Wav &wav)
