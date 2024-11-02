@@ -89,34 +89,6 @@ const char *vibra_get_uri_from_fingerprint(Fingerprint *fingerprint);
  * @note This function is thread-unsafe.
  */
 unsigned int vibra_get_sample_ms_from_fingerprint(Fingerprint *fingerprint);
-
-/**
- * @brief Generate a Shazam request JSON from a fingerprint.
- *
- * @param fingerprint Pointer to the fingerprint.
- * @return const char* The Shazam request JSON as a C-string.
- *
- * @note This function is thread-unsafe and the returned pointer should not be freed.
- */
-const char *vibra_get_shazam_request_json(const Fingerprint *fingerprint);
-
-/**
- * @brief Get the Shazam host URL.
- *
- * @return const char* The Shazam host URL as a C-string.
- *
- * @note This function is thread-unsafe and the returned pointer should not be freed.
- */
-const char *vibra_get_shazam_host();
-
-/**
- * @brief Get a random Shazam user agent string.
- *
- * @return const char* A random Shazam user agent as a C-string.
- *
- * @note This function is thread-unsafe and the returned pointer should not be freed.
- */
-const char *vibra_get_shazam_random_user_agent();
 } // extern "C"
 
 #endif // INCLUDE_VIBRA_H_

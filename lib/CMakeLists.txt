@@ -6,7 +6,6 @@ set(LIBVIBRA_SOURCES
     algorithm/signature_generator.cpp
     audio/wav.cpp
     audio/downsampler.cpp
-    communication/shazam.cpp
 )
 
 # Add shared and static libraries for libvibra
