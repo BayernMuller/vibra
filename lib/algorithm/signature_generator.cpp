@@ -8,6 +8,7 @@
 
 SignatureGenerator::SignatureGenerator()
     : input_pending_processing_(), sample_processed_(0), max_time_seconds_(3.1),
+      fft_object_(2048),
       next_signature_(16000, 0), samples_ring_buffer_(2048, 0),
       fft_outputs_(256, fft::RealArray(1025, 0.0)),
       spread_ffts_output_(256, fft::RealArray(1025, 0.0))
