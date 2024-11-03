@@ -7,6 +7,7 @@
 #include "utils/ring_buffer.h"
 
 constexpr auto MAX_PEAKS = 255u;
+constexpr auto FFT_BUFFER_CHUNK_SIZE = 2048u;
 
 class SignatureGenerator
 {
