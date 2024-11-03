@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-enum class FrequancyBand
+enum class FrequencyBand
 {
     _0_150 = -1,
     _250_520,
@@ -12,12 +12,12 @@ enum class FrequancyBand
     _3500_5500,
 };
 
-class FrequancyPeak
+class FrequencyPeak
 {
-  public:
-    FrequancyPeak(std::uint32_t fft_pass_number, std::uint32_t peak_magnitude,
+public:
+    FrequencyPeak(std::uint32_t fft_pass_number, std::uint32_t peak_magnitude,
                   std::uint32_t corrected_peak_frequency_bin, std::uint32_t sample_rate);
-    ~FrequancyPeak();
+    ~FrequencyPeak();
 
     inline std::uint32_t fft_pass_number() const
     {
@@ -35,7 +35,7 @@ class FrequancyPeak
     inline double ComputeAmplitudePCM() const;
     inline double ComputeElapsedSeconds() const;
 
-  private:
+private:
     std::uint32_t fft_pass_number_;
     std::uint32_t peak_magnitude_;
     std::uint32_t corrected_peak_frequency_bin_;

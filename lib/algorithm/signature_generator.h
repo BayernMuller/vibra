@@ -6,11 +6,12 @@
 #include "utils/fft.h"
 #include "utils/ring_buffer.h"
 
-constexpr auto MAX_PEAKS = 255u;
+constexpr std::size_t MAX_PEAKS = 255u;
+constexpr std::size_t FFT_BUFFER_CHUNK_SIZE = 2048u;
 
 class SignatureGenerator
 {
-  public:
+public:
     SignatureGenerator();
     void FeedInput(const LowQualityTrack &input);
     Signature GetNextSignature();
@@ -25,7 +26,7 @@ class SignatureGenerator
         max_time_seconds_ = max_time_seconds;
     }
 
-  private:
+private:
     void processInput(const LowQualityTrack &input);
     void doFFT(const LowQualityTrack &input);
     void doPeakSpreadingAndRecoginzation();
@@ -33,11 +34,12 @@ class SignatureGenerator
     void doPeakRecognition();
     void resetSignatureGenerater();
 
-  private:
+private:
     LowQualityTrack input_pending_processing_;
     std::uint32_t sample_processed_;
     double max_time_seconds_;
 
+    fft::FFT fft_object_;
     Signature next_signature_;
     RingBuffer<std::int16_t> samples_ring_buffer_;
     RingBuffer<fft::RealArray> fft_outputs_;

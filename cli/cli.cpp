@@ -1,17 +1,9 @@
 #include "../cli/cli.h"
-#include <curl/curl.h>
 #include <fstream>
 #include <iostream>
 #include <vector>
-#include "args/args.hxx"
-
-std::size_t writeCallback(void *contents, size_t size, size_t nmemb, void *userp)
-{
-    std::string *buffer = reinterpret_cast<std::string *>(userp);
-    std::size_t realsize = size * nmemb;
-    buffer->append(reinterpret_cast<char *>(contents), realsize);
-    return realsize;
-}
+#include <args.hxx>
+#include "communication/shazam.h"
 
 int CLI::Run(int argc, char **argv)
 {
@@ -93,7 +85,7 @@ int CLI::Run(int argc, char **argv)
     }
     else if (recognize)
     {
-        std::cout << getMetadataFromShazam(fingerprint) << std::endl;
+        std::cout << Shazam::Recognize(fingerprint) << std::endl;
     }
     return 0;
 }
@@ -121,50 +113,4 @@ Fingerprint *CLI::getFingerprintFromStdin(int chunk_seconds, int sample_rate, in
     }
     return vibra_get_fingerprint_from_float_pcm(buffer.data(), bytes, sample_rate, bits_per_sample,
                                                 channels);
-}
-
-std::string CLI::getMetadataFromShazam(const Fingerprint *fingerprint)
-{
-    auto content = vibra_get_shazam_request_json(fingerprint);
-    auto user_agent = vibra_get_shazam_random_user_agent();
-    std::string url = vibra_get_shazam_host();
-
-    CURL *curl = curl_easy_init();
-    std::string read_buffer;
-
-    if (curl)
-    {
-        struct curl_slist *headers = nullptr;
-        headers = curl_slist_append(headers, "Accept-Encoding: gzip, deflate, br");
-        headers = curl_slist_append(headers, "Accept: */*");
-        headers = curl_slist_append(headers, "Connection: keep-alive");
-        headers = curl_slist_append(headers, "Content-Type: application/json");
-        headers = curl_slist_append(headers, "Content-Language: en_US");
-        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl, CURLOPT_POST, 1L);
-        curl_easy_setopt(curl, CURLOPT_USERAGENT, user_agent);
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, content);
-        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &read_buffer);
-
-        curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "gzip, deflate, br");
-        curl_easy_setopt(curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-
-        CURLcode res = curl_easy_perform(curl);
-        if (res != CURLE_OK)
-        {
-            std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
-        }
-
-        std::int64_t http_code = 0;
-        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
-        if (http_code != 200)
-        {
-            std::cerr << "HTTP code: " << http_code << std::endl;
-        }
-        curl_slist_free_all(headers);
-        curl_easy_cleanup(curl);
-    }
-    return read_buffer;
 }

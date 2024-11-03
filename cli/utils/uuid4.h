@@ -1,5 +1,5 @@
-#ifndef LIB_UTILS_UUID4_H_
-#define LIB_UTILS_UUID4_H_
+#ifndef CLI_UTILS_UUID4_H_
+#define CLI_UTILS_UUID4_H_
 
 #include <iostream>
 #include <random>
@@ -47,4 +47,4 @@ std::string generate()
 }
 } // namespace uuid4
 
-#endif // LIB_UTILS_UUID4_H_
+#endif // CLI_UTILS_UUID4_H_

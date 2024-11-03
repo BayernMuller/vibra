@@ -5,7 +5,7 @@
 
 template <typename T> class RingBuffer : private std::vector<T>
 {
-  public:
+public:
     explicit RingBuffer(std::size_t size, T &&default_value = T());
     virtual ~RingBuffer();
 
@@ -34,7 +34,7 @@ template <typename T> class RingBuffer : private std::vector<T>
         return std::vector<T>::end();
     }
 
-  private:
+private:
     std::uint32_t num_written_;
     std::uint32_t position_;
 };

@@ -18,11 +18,11 @@ constexpr int EXPECTED_DURATION = 5 * 60; // 5 minutes
 
 class FFmpegWrapper
 {
-  public:
+public:
     FFmpegWrapper() = delete;
     static int ConvertToWav(const std::string &input_file, LowQualityTrack *pcm);
 
-  private:
+private:
     static std::string getFFmpegPath();
     static bool isWindows();
 };

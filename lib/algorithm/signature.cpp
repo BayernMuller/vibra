@@ -14,13 +14,13 @@ void Signature::Reset(std::uint32_t sampleRate, std::uint32_t num_samples)
 {
     sample_rate_ = sampleRate;
     num_samples_ = num_samples;
-    frequancy_band_to_peaks_.clear();
+    frequency_band_to_peaks_.clear();
 }
 
 std::uint32_t Signature::SumOfPeaksLength() const
 {
     std::uint32_t sum = 0;
-    for (const auto &pair : frequancy_band_to_peaks_)
+    for (const auto &pair : frequency_band_to_peaks_)
     {
         sum += pair.second.size();
     }
@@ -37,7 +37,7 @@ std::string Signature::EncodeBase64() const
     header.number_samples_plus_divided_sample_rate =
         static_cast<std::uint32_t>(num_samples_ + sample_rate_ * 0.24);
     std::stringstream contents;
-    for (const auto &pair : frequancy_band_to_peaks_)
+    for (const auto &pair : frequency_band_to_peaks_)
     {
         const auto &band = pair.first;
         const auto &peaks = pair.second;

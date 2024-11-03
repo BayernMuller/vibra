@@ -112,8 +112,8 @@
 
 
 #### Build
-* Clone repository **recursively** to include submodules.
-    * `git clone --recursive https://github.com/bayernmuller/vibra.git`
+* Clone vibra repository
+    * `git clone https://github.com/bayernmuller/vibra.git`
 
 * Run the following commands to build vibra:
     * `cd vibra`

@@ -6,14 +6,13 @@
 
 class CLI
 {
-  public:
+public:
     int Run(int argc, char **argv);
 
-  private:
+private:
     Fingerprint *getFingerprintFromMusicFile(const std::string &music_file);
     Fingerprint *getFingerprintFromStdin(int chunk_seconds, int sample_rate, int channels,
                                          int bits_per_sample, bool is_signed);
-    std::string getMetadataFromShazam(const Fingerprint *fingerprint);
 };
 
 #endif // CLI_CLI_H_
