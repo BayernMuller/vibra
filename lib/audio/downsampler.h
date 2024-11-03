@@ -20,11 +20,11 @@ using DownsampleFunc = void (*)(LowQualityTrack *, const void *, double, std::ui
 
 class Downsampler
 {
-  public:
+public:
     static LowQualityTrack GetLowQualityPCM(const Wav &wav, std::int32_t start_sec = 0,
                                             std::int32_t end_sec = -1);
 
-  private:
+private:
     static DownsampleFunc getDownsampleFunc(bool is_signed, std::uint32_t width,
                                             std::uint32_t channels);
 

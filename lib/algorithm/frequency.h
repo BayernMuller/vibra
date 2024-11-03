@@ -14,7 +14,7 @@ enum class FrequencyBand
 
 class FrequencyPeak
 {
-  public:
+public:
     FrequencyPeak(std::uint32_t fft_pass_number, std::uint32_t peak_magnitude,
                   std::uint32_t corrected_peak_frequency_bin, std::uint32_t sample_rate);
     ~FrequencyPeak();
@@ -35,7 +35,7 @@ class FrequencyPeak
     inline double ComputeAmplitudePCM() const;
     inline double ComputeElapsedSeconds() const;
 
-  private:
+private:
     std::uint32_t fft_pass_number_;
     std::uint32_t peak_magnitude_;
     std::uint32_t corrected_peak_frequency_bin_;

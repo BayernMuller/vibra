@@ -30,7 +30,7 @@ enum class AudioFormat
 
 class Wav
 {
-  public:
+public:
     Wav(Wav &&) = default;
     Wav(const Wav &) = delete;
     static Wav FromFile(const std::string &wav_file_path);
@@ -72,14 +72,14 @@ class Wav
         return data_;
     }
 
-  private:
+private:
     Wav() = default;
     static Wav fromPCM(const char *raw_pcm, std::uint32_t raw_pcm_size, AudioFormat audio_format,
                        std::uint32_t sample_rate, std::uint32_t sample_width,
                        std::uint32_t channel_count);
     void readWavFileBuffer(std::istream &stream);
 
-  private:
+private:
     WavHeader header_;
     FmtSubchunk fmt_;
     std::string wav_file_path_;

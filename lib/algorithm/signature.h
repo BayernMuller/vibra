@@ -32,7 +32,7 @@ __attribute__((packed));
 
 class Signature
 {
-  public:
+public:
     Signature(std::uint32_t sample_rate, std::uint32_t num_samples);
     ~Signature();
     void Reset(std::uint32_t sampleRate, std::uint32_t num_samples);
@@ -56,10 +56,10 @@ class Signature
     std::uint32_t SumOfPeaksLength() const;
     std::string EncodeBase64() const;
 
-  private:
+private:
     template <typename T>
     std::stringstream &write_little_endian(std::stringstream &stream, const T &&value,
-                                         size_t size = sizeof(T)) const
+                                           size_t size = sizeof(T)) const
     {
         for (size_t i = 0; i < size; ++i)
         {
@@ -68,7 +68,7 @@ class Signature
         return stream;
     }
 
-  private:
+private:
     std::uint32_t sample_rate_;
     std::uint32_t num_samples_;
     std::map<FrequencyBand, std::list<FrequencyPeak>> frequency_band_to_peaks_;

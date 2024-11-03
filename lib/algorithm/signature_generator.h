@@ -10,7 +10,7 @@ constexpr auto MAX_PEAKS = 255u;
 
 class SignatureGenerator
 {
-  public:
+public:
     SignatureGenerator();
     void FeedInput(const LowQualityTrack &input);
     Signature GetNextSignature();
@@ -25,7 +25,7 @@ class SignatureGenerator
         max_time_seconds_ = max_time_seconds;
     }
 
-  private:
+private:
     void processInput(const LowQualityTrack &input);
     void doFFT(const LowQualityTrack &input);
     void doPeakSpreadingAndRecoginzation();
@@ -33,7 +33,7 @@ class SignatureGenerator
     void doPeakRecognition();
     void resetSignatureGenerater();
 
-  private:
+private:
     LowQualityTrack input_pending_processing_;
     std::uint32_t sample_processed_;
     double max_time_seconds_;
