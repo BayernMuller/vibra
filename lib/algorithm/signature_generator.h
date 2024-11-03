@@ -38,6 +38,7 @@ private:
     std::uint32_t sample_processed_;
     double max_time_seconds_;
 
+    fft::FFT fft_object_;
     Signature next_signature_;
     RingBuffer<std::int16_t> samples_ring_buffer_;
     RingBuffer<fft::RealArray> fft_outputs_;

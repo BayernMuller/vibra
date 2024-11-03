@@ -14,7 +14,7 @@ using RealArray = std::vector<long double>;
 class FFT
 {
 public:
-    template <typename Iterable> static RealArray RFFT(const Iterable &input)
+    template <typename Iterable> RealArray RFFT(const Iterable &input)
     {
         // If input size is 0, return false.
         if (input.empty())
@@ -59,8 +59,12 @@ public:
 
         return real_output;
     }
-};
 
+    virtual ~FFT()
+    {
+        fftw_cleanup();
+    }
+};
 } // namespace fft
 
 #endif // LIB_UTILS_FFT_H_

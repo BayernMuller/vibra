@@ -80,7 +80,7 @@ void SignatureGenerator::doFFT(const LowQualityTrack &input)
         excerpt_from_ring_buffer[i] *= HANNIG_MATRIX[i];
     }
 
-    fft::RealArray real = fft::FFT::RFFT(excerpt_from_ring_buffer);
+    fft::RealArray real = fft_object_.RFFT(excerpt_from_ring_buffer);
     fft_outputs_.Append(real);
 }
 
