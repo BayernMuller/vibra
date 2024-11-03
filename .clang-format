@@ -4,9 +4,10 @@ Language:        Cpp
 # Style
 BasedOnStyle:    Microsoft
 
-# No indent for extern block and namespace
+# No indent for extern block, namespace, and access specifiers in class
 IndentExternBlock: NoIndent
 NamespaceIndentation: None
+AccessModifierOffset: -4
 
 # Header files order
 IncludeIsMainRegex: ".*" # 1. main file

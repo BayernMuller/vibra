@@ -13,7 +13,7 @@ using RealArray = std::vector<long double>;
 
 class FFT
 {
-  public:
+public:
     template <typename Iterable> static RealArray RFFT(const Iterable &input)
     {
         // If input size is 0, return false.
