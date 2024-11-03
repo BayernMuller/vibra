@@ -76,7 +76,7 @@ void SignatureGenerator::doFFT(const LowQualityTrack &input)
               excerpt_from_ring_buffer.begin() + FFT_BUFFER_CHUNK_SIZE -
                   samples_ring_buffer_.position());
 
-    for (int i = 0; i < FFT_BUFFER_CHUNK_SIZE; ++i)
+    for (std::size_t i = 0; i < FFT_BUFFER_CHUNK_SIZE; ++i)
     {
         excerpt_from_ring_buffer[i] *= HANNIG_MATRIX[i];
     }
