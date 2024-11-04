@@ -4,6 +4,8 @@
 #include "audio/wav.h"
 #include "utils/ffmpeg.h"
 
+constexpr std::uint32_t MAX_DURATION_SECONDS = 12;
+
 Fingerprint *_get_fingerprint_from_wav(const Wav &wav);
 
 Fingerprint *_get_fingerprint_from_low_quality_pcm(const LowQualityTrack &pcm);
@@ -17,8 +19,8 @@ Fingerprint *vibra_get_fingerprint_from_music_file(const char *music_file_path)
         return _get_fingerprint_from_wav(wav);
     }
 
-    LowQualityTrack pcm;
-    ffmpeg::FFmpegWrapper::ConvertToWav(path, &pcm);
+    LowQualityTrack pcm =
+        ffmpeg::FFmpegWrapper::ConvertToLowQaulityPcm(path, 0, MAX_DURATION_SECONDS);
     return _get_fingerprint_from_low_quality_pcm(pcm);
 }
 
@@ -64,7 +66,7 @@ Fingerprint *_get_fingerprint_from_low_quality_pcm(const LowQualityTrack &pcm)
 {
     SignatureGenerator generator;
     generator.FeedInput(pcm);
-    generator.set_max_time_seconds(12);
+    generator.set_max_time_seconds(MAX_DURATION_SECONDS);
 
     Signature signature = generator.GetNextSignature();
 
