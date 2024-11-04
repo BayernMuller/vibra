@@ -14,20 +14,21 @@ namespace ffmpeg
 
 constexpr const char *DEFAULT_FFMPEG_PATHS[] = {"ffmpeg", "ffmpeg.exe"};
 constexpr const char FFMPEG_PATH_ENV[] = "FFMPEG_PATH";
-constexpr int EXPECTED_DURATION = 5 * 60; // 5 minutes
 
 class FFmpegWrapper
 {
 public:
     FFmpegWrapper() = delete;
-    static int ConvertToWav(const std::string &input_file, LowQualityTrack *pcm);
+    static LowQualityTrack ConvertToLowQaulityPcm(
+        std::string input_file, std::uint32_t start_seconds, std::uint32_t duration_seconds);
 
 private:
     static std::string getFFmpegPath();
     static bool isWindows();
 };
 
-int FFmpegWrapper::ConvertToWav(const std::string &input_file, LowQualityTrack *pcm)
+LowQualityTrack FFmpegWrapper::ConvertToLowQaulityPcm(
+    std::string input_file, std::uint32_t start_seconds, std::uint32_t duration_seconds)
 {
     static std::string ffmpeg_path = FFmpegWrapper::getFFmpegPath();
     if (ffmpeg_path.empty())
@@ -46,7 +47,10 @@ int FFmpegWrapper::ConvertToWav(const std::string &input_file, LowQualityTrack *
        << "pcm_s" << LOW_QUALITY_SAMPLE_BIT_WIDTH << "le";
     ss << " -ar " << LOW_QUALITY_SAMPLE_RATE;
     ss << " -ac " << 1;
-    ss << " - 2>/dev/null"; // suppress std
+    ss << " -ss " << start_seconds;
+    ss << " -t " << duration_seconds;
+    ss << " -"; // stdout
+    ss << " 2>/dev/null"; // suppress std
 
     std::FILE *pipe = popen(ss.str().c_str(), "r");
     if (!pipe)
@@ -57,16 +61,21 @@ int FFmpegWrapper::ConvertToWav(const std::string &input_file, LowQualityTrack *
     std::array<std::int16_t, 4096> buffer;
     size_t bytes_read;
 
-    pcm->reserve(EXPECTED_DURATION * LOW_QUALITY_SAMPLE_RATE);
+    LowQualityTrack pcm;
+    pcm.reserve(duration_seconds * LOW_QUALITY_SAMPLE_RATE);
 
     while ((bytes_read = fread(buffer.data(), 1, buffer.size(), pipe)) != 0)
     {
-        pcm->insert(pcm->end(), buffer.begin(),
-                    buffer.begin() + (bytes_read / sizeof(LowQualitySample)));
+        pcm.insert(pcm.end(), buffer.begin(),
+                   buffer.begin() + (bytes_read / sizeof(LowQualitySample)));
     }
 
-    pclose(pipe);
-    return 0;
+    int exit_code = pclose(pipe);
+    if (exit_code != 0)
+    {
+        throw std::runtime_error("PCM Conversion Failed: " + std::to_string(exit_code));
+    }
+    return pcm;
 }
 
 std::string FFmpegWrapper::getFFmpegPath()

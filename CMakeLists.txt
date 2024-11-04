@@ -4,8 +4,14 @@ project(vibra)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -pedantic -O2 -fno-strict-aliasing")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -pedantic -fno-strict-aliasing")
 include_directories(${CMAKE_SOURCE_DIR}/lib)
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
+endif()
 
 # build verbose output
 # set(CMAKE_VERBOSE_MAKEFILE ON)
