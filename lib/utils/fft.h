@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <algorithm>
+#include <cassert>
 #include <fftw3.h> // NOLINT [include_order]
 #include <memory>
 #include <vector>
@@ -32,11 +33,8 @@ public:
 
     template <typename Iterable> FFTOutput RFFT(const Iterable &input)
     {
-        if (input.size() != INPUT_SIZE)
-        {
-            throw std::invalid_argument(
-                "Input size must be equal to the input size specified in the constructor");
-        }
+        assert(input.size() == INPUT_SIZE &&
+               "Input size must be equal to the input size specified in the constructor");
 
         FFTOutput real_output;
 
