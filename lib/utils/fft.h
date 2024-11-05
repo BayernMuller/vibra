@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <algorithm>
+#include <cassert>
 #include <fftw3.h> // NOLINT [include_order]
 #include <memory>
 #include <vector>
@@ -10,17 +11,19 @@
 namespace fft
 {
 
-using RealArray = std::vector<long double>;
-
+template <int INPUT_SIZE>
 class FFT
 {
 public:
-    explicit FFT(std::uint32_t input_size)
-        : input_size_(input_size),
-          input_data_buffer_(fftw_alloc_real(input_size), fftw_free),
-          output_data_buffer_(fftw_alloc_complex(input_size / 2 + 1), fftw_free)
+    constexpr static const int OUTPUT_SIZE = INPUT_SIZE / 2 + 1;
+    using FFTOutput = std::array<long double, OUTPUT_SIZE>;
+
+public:
+    FFT()
+        : input_data_buffer_(fftw_alloc_real(INPUT_SIZE), fftw_free),
+          output_data_buffer_(fftw_alloc_complex(OUTPUT_SIZE), fftw_free)
     {
-        fftw_plan_ = fftw_plan_dft_r2c_1d(input_size, input_data_buffer_.get(),
+        fftw_plan_ = fftw_plan_dft_r2c_1d(INPUT_SIZE, input_data_buffer_.get(),
                                           output_data_buffer_.get(), FFTW_ESTIMATE);
     }
     FFT(const FFT &) = delete;
@@ -28,18 +31,15 @@ public:
     FFT(FFT &&) = delete;
     FFT &operator=(FFT &&) = delete;
 
-    template <typename Iterable> RealArray RFFT(const Iterable &input)
+    template <typename Iterable> FFTOutput RFFT(const Iterable &input)
     {
-        if (input.size() != input_size_)
-        {
-            throw std::invalid_argument(
-                "Input size must be equal to the input size specified in the constructor");
-        }
+        assert(input.size() == INPUT_SIZE &&
+               "Input size must be equal to the input size specified in the constructor");
 
-        RealArray real_output(input_size_ / 2 + 1);
+        FFTOutput real_output;
 
         // Copy and convert the input data to double
-        for (std::size_t i = 0; i < input_size_; i++)
+        for (std::size_t i = 0; i < INPUT_SIZE; i++)
         {
             input_data_buffer_.get()[i] = static_cast<double>(input[i]);
         }
@@ -51,7 +51,7 @@ public:
         const double scale_factor = 1.0 / (1 << 17);
 
         // do max((real^2 + imag^2) / (1 << 17), 0.0000000001)
-        for (std::size_t i = 0; i < input_size_ / 2 + 1; ++i)
+        for (std::size_t i = 0; i < OUTPUT_SIZE; ++i)
         {
             real_val = output_data_buffer_.get()[i][0];
             imag_val = output_data_buffer_.get()[i][1];
@@ -69,7 +69,6 @@ public:
     }
 
 private:
-    std::uint32_t input_size_;
     fftw_plan fftw_plan_;
     std::unique_ptr<double, decltype(&fftw_free)> input_data_buffer_;
     std::unique_ptr<fftw_complex, decltype(&fftw_free)> output_data_buffer_;
