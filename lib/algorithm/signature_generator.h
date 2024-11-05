@@ -39,11 +39,11 @@ private:
     std::uint32_t sample_processed_;
     double max_time_seconds_;
 
-    fft::FFT fft_object_;
+    fft::FFT<FFT_BUFFER_CHUNK_SIZE> fft_object_;
     Signature next_signature_;
     RingBuffer<std::int16_t> samples_ring_buffer_;
-    RingBuffer<fft::RealArray> fft_outputs_;
-    RingBuffer<fft::RealArray> spread_ffts_output_;
+    RingBuffer<decltype(fft_object_)::FFTOutput> fft_outputs_;
+    RingBuffer<decltype(fft_object_)::FFTOutput> spread_ffts_output_;
 };
 
 #endif // LIB_ALGORITHM_SIGNATURE_GENERATOR_H_

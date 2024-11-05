@@ -3,14 +3,14 @@
 #include <iostream>
 #include <list>
 #include <numeric>
+#include <vector>
 #include <utility>
 #include "utils/hanning.h"
 
 SignatureGenerator::SignatureGenerator()
     : input_pending_processing_(), sample_processed_(0), max_time_seconds_(3.1),
-      fft_object_(FFT_BUFFER_CHUNK_SIZE), next_signature_(16000, 0),
-      samples_ring_buffer_(FFT_BUFFER_CHUNK_SIZE, 0), fft_outputs_(256, fft::RealArray(1025, 0.0)),
-      spread_ffts_output_(256, fft::RealArray(1025, 0.0))
+      next_signature_(16000, 0), samples_ring_buffer_(FFT_BUFFER_CHUNK_SIZE, 0),
+      fft_outputs_(256, {0.0}), spread_ffts_output_(256, {0.0})
 {
 }
 
@@ -66,7 +66,7 @@ void SignatureGenerator::doFFT(const LowQualityTrack &input)
     samples_ring_buffer_.position() %= FFT_BUFFER_CHUNK_SIZE;
     samples_ring_buffer_.num_written() += input.size();
 
-    fft::RealArray excerpt_from_ring_buffer(FFT_BUFFER_CHUNK_SIZE, 0.0);
+    std::vector<long double> excerpt_from_ring_buffer(FFT_BUFFER_CHUNK_SIZE, 0.0);
 
     std::copy(samples_ring_buffer_.begin() + samples_ring_buffer_.position(),
               samples_ring_buffer_.end(), excerpt_from_ring_buffer.begin());
@@ -81,7 +81,7 @@ void SignatureGenerator::doFFT(const LowQualityTrack &input)
         excerpt_from_ring_buffer[i] *= HANNIG_MATRIX[i];
     }
 
-    fft::RealArray real = fft_object_.RFFT(excerpt_from_ring_buffer);
+    decltype(fft_object_)::FFTOutput real = fft_object_.RFFT(excerpt_from_ring_buffer);
     fft_outputs_.Append(real);
 }
 
@@ -99,9 +99,9 @@ void SignatureGenerator::doPeakSpreading()
 {
     auto spread_last_fft = fft_outputs_[fft_outputs_.position() - 1];
 
-    for (auto position = 0u; position < 1025; ++position)
+    for (auto position = 0u; position < decltype(fft_object_)::OUTPUT_SIZE; ++position)
     {
-        if (position < 1023)
+        if (position < decltype(fft_object_)::OUTPUT_SIZE - 2)
         {
             spread_last_fft[position] = *std::max_element(spread_last_fft.begin() + position,
                                                           spread_last_fft.begin() + position + 3);
@@ -127,7 +127,7 @@ void SignatureGenerator::doPeakRecognition()
         spread_ffts_output_[(spread_ffts_output_.position() - 49) % spread_ffts_output_.size()];
 
     auto other_offsets = {-53, -45, 165, 172, 179, 186, 193, 200, 214, 221, 228, 235, 242, 249};
-    for (auto bin_position = 10u; bin_position < 1025; ++bin_position)
+    for (auto bin_position = 10u; bin_position < decltype(fft_object_)::OUTPUT_SIZE; ++bin_position)
     {
         if (fft_minus_46[bin_position] >= 1.0 / 64.0 &&
             fft_minus_46[bin_position] >= fft_minus_49[bin_position])
@@ -205,6 +205,6 @@ void SignatureGenerator::resetSignatureGenerater()
 {
     next_signature_ = Signature(16000, 0);
     samples_ring_buffer_ = RingBuffer<std::int16_t>(FFT_BUFFER_CHUNK_SIZE, 0);
-    fft_outputs_ = RingBuffer<fft::RealArray>(256, fft::RealArray(1025, 0.0));
-    spread_ffts_output_ = RingBuffer<fft::RealArray>(256, fft::RealArray(1025, 0.0));
+    fft_outputs_ = RingBuffer<decltype(fft_object_)::FFTOutput>(256, {0.0});
+    spread_ffts_output_ = RingBuffer<decltype(fft_object_)::FFTOutput>(256, {0.0});
 }
