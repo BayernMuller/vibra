@@ -20,7 +20,7 @@ Follow these steps to build the WebAssembly version of Vibra:
 
 4. Build the Docker image:
    ```bash
-   docker build -f wasm/Dockerfile -t vibra-wasm .
+   docker build -f bindings/wasm/Dockerfile -t vibra-wasm .
    ```
 
 5. Run the Docker container to compile the WebAssembly files:
