@@ -25,7 +25,7 @@ jobs:
         submodules: recursive
 
     - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y cmake build-essential libfftw3-dev libcurl4-openssl-dev ffmpeg cpplint
+      run: sudo apt-get update && sudo apt-get install -y cmake build-essential libfftw3-dev libcurl4-openssl-dev ffmpeg cpplint valgrind
 
     - name: Check cpplint
       run: cpplint --recursive lib include
@@ -41,3 +41,6 @@ jobs:
 
     - name: Test CLI
       run: cd tests && ./test.sh 5
+
+    - name: Valgrind Memory Leak Test
+      run: valgrind --leak-check=full --error-exitcode=1 ./build/cli/vibra -R -f ./tests/sample.mp3

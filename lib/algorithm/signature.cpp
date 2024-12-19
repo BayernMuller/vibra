@@ -29,7 +29,7 @@ std::uint32_t Signature::SumOfPeaksLength() const
 
 std::string Signature::EncodeBase64() const
 {
-    RawSignatureHeader header;
+    RawSignatureHeader header = {0};
     header.magic1 = 0xcafe2580;
     header.magic2 = 0x94119c00;
     header.shifted_sample_rate_id = 3 << 27;
