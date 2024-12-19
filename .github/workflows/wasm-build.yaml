@@ -7,6 +7,7 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   wasm-build:
@@ -33,7 +34,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: wasm/Dockerfile
+          file: bindings/wasm/Dockerfile
           tags: vibra-wasm:latest
           push: false
           load: true
@@ -47,12 +48,12 @@ jobs:
 
       - name: Run Docker container for WASM build
         run: |
-          docker run --rm -v $(pwd):/app vibra-wasm:latest bash -c "cd wasm && ./build-wasm.sh"
+          docker run --rm -v $(pwd):/app vibra-wasm:latest bash -c "cd bindings/wasm && ./build-wasm.sh"
 
       - name: Upload WASM artifacts
         uses: actions/upload-artifact@v3
         with:
           name: wasm-build
           path: |
-            wasm/build/vibra.wasm
-            wasm/build/vibra.js
+            bindings/wasm/build/vibra.wasm
+            bindings/wasm/build/vibra.js
