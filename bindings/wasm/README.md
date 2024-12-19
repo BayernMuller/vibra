@@ -25,12 +25,12 @@ Follow these steps to build the WebAssembly version of Vibra:
 
 5. Run the Docker container to compile the WebAssembly files:
    ```bash
-   docker run --rm -v $(pwd):/app vibra-wasm bash -c "cd wasm && ./build-wasm.sh"
+   docker run --rm -v $(pwd):/app vibra-wasm bash -c "cd bindings/wasm && ./build-wasm.sh"
    ```
 
 6. After compilation, you'll find the following files in the `wasm/build` directory:
    ```bash
-   $ ls -l wasm/build
+   $ ls -l bindings/wasm/build
    .rw-r--r-- jayden staff  88 KB Wed Sep 11 23:07:52 2024 vibra.js
    .rwxr-xr-x jayden staff 804 KB Wed Sep 11 23:07:52 2024 vibra.wasm
    ```
@@ -38,7 +38,7 @@ Follow these steps to build the WebAssembly version of Vibra:
 ##### If you can't build the WebAssembly version, you can download `vibra.wasm` and `vibra.js` from GitHub workflow artifacts.
 * https://github.com/BayernMuller/vibra/actions/workflows/wasm-build.yaml
 * Please download `vibra.wasm` and `vibra.js` from the latest successful run.
-* and put them in the `vibra/wasm/build` directory to run the demo Node.js app.
+* and put them in the `vibra/bindings/wasm/build` directory to run the demo Node.js app.
 
 ### 2. Running the Demo Node.js App "vibrajs"
 
@@ -46,7 +46,7 @@ To run the demo Node.js application:
 
 1. Install dependencies and build the CLI app:
    ```bash
-   cd wasm
+   cd bindings/wasm
    npm install
    npm run build
    npm link

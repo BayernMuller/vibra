@@ -50,7 +50,7 @@
     <th>Build Status</th>
   </tr>
   <tr>
-    <td><a href="wasm/README.md">WebAssembly</a></td>
+    <td><a href="bindings/wasm/README.md">WebAssembly</a></td>
     <td>-</td>
     <td><img src="https://github.com/bayernmuller/vibra/actions/workflows/wasm-build.yaml/badge.svg"/></td>
   </tr>
@@ -77,7 +77,7 @@
 </table>
 
 ### Building the WebAssembly Version
-* Please refer to **[wasm/README.md](wasm/README.md)** for instructions on building and running the WebAssembly version of vibra.
+* Please refer to **[bindings/wasm/README.md](bindings/wasm/README.md)** for instructions on building and running the WebAssembly version of vibra.
 
 ### Building the Native Version
 
