@@ -5,9 +5,10 @@ namespace crc32
 {
 std::uint32_t crc32(const char *buf, std::size_t len)
 {
-    std::uint32_t crc_table[256];
-    std::uint32_t crc;
-    std::size_t i, j;
+    std::uint32_t crc_table[256] = {0};
+    std::uint32_t crc = 0;
+    std::size_t i = 0;
+    std::size_t j = 0;
 
     for (i = 0; i < 256; i++)
     {
