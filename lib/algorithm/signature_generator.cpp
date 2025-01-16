@@ -1,5 +1,6 @@
 #include "algorithm/signature_generator.h"
 #include <algorithm>
+#include <array>
 #include <iostream>
 #include <list>
 #include <numeric>
