@@ -38,8 +38,14 @@ set_target_properties(vibra_shared PROPERTIES CXX_STANDARD 11)
 set_target_properties(vibra_static PROPERTIES CXX_STANDARD 11)
 
 # Set output names
-set_target_properties(vibra_shared PROPERTIES OUTPUT_NAME "vibra")
-set_target_properties(vibra_static PROPERTIES OUTPUT_NAME "vibra")
+if (DEFINED BUILD_SUFFIX)
+    message(STATUS "Adding suffix: ${BUILD_SUFFIX}")
+    set(SUFFIX "-${BUILD_SUFFIX}")
+else()
+    set(SUFFIX "")
+endif()
+set_target_properties(vibra_shared PROPERTIES OUTPUT_NAME "vibra${SUFFIX}")
+set_target_properties(vibra_static PROPERTIES OUTPUT_NAME "vibra${SUFFIX}")
 
 # Install library files to standard system paths
 install(TARGETS vibra_shared vibra_static

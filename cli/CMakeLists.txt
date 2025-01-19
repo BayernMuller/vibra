@@ -26,6 +26,15 @@ find_library(CURL_LIBRARY NAMES curl)
 # Link the CLI with the static libvibra and libcurl
 target_link_libraries(vibra PRIVATE vibra_static ${CURL_LIBRARY})
 
+# Set the output name
+if (DEFINED BUILD_SUFFIX)
+    message(STATUS "Adding suffix: ${BUILD_SUFFIX}")
+    set(SUFFIX "-${BUILD_SUFFIX}")
+else()
+    set(SUFFIX "")
+endif()
+set_target_properties(vibra PROPERTIES OUTPUT_NAME "vibra${SUFFIX}")
+
 # Install the CLI
 install(TARGETS vibra
     RUNTIME DESTINATION bin
