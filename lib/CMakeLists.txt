@@ -18,12 +18,18 @@ target_include_directories(vibra_static PRIVATE ${CMAKE_SOURCE_DIR}/include)
 if (DEFINED FFTW3_PATH)
     set(FFTW3_INCLUDE_DIR ${FFTW3_PATH}/include)
     set(FFTW3_LIBRARY ${FFTW3_PATH}/lib/libfftw3.a)
-    target_include_directories(vibra_shared PRIVATE ${FFTW3_INCLUDE_DIR})
-    target_include_directories(vibra_static PRIVATE ${FFTW3_INCLUDE_DIR})
 else()
+    find_path(FFTW3_INCLUDE_DIR fftw3.h)
     find_library(FFTW3_LIBRARY NAMES fftw3)
 endif()
+if (NOT FFTW3_LIBRARY OR NOT FFTW3_INCLUDE_DIR)
+    message(FATAL_ERROR "FFTW3 library or include path not found. Please install FFTW3 or specify FFTW3_PATH.")
+endif()
 
+message(STATUS "FFTW3_INCLUDE_DIR: ${FFTW3_INCLUDE_DIR}")
+message(STATUS "FFTW3_LIBRARY: ${FFTW3_LIBRARY}")
+target_include_directories(vibra_shared PRIVATE ${FFTW3_INCLUDE_DIR})
+target_include_directories(vibra_static PRIVATE ${FFTW3_INCLUDE_DIR})
 target_link_libraries(vibra_shared PRIVATE ${FFTW3_LIBRARY})
 target_link_libraries(vibra_static PRIVATE ${FFTW3_LIBRARY})
 
@@ -32,8 +38,14 @@ set_target_properties(vibra_shared PROPERTIES CXX_STANDARD 11)
 set_target_properties(vibra_static PROPERTIES CXX_STANDARD 11)
 
 # Set output names
-set_target_properties(vibra_shared PROPERTIES OUTPUT_NAME "vibra")
-set_target_properties(vibra_static PROPERTIES OUTPUT_NAME "vibra")
+if (DEFINED BUILD_SUFFIX)
+    message(STATUS "Adding suffix: ${BUILD_SUFFIX}")
+    set(SUFFIX "-${BUILD_SUFFIX}")
+else()
+    set(SUFFIX "")
+endif()
+set_target_properties(vibra_shared PROPERTIES OUTPUT_NAME "vibra${SUFFIX}")
+set_target_properties(vibra_static PROPERTIES OUTPUT_NAME "vibra${SUFFIX}")
 
 # Install library files to standard system paths
 install(TARGETS vibra_shared vibra_static
