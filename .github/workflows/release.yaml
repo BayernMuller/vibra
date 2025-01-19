@@ -26,6 +26,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Install necessary dependencies based on the operating system
       - name: Install dependencies on Linux
         if: startsWith(matrix.os, 'ubuntu')
         run: |
@@ -40,6 +41,7 @@ jobs:
         if: startsWith(matrix.os, 'windows')
         run: vcpkg install curl:x64-windows fftw3:x64-windows
 
+      # Configure CMake for building the project
       - name: Configure CMake
         if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
         run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SUFFIX=${{ matrix.id }}
@@ -48,9 +50,11 @@ jobs:
         if: startsWith(matrix.os, 'windows')
         run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SUFFIX=${{ matrix.id }} -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT\scripts\buildsystems\vcpkg.cmake"
 
+      # Build the project
       - name: Build
         run: cmake --build ${{ github.workspace }}/build --config Release
 
+      # Verify the build results
       - name: Check build results
         if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
         run: |
@@ -63,6 +67,7 @@ jobs:
           Get-ChildItem build/cli/Release
           Get-ChildItem build/lib/Release
 
+      # Upload the build artifacts for further use
       - name: Upload artifacts
         if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
         uses: actions/upload-artifact@v4
