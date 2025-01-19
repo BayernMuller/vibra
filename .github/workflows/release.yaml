@@ -177,9 +177,15 @@ jobs:
         run: |
           emcmake cmake -B ${{ github.workspace }}/bindings/wasm/build -DLIBRARY_ONLY=ON -DFFTW3_PATH=${FFTW3_PATH}
 
-      - name: Build
+      - name: Build WebAssembly Library
         run: |
           cmake --build ${{ github.workspace }}/bindings/wasm/build --config Release -j8
+          make install
+
+      - name: Build WebAssembly Module
+        run: |
+          cd ${{ github.workspace }}/bindings/wasm
+          emmake make -j8
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
