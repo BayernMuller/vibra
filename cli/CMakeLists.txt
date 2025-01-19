@@ -20,11 +20,14 @@ target_include_directories(vibra PRIVATE ${args_SOURCE_DIR})
 # Add the include directory to the target
 target_include_directories(vibra PRIVATE ${CMAKE_SOURCE_DIR}/cli)
 
-# Find libcurl
-find_library(CURL_LIBRARY NAMES curl)
-
 # Link the CLI with the static libvibra and libcurl
-target_link_libraries(vibra PRIVATE vibra_static ${CURL_LIBRARY})
+if(MSVC)
+    find_package(CURL REQUIRED)
+    target_link_libraries(vibra PRIVATE vibra_static CURL::libcurl)
+else()
+    find_library(CURL_LIBRARY NAMES curl)
+    target_link_libraries(vibra PRIVATE vibra_static ${CURL_LIBRARY})
+endif()
 
 # Set the output name
 if (DEFINED BUILD_SUFFIX)

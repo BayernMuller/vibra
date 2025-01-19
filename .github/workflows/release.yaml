@@ -18,6 +18,8 @@ jobs:
             os: macos-13 # macos-14-large is non-free
           - id: macos-arm64
             os: macos-14
+          - id: windows-amd64
+            os: windows-2022
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -34,21 +36,47 @@ jobs:
         if: startsWith(matrix.os, 'macos')
         run: brew install fftw --formula
 
+      - name: Install dependencies on Windows
+        if: startsWith(matrix.os, 'windows')
+        run: vcpkg install curl:x64-windows fftw3:x64-windows
+
       - name: Configure CMake
+        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
         run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SUFFIX=${{ matrix.id }}
+
+      - name: Configure CMake with vcpkg
+        if: startsWith(matrix.os, 'windows')
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SUFFIX=${{ matrix.id }} -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT\scripts\buildsystems\vcpkg.cmake"
 
       - name: Build
         run: cmake --build ${{ github.workspace }}/build --config Release
 
       - name: Check build results
+        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
         run: |
           file build/cli/vibra*
           file build/lib/libvibra*
 
+      - name: Check build results on Windows
+        if: startsWith(matrix.os, 'windows')
+        run: |
+          Get-ChildItem build/cli/Release
+          Get-ChildItem build/lib/Release
+
       - name: Upload artifacts
+        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
         uses: actions/upload-artifact@v4
         with:
           name: vibra-${{ matrix.id }}
           path: |
             build/cli/vibra*
             build/lib/libvibra*
+
+      - name: Upload artifacts
+        if: startsWith(matrix.os, 'windows')
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibra-${{ matrix.id }}
+          path: |
+            build/cli/Release
+            build/lib/Release
