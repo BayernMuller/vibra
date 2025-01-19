@@ -9,6 +9,14 @@
 #include <string>
 #include "audio/downsampler.h"
 
+#ifdef _MSC_VER
+    #define PROCESS_OPEN _popen
+    #define PROCESS_CLOSE _pclose
+#else
+    #define PROCESS_OPEN popen
+    #define PROCESS_CLOSE pclose
+#endif
+
 namespace ffmpeg
 {
 
@@ -52,7 +60,7 @@ LowQualityTrack FFmpegWrapper::ConvertToLowQaulityPcm(
     ss << " -"; // stdout
     ss << " 2>/dev/null"; // suppress std
 
-    std::FILE *pipe = popen(ss.str().c_str(), "r");
+    std::FILE *pipe = PROCESS_OPEN(ss.str().c_str(), "r");
     if (!pipe)
     {
         throw std::runtime_error("popen() failed!");
@@ -70,7 +78,7 @@ LowQualityTrack FFmpegWrapper::ConvertToLowQaulityPcm(
                    buffer.begin() + (bytes_read / sizeof(LowQualitySample)));
     }
 
-    int exit_code = pclose(pipe);
+    int exit_code = PROCESS_CLOSE(pipe);
     if (exit_code != 0)
     {
         throw std::runtime_error("PCM Conversion Failed: " + std::to_string(exit_code));
