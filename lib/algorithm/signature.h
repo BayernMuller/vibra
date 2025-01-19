@@ -11,7 +11,11 @@
 // Prevent Structure Padding
 #ifdef _MSC_VER
 #pragma pack(push, 1)
+#define PACKED_ATTRIBUTE
+#else
+#define PACKED_ATTRIBUTE __attribute__((packed))
 #endif
+
 struct RawSignatureHeader
 {
     uint32_t magic1;
@@ -23,11 +27,10 @@ struct RawSignatureHeader
     uint32_t void2[2];
     uint32_t number_samples_plus_divided_sample_rate;
     uint32_t fixed_value;
-}
+} PACKED_ATTRIBUTE;
+
 #ifdef _MSC_VER
 #pragma pack(pop)
-#else
-__attribute__((packed));
 #endif
 
 class Signature
