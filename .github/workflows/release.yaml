@@ -8,84 +8,146 @@ on:
   workflow_dispatch:
 
 jobs:
-  native-build:
-    strategy:
-      fail-fast: false
-      matrix:
-        # https://github.com/actions/runner-images#available-images
-        include:
-          - id: linux-amd64
-            os: ubuntu-22.04
-          - id: linux-arm64
-            os: ubuntu-22.04-arm
-          - id: macos-amd64
-            os: macos-13 # macos-14-large is non-free
-          - id: macos-arm64
-            os: macos-14
-          - id: windows-amd64
-            os: windows-2022
-    runs-on: ${{ matrix.os }}
-
+  linux-amd64:
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Install necessary dependencies based on the operating system
-      - name: Install dependencies on Linux
-        if: startsWith(matrix.os, 'ubuntu')
+      - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential libfftw3-dev libcurl4-openssl-dev
 
-      - name: Install dependencies on macOS
-        if: startsWith(matrix.os, 'macos')
-        run: brew install fftw --formula
-
-      - name: Install dependencies on Windows
-        if: startsWith(matrix.os, 'windows')
-        run: vcpkg install curl:x64-windows fftw3:x64-windows
-
-      # Configure CMake for building the project
       - name: Configure CMake
-        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
-        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SUFFIX=${{ matrix.id }}
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SUFFIX=linux-amd64
 
-      - name: Configure CMake with vcpkg
-        if: startsWith(matrix.os, 'windows')
-        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SUFFIX=${{ matrix.id }} -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT\scripts\buildsystems\vcpkg.cmake"
-
-      # Build the project
       - name: Build
         run: cmake --build ${{ github.workspace }}/build --config Release
 
-      # Verify the build results
       - name: Check build results
-        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
         run: |
           file build/cli/vibra*
           file build/lib/libvibra*
 
-      - name: Check build results on Windows
-        if: startsWith(matrix.os, 'windows')
-        run: |
-          Get-ChildItem build/cli/Release
-          Get-ChildItem build/lib/Release
-
-      # Upload the build artifacts for further use
       - name: Upload artifacts
-        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
         uses: actions/upload-artifact@v4
         with:
-          name: vibra-${{ matrix.id }}
+          name: vibra-linux-amd64
           path: |
             build/cli/vibra*
             build/lib/libvibra*
 
+  linux-arm64:
+    runs-on: ubuntu-22.04-arm
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libfftw3-dev libcurl4-openssl-dev
+
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SUFFIX=linux-arm64
+
+      - name: Build
+        run: cmake --build ${{ github.workspace }}/build --config Release
+
+      - name: Check build results
+        run: |
+          file build/cli/vibra*
+          file build/lib/libvibra*
+
       - name: Upload artifacts
-        if: startsWith(matrix.os, 'windows')
         uses: actions/upload-artifact@v4
         with:
-          name: vibra-${{ matrix.id }}
+          name: vibra-linux-arm64
+          path: |
+            build/cli/vibra*
+            build/lib/libvibra*
+
+  macos-amd64:
+    runs-on: macos-13
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: brew install fftw --formula
+
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SUFFIX=macos-amd64
+
+      - name: Build
+        run: cmake --build ${{ github.workspace }}/build --config Release
+
+      - name: Check build results
+        run: |
+          file build/cli/vibra*
+          file build/lib/libvibra*
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibra-macos-amd64
+          path: |
+            build/cli/vibra*
+            build/lib/libvibra*
+
+  macos-arm64:
+    runs-on: macos-14
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: brew install fftw --formula
+
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SUFFIX=macos-arm64
+
+      - name: Build
+        run: cmake --build ${{ github.workspace }}/build --config Release
+
+      - name: Check build results
+        run: |
+          file build/cli/vibra*
+          file build/lib/libvibra*
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibra-macos-arm64
+          path: |
+            build/cli/vibra*
+            build/lib/libvibra*
+
+  windows-amd64:
+    runs-on: windows-2022
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: vcpkg install curl:x64-windows fftw3:x64-windows
+
+      - name: Configure CMake with vcpkg
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SUFFIX=windows-amd64 -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT\scripts\buildsystems\vcpkg.cmake"
+
+      - name: Build
+        run: cmake --build ${{ github.workspace }}/build --config Release
+
+      - name: Check build results
+        run: |
+          Get-ChildItem build/cli/Release
+          Get-ChildItem build/lib/Release
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibra-windows-amd64
           path: |
             build/cli/Release
             build/lib/Release
