@@ -175,15 +175,11 @@ jobs:
 
       - name: Configure CMake
         run: |
-          emcmake cmake -B ${{ github.workspace }}/bindings/wasm/build \
-            -DLIBRARY_ONLY=ON \
-            -DFFTW3_PATH=${FFTW3_PATH}
+          emcmake cmake -B ${{ github.workspace }}/bindings/wasm/build -DLIBRARY_ONLY=ON -DFFTW3_PATH=${FFTW3_PATH}
 
       - name: Build
         run: |
-          cmake --build ${{ github.workspace }}/bindings/wasm/build \
-            -DLIBRARY_ONLY=ON \
-            -DFFTW3_PATH=${FFTW3_PATH}
+          cmake --build ${{ github.workspace }}/bindings/wasm/build --config Release -j8
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
