@@ -173,7 +173,7 @@ jobs:
             --prefix=/usr/local \
             --disable-dependency-tracking
           emmake make -j9
-          emmake make install
+          sudo make install
 
       - name: Configure CMake
         run: >
@@ -186,7 +186,7 @@ jobs:
         run: |
           cd ${{ github.workspace }}/build
           make -j8
-          make install
+          sudo make install
 
       - name: Build vibra WebAssembly Module
         run: |
