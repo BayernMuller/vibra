@@ -168,18 +168,15 @@ jobs:
           wget http://www.fftw.org/fftw-3.3.10.tar.gz
           tar -xvf fftw-3.3.10.tar.gz
           cd fftw-3.3.10
-          emconfigure ./configure \
-            --disable-fortran \
-            --prefix=/usr/local \
-            --disable-dependency-tracking
+          emconfigure ./configure --disable-fortran --prefix=/usr/local
           emmake make -j9
           sudo make install
 
       - name: Configure CMake
         run: >
           emcmake cmake -B ${{ github.workspace }}/build \
-            -DFFTW3_PATH=/usr/local \
             -DLIBRARY_ONLY=ON \
+            -DFFTW3_PATH=/usr/local \
             -DCMAKE_INSTALL_PREFIX=/usr/local
 
       - name: Build libvibra as WebAssembly Library
