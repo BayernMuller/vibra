@@ -10,6 +10,11 @@
 
 </span>
 
+<div align="center">
+
+![webassembly-main] ![linux-amd64-main] ![linux-arm64-main] ![macos-amd64-main] ![macos-arm64-main] ![windows-amd64-main]
+
+</div>
 
 <p align="center">
     <img src="https://img.shields.io/github/stars/bayernmuller/vibra?style=social" alt="GitHub stars"/>
@@ -40,41 +45,6 @@
 
 * You can try the music recognition with the **[WebAssembly version of vibra here](https://bayernmuller.github.io/vibra-live-demo/)**
 * The source code for the demo is available at [vibra-live-demo](https://github.com/bayernmuller/vibra-live-demo)
-
-### Platform Compatibility and Build Status
-
-<table>
-  <tr>
-    <th>Platform</th>
-    <th>Architecture</th>
-    <th>Build Status</th>
-  </tr>
-  <tr>
-    <td><a href="bindings/wasm/README.md">WebAssembly</a></td>
-    <td>-</td>
-    <td><img src="https://github.com/bayernmuller/vibra/actions/workflows/wasm-build.yaml/badge.svg"/></td>
-  </tr>
-  <tr>
-    <td>Linux</td>
-    <td>x86_64, ARM64</td>
-    <td><img src="https://github.com/bayernmuller/vibra/actions/workflows/native-build.yaml/badge.svg"/></td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>x86_64</td>
-    <td>✅</td>
-  </tr>
-  <tr>
-    <td>macOS</td>
-    <td>x86_64, ARM64</td>
-    <td>✅</td>
-  </tr>
-  <tr>
-    <td>Raspberry Pi</td>
-    <td>ARMv8-A, ARMv6</td>
-    <td>✅</td>
-  </tr>
-</table>
 
 ### Building the WebAssembly Version
 * Please refer to **[bindings/wasm/README.md](bindings/wasm/README.md)** for instructions on building and running the WebAssembly version of vibra.
@@ -222,3 +192,14 @@ vibra --recognize --file sample.mp3
 
 ### License
 * vibra is licensed under the GPLv3 license. See [LICENSE](LICENSE) for more details.
+
+
+[linux-amd64-main]: https://github.com/bayernmuller/vibra/actions/workflows/build-linux-amd64.yaml/badge.svg?branch=main
+[linux-arm64-main]: https://github.com/bayernmuller/vibra/actions/workflows/build-linux-arm64.yaml/badge.svg?branch=main
+
+[macos-amd64-main]: https://github.com/bayernmuller/vibra/actions/workflows/build-macos-amd64.yaml/badge.svg?branch=main
+[macos-arm64-main]: https://github.com/bayernmuller/vibra/actions/workflows/build-macos-arm64.yaml/badge.svg?branch=main
+
+[windows-amd64-main]: https://github.com/bayernmuller/vibra/actions/workflows/build-windows-amd64.yaml/badge.svg
+
+[webassembly-main]: https://github.com/bayernmuller/vibra/actions/workflows/build-webassembly.yaml/badge.svg?branch=main
