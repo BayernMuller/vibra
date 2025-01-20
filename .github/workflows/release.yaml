@@ -176,7 +176,7 @@ jobs:
 
       - name: Configure CMake
         run: |
-          emcmake cmake -B ${{ github.workspace }}/bindings/wasm/build -DBUILD_SUFFIX=wasm -DFFTW3_PATH=${FFTW3_INSTALL_PATH}
+          emcmake cmake -B ${{ github.workspace }}/bindings/wasm/build -DBUILD_SUFFIX=wasm -DFFTW3_PATH=${FFTW3_INSTALL_PATH} -DLIBRARY_ONLY=ON
 
       - name: Build WebAssembly Library
         run: |
