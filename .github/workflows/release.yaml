@@ -173,7 +173,7 @@ jobs:
             --prefix=/usr/local \
             --disable-dependency-tracking
           emmake make -j9
-          emmake make install
+          sudo make install
 
       - name: Configure CMake
         run: >
