@@ -185,7 +185,7 @@ jobs:
       - name: Build libvibra as WebAssembly Library
         run: |
           cd ${{ github.workspace }}/build
-          make -j8
+          make
           sudo make install
 
       - name: Build vibra WebAssembly Module
