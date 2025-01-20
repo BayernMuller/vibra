@@ -1,15 +1,14 @@
 name: WebAssembly
 
 on:
-  workflow_run:
-    workflows: ["Precheck"]
-    types:
-      - completed
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
   workflow_dispatch:
 
 jobs:
   web-assembly:
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-22.04
     steps:
       - name: Setup emsdk

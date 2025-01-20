@@ -1,10 +1,10 @@
 name: MacOS ARM64
 
 on:
-  workflow_run:
-    workflows: ["Precheck"]
-    types:
-      - completed
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
   workflow_dispatch:
 
 jobs:
