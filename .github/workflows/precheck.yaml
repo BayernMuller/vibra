@@ -17,7 +17,18 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake cpplint
+          sudo apt-get install -y build-essential cmake cpplint clang-tidy clang-format
 
       - name: Check cpplint
-        run: cpplint --recursive lib include
+        run: cpplint $(git ls-files '*.cpp' '*.h')
+
+      - name: Check clang-tidy
+        run: |
+          cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
+          clang-tidy -p build/compile_commands.json $(git ls-files '*.cpp' '*.h' | grep -v 'wasm.cpp')
+
+      # TODO(BayernMuller): Add clang-format check
+      # - name: Check clang-format
+      #   run: |
+      #     clang-format --dry-run --Werror $(git ls-files '*.cpp' '*.h')
+
