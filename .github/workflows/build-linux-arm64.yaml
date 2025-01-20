@@ -1,0 +1,40 @@
+name: Linux ARM64
+
+on:
+  workflow_run:
+    workflows: ["Precheck"]
+    types:
+      - completed
+  workflow_dispatch:
+
+jobs:
+  linux-arm64:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-22.04-arm
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libfftw3-dev libcurl4-openssl-dev
+
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SUFFIX=linux-arm64
+
+      - name: Build
+        run: cmake --build ${{ github.workspace }}/build --config Release
+
+      - name: Check build results
+        run: |
+          file build/cli/vibra*
+          file build/lib/libvibra*
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibra-linux-arm64
+          path: |
+            build/cli/vibra*
+            build/lib/libvibra*

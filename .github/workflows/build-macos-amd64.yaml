@@ -1,0 +1,37 @@
+name: MacOS AMD64
+
+on:
+  workflow_run:
+    workflows: ["Precheck"]
+    types:
+      - completed
+  workflow_dispatch:
+
+jobs:
+  macos-amd64:
+    runs-on: macos-13
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: brew install fftw --formula
+
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SUFFIX=macos-amd64
+
+      - name: Build
+        run: cmake --build ${{ github.workspace }}/build --config Release
+
+      - name: Check build results
+        run: |
+          file build/cli/vibra*
+          file build/lib/libvibra*
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibra-macos-amd64
+          path: |
+            build/cli/vibra*
+            build/lib/libvibra*

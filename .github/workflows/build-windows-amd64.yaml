@@ -1,0 +1,38 @@
+name: Windows AMD64
+
+on:
+  workflow_run:
+    workflows: ["Precheck"]
+    types:
+      - completed
+  workflow_dispatch:
+
+jobs:
+  windows-amd64:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: windows-2022
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: vcpkg install curl:x64-windows fftw3:x64-windows
+
+      - name: Configure CMake with vcpkg
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SUFFIX=windows-amd64 -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT\scripts\buildsystems\vcpkg.cmake"
+
+      - name: Build
+        run: cmake --build ${{ github.workspace }}/build --config Release
+
+      - name: Check build results
+        run: |
+          Get-ChildItem build/cli/Release
+          Get-ChildItem build/lib/Release
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibra-windows-amd64
+          path: |
+            build/cli/Release
+            build/lib/Release
