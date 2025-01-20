@@ -154,11 +154,9 @@ jobs:
 
   web-assembly:
     runs-on: ubuntu-22.04
-    env:
-      FFTW3_INSTALL_PATH: ${{ github.workspace }}/fftw3
-      VIBRA_INSTALL_PATH: ${{ github.workspace }}/bindings/wasm
     steps:
-      - uses: mymindstorm/setup-emsdk@v14
+      - name: Setup emsdk
+        uses: mymindstorm/setup-emsdk@v14
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -170,23 +168,30 @@ jobs:
           wget http://www.fftw.org/fftw-3.3.10.tar.gz
           tar -xvf fftw-3.3.10.tar.gz
           cd fftw-3.3.10
-          emconfigure ./configure --disable-fortran --prefix=${FFTW3_INSTALL_PATH}
+          emconfigure ./configure \
+            --disable-fortran \
+            --prefix=/usr/local \
+            --disable-dependency-tracking
           emmake make -j9
           emmake make install
 
       - name: Configure CMake
-        run: |
-          emcmake cmake -B ${{ github.workspace }}/bindings/wasm/build -DBUILD_SUFFIX=wasm -DFFTW3_PATH=${FFTW3_INSTALL_PATH} -DLIBRARY_ONLY=ON
+        run: >
+          emcmake cmake -B ${{ github.workspace }}/build \
+            -DFFTW3_PATH=/usr/local \
+            -DLIBRARY_ONLY=ON \
+            -DCMAKE_INSTALL_PREFIX=/usr/local
 
-      - name: Build WebAssembly Library
+      - name: Build libvibra as WebAssembly Library
         run: |
-          cmake --build ${{ github.workspace }}/bindings/wasm/build --config Release -j8
-          cd ${{ github.workspace }}/bindings/wasm
+          cd ${{ github.workspace }}/build
+          make -j8
           make install
 
-      - name: Build WebAssembly Module
+      - name: Build vibra WebAssembly Module
         run: |
           cd ${{ github.workspace }}/bindings/wasm
+          mkdir build
           emmake make -j8
 
       - name: Upload artifacts
