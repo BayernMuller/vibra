@@ -17,7 +17,14 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake cpplint clang-tidy clang-format
+          sudo apt-get install -y \
+            build-essential \
+            cmake \
+            cpplint \
+            clang-tidy \
+            clang-format \
+            libcurl4-openssl-dev \
+            libfftw3-dev
 
       - name: Check cpplint
         run: cpplint $(git ls-files '*.cpp' '*.h')
