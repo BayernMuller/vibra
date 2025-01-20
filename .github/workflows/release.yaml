@@ -170,7 +170,7 @@ jobs:
           cd fftw-3.3.10
           emconfigure ./configure --disable-fortran --prefix=/usr/local
           emmake make -j9
-          sudo make install
+          sudo emmake make install
 
       - name: Configure CMake
         run: >
