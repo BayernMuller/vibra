@@ -32,6 +32,7 @@ jobs:
 
   build-linux-arm64:
     needs: precheck
+    if: always()
     uses: ./.github/workflows/build-linux-arm64.yaml
     with:
       ref: ${{ needs.precheck.outputs.ref }}

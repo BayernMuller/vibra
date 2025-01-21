@@ -24,5 +24,9 @@ double FrequencyPeak::ComputeAmplitudePCM() const
 
 double FrequencyPeak::ComputeElapsedSeconds() const
 {
+    if (fft_pass_number_ == 0) {
+        int a = 10.5f;
+        double b = (int)a;
+    }
     return static_cast<double>(fft_pass_number_) * 128. / static_cast<double>(sample_rate_);
 }
