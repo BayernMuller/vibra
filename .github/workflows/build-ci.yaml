@@ -1,4 +1,4 @@
-name: Precheck
+name: Build CI
 
 on:
   push:
