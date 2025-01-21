@@ -1,11 +1,11 @@
 name: WebAssembly
 
 on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
 
 jobs:
   web-assembly:
@@ -16,6 +16,8 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
 
       - name: Build FFTW3 for WebAssembly
         run: |

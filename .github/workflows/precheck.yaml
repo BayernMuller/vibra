@@ -10,6 +10,8 @@ on:
 jobs:
   precheck:
     runs-on: ubuntu-22.04
+    outputs:
+      ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref_name }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -21,3 +23,39 @@ jobs:
 
       - name: Check cpplint
         run: cpplint --recursive lib include
+
+  build-linux-amd64:
+    needs: precheck
+    uses: ./.github/workflows/build-linux-amd64.yaml
+    with:
+      ref: ${{ needs.precheck.outputs.ref }}
+
+  build-linux-arm64:
+    needs: precheck
+    uses: ./.github/workflows/build-linux-arm64.yaml
+    with:
+      ref: ${{ needs.precheck.outputs.ref }}
+
+  build-macos-amd64:
+    needs: precheck
+    uses: ./.github/workflows/build-macos-amd64.yaml
+    with:
+      ref: ${{ needs.precheck.outputs.ref }}
+
+  build-macos-arm64:
+    needs: precheck
+    uses: ./.github/workflows/build-macos-arm64.yaml
+    with:
+      ref: ${{ needs.precheck.outputs.ref }}
+
+  build-windows-amd64:
+    needs: precheck
+    uses: ./.github/workflows/build-windows-amd64.yaml
+    with:
+      ref: ${{ needs.precheck.outputs.ref }}
+
+  build-webassembly:
+    needs: precheck
+    uses: ./.github/workflows/build-webassembly.yaml
+    with:
+      ref: ${{ needs.precheck.outputs.ref }}
