@@ -21,6 +21,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential libfftw3-dev libcurl4-openssl-dev
 
+      - name: Do idiot test
+        run: |
+          int a = 10.5f;
+          double b = (int)a;
+
       - name: Configure CMake
         run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SUFFIX=linux-arm64
 
