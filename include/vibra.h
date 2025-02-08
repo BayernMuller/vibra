@@ -94,7 +94,6 @@ unsigned int vibra_get_sample_ms_from_fingerprint(Fingerprint *fingerprint);
  * @param fingerprint Pointer to the fingerprint.
  */
 void vibra_free_fingerprint(Fingerprint *fingerprint);
-
 } // extern "C"
 
 #endif // INCLUDE_VIBRA_H_
