@@ -56,6 +56,11 @@ unsigned int vibra_get_sample_ms_from_fingerprint(Fingerprint *fingerprint)
     return fingerprint->sample_ms;
 }
 
+void vibra_free_fingerprint(Fingerprint *fingerprint)
+{
+    delete fingerprint;
+}
+
 Fingerprint *_get_fingerprint_from_wav(const Wav &wav)
 {
     LowQualityTrack pcm = Downsampler::GetLowQualityPCM(wav);
@@ -70,8 +75,8 @@ Fingerprint *_get_fingerprint_from_low_quality_pcm(const LowQualityTrack &pcm)
 
     Signature signature = generator.GetNextSignature();
 
-    static Fingerprint fingerprint;
-    fingerprint.uri = signature.EncodeBase64();
-    fingerprint.sample_ms = signature.num_samples() * 1000 / signature.sample_rate();
-    return &fingerprint;
+    Fingerprint *fingerprint = new Fingerprint;
+    fingerprint->uri = signature.EncodeBase64();
+    fingerprint->sample_ms = signature.num_samples() * 1000 / signature.sample_rate();
+    return fingerprint;
 }
