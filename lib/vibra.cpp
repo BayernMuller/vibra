@@ -70,8 +70,8 @@ Fingerprint *_get_fingerprint_from_low_quality_pcm(const LowQualityTrack &pcm)
 
     Signature signature = generator.GetNextSignature();
 
-    static Fingerprint fingerprint;
-    fingerprint.uri = signature.EncodeBase64();
-    fingerprint.sample_ms = signature.num_samples() * 1000 / signature.sample_rate();
-    return &fingerprint;
+    Fingerprint *fingerprint = new Fingerprint;
+    fingerprint->uri = signature.EncodeBase64();
+    fingerprint->sample_ms = signature.num_samples() * 1000 / signature.sample_rate();
+    return fingerprint;
 }
