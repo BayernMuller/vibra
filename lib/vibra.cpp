@@ -56,6 +56,11 @@ unsigned int vibra_get_sample_ms_from_fingerprint(Fingerprint *fingerprint)
     return fingerprint->sample_ms;
 }
 
+void vibra_free_fingerprint(Fingerprint *fingerprint)
+{
+    delete fingerprint;
+}
+
 Fingerprint *_get_fingerprint_from_wav(const Wav &wav)
 {
     LowQualityTrack pcm = Downsampler::GetLowQualityPCM(wav);

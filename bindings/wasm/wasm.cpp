@@ -37,6 +37,11 @@ unsigned int EMSCRIPTEN_KEEPALIVE GetSampleMs(Fingerprint *signature)
     return vibra_get_sample_ms_from_fingerprint(signature);
 }
 
+void EMSCRIPTEN_KEEPALIVE FreeFingerprint(Fingerprint *signature)
+{
+    vibra_free_fingerprint(signature);
+}
+
 #ifdef __cplusplus
 }
 #endif

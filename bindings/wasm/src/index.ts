@@ -40,6 +40,8 @@ export class Vibra extends EventEmitter {
     const uri = Module.ccall('GetFingerprint', 'string', ['number'], [signaturePtr]);
     const samplems = Module.ccall('GetSampleMs', 'number', ['number'], [signaturePtr]);
 
+    Module.ccall('FreeFingerprint', 'void', ['number'], [signaturePtr]);
+
     return new Singature(uri, samplems);
   }
 }
