@@ -1,11 +1,11 @@
 name: Windows AMD64
 
 on:
-  workflow_call:
-    inputs:
-      ref:
-        required: true
-        type: string
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
 
 jobs:
   windows-amd64:
@@ -13,8 +13,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.ref }}
 
       - name: Install dependencies
         run: vcpkg install curl:x64-windows fftw3:x64-windows
