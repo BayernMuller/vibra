@@ -23,7 +23,10 @@ WASM_SETTINGS := -s EXPORTED_FUNCTIONS="[ \
 					]" \
                  -s EXPORTED_RUNTIME_METHODS="['ccall', 'cwrap']" \
                  -s ALLOW_MEMORY_GROWTH=1 \
-                 -s WASM=1
+                 -s WASM=1 \
+				 -s MODULARIZE=1 \
+				 -s EXPORT_NAME=createModule \
+				 -s EXPORT_ES6=1
 
 CFLAGS := -Os
 CXXFLAGS := -Os -std=c++11 -I/usr/local/include
