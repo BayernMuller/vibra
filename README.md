@@ -60,7 +60,7 @@
 * The project is developed using the **C++11** standard.
 * vibra has the following dependencies:
     * [CMake](https://cmake.org/): A cross-platform build system generator.
-    * [libfftw3](http://www.fftw.org/): A library for computing Fast Fourier Transforms.
+    * [KISS FFT](https://github.com/mborgerding/kissfft): Vendored in `third-party/kissfft` for Fast Fourier Transforms.
     * [libcurl](https://curl.se/libcurl/) (CLI tool only): A library for transferring data with URLs.
       * If you don't need CLI tool, libcurl is not required.
       * You can disable it by setting the `-DLIBRARY_ONLY=ON` option in the CMake command.
@@ -70,18 +70,18 @@
 #### Install dependencies
 * **Ubuntu**
     * `sudo apt-get update`
-    * `sudo apt-get install cmake libcurl4-openssl-dev libfftw3-dev`
+    * `sudo apt-get install cmake libcurl4-openssl-dev`
     * `sudo apt-get install ffmpeg` (Optional)
 * **Windows**
     * Install [CMake](https://cmake.org/download/)
     * Install [vcpkg](https://github.com/Microsoft/vcpkg)
     * Install dependencies using vcpkg:
-        * `vcpkg install curl:x64-windows fftw3:x64-windows`
+        * `vcpkg install curl:x64-windows`
     * Add the vcpkg toolchain file to your CMake command (see Build section)
     * Install [FFmpeg](https://ffmpeg.org/download.html#build-windows) (Optional)
 * **macOS**
     * Install [Homebrew](https://brew.sh/)
-    * `brew install cmake curl fftw`
+    * `brew install cmake curl`
     * `brew install ffmpeg` (Optional)
 
 
