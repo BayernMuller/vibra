@@ -27,7 +27,7 @@ WASM_SETTINGS := -s EXPORTED_FUNCTIONS="[ \
 
 CFLAGS := -Os
 CXXFLAGS := -Os -std=c++11 -I/usr/local/include
-LDFLAGS := $(WASM_SETTINGS) -L/usr/local/lib -lvibra -lfftw3
+LDFLAGS := $(WASM_SETTINGS) -L/usr/local/lib -lvibra
 
 all: $(TARGET_JS)
 
