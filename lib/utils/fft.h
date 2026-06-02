@@ -1,13 +1,12 @@
 #ifndef LIB_UTILS_FFT_H_
 #define LIB_UTILS_FFT_H_
 
+#include <array>
 #include <cassert>
 #include <cmath>
 
-#include <fftw3.h>  // NOLINT [include_order]
+#include <kiss_fftr.h>  // NOLINT [include_order]
 #include <algorithm>
-#include <memory>
-#include <vector>
 
 namespace fft {
 
@@ -18,11 +17,8 @@ class FFT {
   using FFTOutput = std::array<long double, OUTPUT_SIZE>;
 
  public:
-  FFT()
-      : input_data_buffer_(fftw_alloc_real(INPUT_SIZE), fftw_free),
-        output_data_buffer_(fftw_alloc_complex(OUTPUT_SIZE), fftw_free) {
-    fftw_plan_ = fftw_plan_dft_r2c_1d(INPUT_SIZE, input_data_buffer_.get(),
-                                      output_data_buffer_.get(), FFTW_ESTIMATE);
+  FFT() : fft_cfg_(kiss_fftr_alloc(INPUT_SIZE, 0, nullptr, nullptr)) {
+    assert(fft_cfg_ != nullptr && "Failed to allocate kissfft config");
   }
   FFT(const FFT&) = delete;
   FFT& operator=(const FFT&) = delete;
@@ -37,11 +33,10 @@ class FFT {
 
     FFTOutput real_output;
 
-    // Copy and convert the input data to double
     for (std::size_t i = 0; i < INPUT_SIZE; i++) {
-      input_data_buffer_.get()[i] = static_cast<double>(input[i]);
+      input_data_buffer_[i] = static_cast<kiss_fft_scalar>(input[i]);
     }
-    fftw_execute(fftw_plan_);
+    kiss_fftr(fft_cfg_, input_data_buffer_.data(), output_data_buffer_.data());
 
     double real_val = 0.0;
     double imag_val = 0.0;
@@ -50,8 +45,8 @@ class FFT {
 
     // do max((real^2 + imag^2) / (1 << 17), 0.0000000001)
     for (std::size_t i = 0; i < OUTPUT_SIZE; ++i) {
-      real_val = output_data_buffer_.get()[i][0];
-      imag_val = output_data_buffer_.get()[i][1];
+      real_val = output_data_buffer_[i].r;
+      imag_val = output_data_buffer_[i].i;
 
       real_val = (real_val * real_val + imag_val * imag_val) * scale_factor;
       real_output[i] = (real_val < min_val) ? min_val : real_val;
@@ -60,14 +55,13 @@ class FFT {
   }
 
   virtual ~FFT() {
-    fftw_destroy_plan(fftw_plan_);
-    fftw_cleanup();
+    kiss_fftr_free(fft_cfg_);
   }
 
  private:
-  fftw_plan fftw_plan_;
-  std::unique_ptr<double, decltype(&fftw_free)> input_data_buffer_;
-  std::unique_ptr<fftw_complex, decltype(&fftw_free)> output_data_buffer_;
+  kiss_fftr_cfg fft_cfg_;
+  std::array<kiss_fft_scalar, INPUT_SIZE> input_data_buffer_;
+  std::array<kiss_fft_cpx, OUTPUT_SIZE> output_data_buffer_;
 };
 }  // namespace fft
 
