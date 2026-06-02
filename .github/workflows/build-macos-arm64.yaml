@@ -14,9 +14,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: brew install fftw --formula
-
       - name: Configure CMake
         run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SUFFIX=macos-arm64
 

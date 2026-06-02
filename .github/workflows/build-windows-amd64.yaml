@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install dependencies
-        run: vcpkg install curl:x64-windows fftw3:x64-windows
+        run: vcpkg install curl:x64-windows
 
       - name: Configure CMake with vcpkg
         run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SUFFIX=windows-amd64 -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT\scripts\buildsystems\vcpkg.cmake"
