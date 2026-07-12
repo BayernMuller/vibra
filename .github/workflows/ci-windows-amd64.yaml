@@ -1,0 +1,55 @@
+name: CI Windows AMD64
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+jobs:
+  ci-windows-amd64:
+    runs-on: windows-2022
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: vcpkg install curl:x64-windows
+
+      - name: Configure release build with vcpkg
+        run: >
+          cmake -B build
+          -DCMAKE_BUILD_TYPE=Release
+          -DBUILD_SUFFIX=windows-amd64
+          -DBUILD_TESTING=OFF
+          -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT\scripts\buildsystems\vcpkg.cmake"
+
+      - name: Build
+        run: cmake --build ${{ github.workspace }}/build --config Release
+
+      - name: Configure unit tests
+        run: >
+          cmake -B build-test
+          -DCMAKE_BUILD_TYPE=Debug
+          -DLIBRARY_ONLY=ON
+          -DBUILD_TESTING=ON
+
+      - name: Build unit tests
+        run: cmake --build build-test --target vibra_unit_tests --config Debug
+
+      - name: Run unit tests
+        run: ctest --test-dir build-test -C Debug --output-on-failure
+
+      - name: Check build results
+        run: |
+          Get-ChildItem build/cli/Release
+          Get-ChildItem build/lib/Release
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibra-windows-amd64
+          path: |
+            build/cli/Release
+            build/lib/Release

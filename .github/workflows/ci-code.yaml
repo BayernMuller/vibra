@@ -1,0 +1,30 @@
+name: Code CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+jobs:
+  code:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-format cpplint
+
+      - name: Check cpplint
+        run: cpplint --recursive lib include tests/algorithm tests/audio tests/utils tests/public_api_test.cpp
+
+      - name: Check clang-format
+        run: |
+          find include lib tests \
+            -path tests/e2e -prune -o \
+            \( -name '*.h' -o -name '*.cpp' -o -name '*.cc' -o -name '*.c' \) \
+            -print0 | xargs -0 clang-format --dry-run --Werror

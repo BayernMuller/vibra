@@ -1,8 +1,9 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.14)
 project(vibra)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if(MSVC)
     # TODO: fix warnings
@@ -35,9 +36,20 @@ if(ENABLE_PROFILING)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pg")
 endif()
 
+option(LIBRARY_ONLY "Build only the library" OFF)
+option(BUILD_JS "Build JavaScript/WebAssembly bindings" OFF)
+include(CTest)
+
 add_subdirectory(lib)
 
-option(LIBRARY_ONLY "Build only the library" OFF)
+if(BUILD_JS)
+    add_subdirectory(js)
+endif()
+
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()
+
 if(NOT LIBRARY_ONLY)
     add_subdirectory(cli)
 endif()

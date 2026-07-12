@@ -1,12 +1,3 @@
-# Fetch the args header-only library
-include(FetchContent)
-FetchContent_Declare(
-    args
-    GIT_REPOSITORY https://github.com/Taywee/args.git
-    GIT_TAG        master
-)
-FetchContent_Populate(args)
-
 # Add the executable for the CLI
 add_executable(vibra
     main.cpp
@@ -15,11 +6,9 @@ add_executable(vibra
     communication/shazam.cpp
 )
 
-# Add the args include directory to the target
-target_include_directories(vibra PRIVATE ${args_SOURCE_DIR})
-
 # Add the include directory to the target
 target_include_directories(vibra PRIVATE ${CMAKE_SOURCE_DIR}/cli)
+target_include_directories(vibra PRIVATE ${CMAKE_SOURCE_DIR}/third-party/args)
 
 # Link the CLI with the static libvibra and libcurl
 if(MSVC)

@@ -23,7 +23,7 @@
 * **Key features**:
     * **Smart Segment Selection**: Automatically analyzes audio to find the most distinctive part for fingerprinting, significantly improving recognition accuracy.
     * Fast and lightweight, optimized for various platforms, including embedded devices.
-    * Cross-platform support: Linux, Windows, macOS, **WebAssembly**, and **FFI bindings** for other languages.
+    * Cross-platform support: Linux, Windows, macOS, **WebAssembly**, and **Python**.
     * Flexible input processing: native support for WAV files, optional FFmpeg for other formats.
 * **Based on Shazam's algorithm**:
     * [An Industrial-Strength Audio Search Algorithm](https://www.ee.columbia.edu/~dpwe/papers/Wang03-shazam.pdf)
@@ -33,7 +33,8 @@
     * Embedded devices (e.g., Raspberry Pi, Jetson Nano)
     * Desktop and server environments for high-performance recognition
     * WebAssembly for web-based use
-    * Additional support for iOS, Android, and other languages via FFI bindings
+    * Python applications through the ctypes-based Python package
+    * Additional support for iOS, Android, and other languages through the public C ABI
 
 ### Smart Segment Selection
 
@@ -191,16 +192,19 @@ vibra --recognize --tor --file song.mp3
 
 | Platform | Status | Workflows |
 |--------|--------|--------|
-| **Linux AMD64** | [![linux-amd64-main]][linux-amd64-main] | [build-linux-amd64] |
-| **Linux ARM64** | [![linux-arm64-main]][linux-arm64-main] | [build-linux-arm64] |
-| **MacOS AMD64** | [![macos-amd64-main]][macos-amd64-main] | [build-macos-amd64] |
-| **MacOS ARM64** | [![macos-arm64-main]][macos-arm64-main] | [build-macos-arm64] |
-| **Windows AMD64** | [![windows-amd64-main]][windows-amd64-main] | [build-windows-amd64] |
-| **WebAssembly** | [![webassembly-main]][webassembly-main] | [build-webassembly] |
-| ***Python*** | *Coming soon...* | - |
+| **Code Checks** | [![code-main]][code-main] | [ci-code] |
+| **Linux AMD64** | [![linux-amd64-main]][linux-amd64-main] | [ci-linux-amd64] |
+| **Linux ARM64** | [![linux-arm64-main]][linux-arm64-main] | [ci-linux-arm64] |
+| **MacOS ARM64** | [![macos-arm64-main]][macos-arm64-main] | [ci-macos-arm64] |
+| **Windows AMD64** | [![windows-amd64-main]][windows-amd64-main] | [ci-windows-amd64] |
+| **WebAssembly** | [![webassembly-main]][webassembly-main] | [ci-webassembly] |
+| **Python** | [![python-main]][python-main] | [ci-python] |
 
 ### Building the WebAssembly Version
-* Please refer to **[bindings/wasm/README.md](bindings/wasm/README.md)** for instructions on building and running the WebAssembly version of vibra.
+* Please refer to **[js/README.md](js/README.md)** for instructions on building and running the JavaScript/WebAssembly version of vibra.
+
+### Building the Python Package
+* Please refer to **[python/README.md](python/README.md)** for instructions on building and using the Python package.
 
 ### Building the Native Version
 
@@ -209,7 +213,6 @@ vibra --recognize --tor --file song.mp3
 * The project is developed using the **C++11** standard.
 * vibra has the following dependencies:
     * [CMake](https://cmake.org/): A cross-platform build system generator.
-    * [libfftw3](http://www.fftw.org/): A library for computing Fast Fourier Transforms.
     * [libcurl](https://curl.se/libcurl/) (CLI tool only): A library for transferring data with URLs.
       * If you don't need CLI tool, libcurl is not required.
       * You can disable it by setting the `-DLIBRARY_ONLY=ON` option in the CMake command.
@@ -219,18 +222,18 @@ vibra --recognize --tor --file song.mp3
 #### Install dependencies
 * **Ubuntu**
     * `sudo apt-get update`
-    * `sudo apt-get install cmake libcurl4-openssl-dev libfftw3-dev`
+    * `sudo apt-get install cmake libcurl4-openssl-dev`
     * `sudo apt-get install ffmpeg` (Optional)
 * **Windows**
     * Install [CMake](https://cmake.org/download/)
     * Install [vcpkg](https://github.com/Microsoft/vcpkg)
     * Install dependencies using vcpkg:
-        * `vcpkg install curl:x64-windows fftw3:x64-windows`
+        * `vcpkg install curl:x64-windows`
     * Add the vcpkg toolchain file to your CMake command (see Build section)
     * Install [FFmpeg](https://ffmpeg.org/download.html#build-windows) (Optional)
 * **macOS**
     * Install [Homebrew](https://brew.sh/)
-    * `brew install cmake curl fftw`
+    * `brew install cmake curl`
     * `brew install ffmpeg` (Optional)
 
 
@@ -456,25 +459,44 @@ vibra --bulk --dir ./music --output results.json --threads 4 --delay 3 \
 * I compared the performance of vibra with the [SongRec](https://github.com/marin-m/SongRec/tree/master) rust and python version on the Raspberry Pi 4.
 * vibra is about 2 times faster than the SongRec!
 
+### Contribution
+
+#### Unit tests
+* Unit tests are built with [GoogleTest](https://github.com/google/googletest), fetched by CMake.
+* Native CI builds release artifacts with `-DBUILD_TESTING=OFF`, then configures a separate test build with `-DBUILD_TESTING=ON`.
+* Run the following commands to build and run unit tests:
+    * `cmake -B build-test -DCMAKE_BUILD_TYPE=Debug -DLIBRARY_ONLY=ON -DBUILD_TESTING=ON`
+    * `cmake --build build-test --target vibra_unit_tests`
+    * `ctest --test-dir build-test --output-on-failure`
+
+#### Code checks
+* Code CI runs `cpplint` and `clang-format`.
+* Run the following commands locally:
+    * `cpplint --recursive lib include tests/algorithm tests/audio tests/utils tests/public_api_test.cpp`
+    * `find include lib tests -path tests/e2e -prune -o \( -name '*.h' -o -name '*.cpp' -o -name '*.cc' -o -name '*.c' \) -print0 | xargs -0 clang-format --dry-run --Werror`
+
 ### License
 * vibra is licensed under the GPLv3 license. See [LICENSE](LICENSE) for more details.
 
 
 
-[linux-amd64-main]: https://github.com/bayernmuller/vibra/actions/workflows/build-linux-amd64.yaml/badge.svg
-[build-linux-amd64]: https://github.com/bayernmuller/vibra/tree/main/.github/workflows/build-linux-amd64.yaml
+[code-main]: https://github.com/bayernmuller/vibra/actions/workflows/ci-code.yaml/badge.svg
+[ci-code]: https://github.com/bayernmuller/vibra/tree/main/.github/workflows/ci-code.yaml
 
-[linux-arm64-main]: https://github.com/bayernmuller/vibra/actions/workflows/build-linux-arm64.yaml/badge.svg
-[build-linux-arm64]: https://github.com/bayernmuller/vibra/tree/main/.github/workflows/build-linux-arm64.yaml
+[linux-amd64-main]: https://github.com/bayernmuller/vibra/actions/workflows/ci-linux-amd64.yaml/badge.svg
+[ci-linux-amd64]: https://github.com/bayernmuller/vibra/tree/main/.github/workflows/ci-linux-amd64.yaml
 
-[macos-amd64-main]: https://github.com/bayernmuller/vibra/actions/workflows/build-macos-amd64.yaml/badge.svg
-[build-macos-amd64]: https://github.com/bayernmuller/vibra/tree/main/.github/workflows/build-macos-amd64.yaml
+[linux-arm64-main]: https://github.com/bayernmuller/vibra/actions/workflows/ci-linux-arm64.yaml/badge.svg
+[ci-linux-arm64]: https://github.com/bayernmuller/vibra/tree/main/.github/workflows/ci-linux-arm64.yaml
 
-[macos-arm64-main]: https://github.com/bayernmuller/vibra/actions/workflows/build-macos-arm64.yaml/badge.svg
-[build-macos-arm64]: https://github.com/bayernmuller/vibra/tree/main/.github/workflows/build-macos-arm64.yaml
+[macos-arm64-main]: https://github.com/bayernmuller/vibra/actions/workflows/ci-macos-arm64.yaml/badge.svg
+[ci-macos-arm64]: https://github.com/bayernmuller/vibra/tree/main/.github/workflows/ci-macos-arm64.yaml
 
-[windows-amd64-main]: https://github.com/bayernmuller/vibra/actions/workflows/build-windows-amd64.yaml/badge.svg
-[build-windows-amd64]: https://github.com/bayernmuller/vibra/tree/main/.github/workflows/build-windows-amd64.yaml
+[windows-amd64-main]: https://github.com/bayernmuller/vibra/actions/workflows/ci-windows-amd64.yaml/badge.svg
+[ci-windows-amd64]: https://github.com/bayernmuller/vibra/tree/main/.github/workflows/ci-windows-amd64.yaml
 
-[webassembly-main]: https://github.com/bayernmuller/vibra/actions/workflows/build-webassembly.yaml/badge.svg
-[build-webassembly]: https://github.com/bayernmuller/vibra/tree/main/.github/workflows/build-webassembly.yaml
+[webassembly-main]: https://github.com/bayernmuller/vibra/actions/workflows/ci-webassembly.yaml/badge.svg
+[ci-webassembly]: https://github.com/bayernmuller/vibra/tree/main/.github/workflows/ci-webassembly.yaml
+
+[python-main]: https://github.com/bayernmuller/vibra/actions/workflows/ci-python.yaml/badge.svg
+[ci-python]: https://github.com/bayernmuller/vibra/tree/main/.github/workflows/ci-python.yaml

@@ -1,78 +1,70 @@
 #ifndef LIB_UTILS_FFT_H_
 #define LIB_UTILS_FFT_H_
 
-#include <cmath>
-#include <algorithm>
+#include <array>
 #include <cassert>
-#include <fftw3.h> // NOLINT [include_order]
-#include <memory>
-#include <vector>
+#include <cmath>
 
-namespace fft
-{
+#include <kiss_fftr.h>  // NOLINT [include_order]
+#include <algorithm>
+
+namespace vibra {
+
+namespace fft {
 
 template <int INPUT_SIZE>
-class FFT
-{
-public:
-    constexpr static const int OUTPUT_SIZE = INPUT_SIZE / 2 + 1;
-    using FFTOutput = std::array<long double, OUTPUT_SIZE>;
+class FFT {
+ public:
+  constexpr static const int kOutputSize = INPUT_SIZE / 2 + 1;
+  using FFTOutput = std::array<double, kOutputSize>;
 
-public:
-    FFT()
-        : input_data_buffer_(fftw_alloc_real(INPUT_SIZE), fftw_free),
-          output_data_buffer_(fftw_alloc_complex(OUTPUT_SIZE), fftw_free)
-    {
-        fftw_plan_ = fftw_plan_dft_r2c_1d(INPUT_SIZE, input_data_buffer_.get(),
-                                          output_data_buffer_.get(), FFTW_ESTIMATE);
+ public:
+  FFT() : fft_cfg_(kiss_fftr_alloc(INPUT_SIZE, 0, nullptr, nullptr)) {
+    assert(fft_cfg_ != nullptr && "Failed to allocate kissfft config");
+  }
+  FFT(const FFT&) = delete;
+  FFT& operator=(const FFT&) = delete;
+  FFT(FFT&&) = delete;
+  FFT& operator=(FFT&&) = delete;
+
+  template <typename Iterable>
+  FFTOutput RFFT(const Iterable& input) {
+    assert(input.size() == INPUT_SIZE &&
+           "Input size must be equal to the input size specified in the "
+           "constructor");
+
+    FFTOutput real_output;
+
+    for (std::size_t i = 0; i < INPUT_SIZE; i++) {
+      input_data_buffer_[i] = static_cast<kiss_fft_scalar>(input[i]);
     }
-    FFT(const FFT &) = delete;
-    FFT &operator=(const FFT &) = delete;
-    FFT(FFT &&) = delete;
-    FFT &operator=(FFT &&) = delete;
+    kiss_fftr(fft_cfg_, input_data_buffer_.data(), output_data_buffer_.data());
 
-    template <typename Iterable> FFTOutput RFFT(const Iterable &input)
-    {
-        assert(input.size() == INPUT_SIZE &&
-               "Input size must be equal to the input size specified in the constructor");
+    double real_val = 0.0;
+    double imag_val = 0.0;
+    const double kMinVal = 1e-10;
+    const double kScaleFactor = 1.0 / (1 << 17);
 
-        FFTOutput real_output;
+    // do max((real^2 + imag^2) / (1 << 17), 0.0000000001)
+    for (std::size_t i = 0; i < kOutputSize; ++i) {
+      real_val = output_data_buffer_[i].r;
+      imag_val = output_data_buffer_[i].i;
 
-        // Copy and convert the input data to double
-        for (std::size_t i = 0; i < INPUT_SIZE; i++)
-        {
-            input_data_buffer_.get()[i] = static_cast<double>(input[i]);
-        }
-        fftw_execute(fftw_plan_);
-
-        double real_val = 0.0;
-        double imag_val = 0.0;
-        const double min_val = 1e-10;
-        const double scale_factor = 1.0 / (1 << 17);
-
-        // do max((real^2 + imag^2) / (1 << 17), 0.0000000001)
-        for (std::size_t i = 0; i < OUTPUT_SIZE; ++i)
-        {
-            real_val = output_data_buffer_.get()[i][0];
-            imag_val = output_data_buffer_.get()[i][1];
-
-            real_val = (real_val * real_val + imag_val * imag_val) * scale_factor;
-            real_output[i] = (real_val < min_val) ? min_val : real_val;
-        }
-        return real_output;
+      real_val = (real_val * real_val + imag_val * imag_val) * kScaleFactor;
+      real_output[i] = (real_val < kMinVal) ? kMinVal : real_val;
     }
+    return real_output;
+  }
 
-    virtual ~FFT()
-    {
-        fftw_destroy_plan(fftw_plan_);
-        fftw_cleanup();
-    }
+  virtual ~FFT() { kiss_fftr_free(fft_cfg_); }
 
-private:
-    fftw_plan fftw_plan_;
-    std::unique_ptr<double, decltype(&fftw_free)> input_data_buffer_;
-    std::unique_ptr<fftw_complex, decltype(&fftw_free)> output_data_buffer_;
+ private:
+  kiss_fftr_cfg fft_cfg_;
+  std::array<kiss_fft_scalar, INPUT_SIZE> input_data_buffer_;
+  std::array<kiss_fft_cpx, kOutputSize> output_data_buffer_;
 };
-} // namespace fft
+}  // namespace fft
 
-#endif // LIB_UTILS_FFT_H_
+}  // namespace vibra
+
+#endif  // LIB_UTILS_FFT_H_

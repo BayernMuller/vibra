@@ -1,0 +1,7 @@
+prune build
+prune build-*
+prune .git
+prune js/node_modules
+prune js/dist
+prune live-demo/vercel_proxy/node_modules
+global-exclude __pycache__ *.py[cod]

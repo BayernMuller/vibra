@@ -1,0 +1,17 @@
+{
+  "name": "vercel_proxy",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "module",
+  "dependencies": {
+    "node-fetch": "^3.3.2",
+    "uuid": "^10.0.0"
+  }
+}

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vibra-live-demo</title>
+    <link rel="stylesheet" href="public/styles.css">
+    <div class="profile-container">
+        <img src="https://github.com/bayernmuller.png" class="profile" width=50px/>
+        <div style="display: flex; flex-direction: column;">
+            <a href="https://github.com/bayernmuller">@BayernMuller</a>
+            <a href="https://github.com/bayernmuller" class="caption">https://github.com/bayernmuller</a>
+        </div>
+    </div>
+</head>
+<body>
+    <div class="container">
+        <a href="https://github.com/BayernMuller/vibra" class="center-content" id="center-content">
+            <img src="https://github.com/BayernMuller/vibra/raw/main/docs/project_vibra.png" width=400px class="logo">
+            <img src="https://github.com/BayernMuller/vibra/raw/main/docs/logo_license.svg" width=400px class="logo">
+        </a>
+        <div id="track-container" class="track-container">
+            <img id="cover" src="" width="200px">
+            <div class="track-info">
+                <h1 id="title"></h1>
+                <p id="artist"></p>
+                <p id="album" class="caption"></p>
+            </div>
+        </div>
+        <div class="text-center" id="title-content">
+            <h1>vibra-live-demo</h1>
+        </div>
+        <div class="text-center">
+            <i>Play a song and press the Start Recording button, vibra will try to guess the song for you!</i><br><br>
+            <p class="caption">- Make sure to allow microphone access.</p>
+            <p class="caption">- Please visit <a href="https://github.com/BayernMuller/vibra">vibra repository</a> for more information!</p>
+        </div>
+        <div class="text-center">
+            <button id="startBtn" class="btn" disabled>Start Recording</button>
+            <button id="stopBtn" class="btn" disabled>Stop Recording</button>
+        </div>
+        <p id="error-message" class="error-message"></p>
+    </div>
+</body>
+<script src="public/vibra.js"></script>
+<script src="public/main.js"></script>
+</html>

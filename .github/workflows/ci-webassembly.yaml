@@ -1,0 +1,29 @@
+name: CI WebAssembly
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+jobs:
+  ci-webassembly:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Setup emsdk
+        uses: mymindstorm/setup-emsdk@v14
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build vibra WebAssembly Module
+        run: ${{ github.workspace }}/js/build-wasm.sh
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibra-web-assembly
+          path: |
+            build-js-wasm/js/vibra.wasm
+            build-js-wasm/js/vibra.js

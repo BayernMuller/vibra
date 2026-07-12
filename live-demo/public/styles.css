@@ -1,0 +1,113 @@
+.btn {
+    background-color: #007aff;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+}
+.btn:hover {
+    background-color: #005bb5;
+}
+.btn:active {
+    background-color: #003e7e;
+}
+.btn:disabled {
+    background-color: #d3d3d3;
+    cursor: not-allowed;
+}
+#stopBtn {
+    background-color: #ff3b30;
+}
+#stopBtn:hover {
+    background-color: #e62e2e;
+}
+#stopBtn:active {
+    background-color: #b22222;
+}
+#stopBtn:disabled {
+    background-color: #d3d3d3;
+    cursor: not-allowed;
+}
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+    margin: 10px; /* Added margin for mobile */
+    padding: 10px; /* Added padding for mobile */
+    box-sizing: border-box; /* Ensure padding and margin are included in the total width and height */
+    position: absolute; /* Ensure the container is positioned absolutely */
+    top: 50%; /* Move the container to the middle of the screen */
+    left: 50%; /* Move the container to the middle of the screen */
+    transform: translate(-50%, -50%); /* Center the container */
+}
+.center-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.text-center {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.profile {
+    border-radius: 100px;
+    border: 1px solid #eaeaea;
+    margin-right: 10px;
+}
+.profile-container {
+    display: flex;
+    align-items: center;
+    padding: 5px; /* Added padding for mobile */
+    box-sizing: border-box; /* Ensure padding is included in the total width */
+}
+
+.error-message {
+    color: red;
+}
+
+.caption {
+    color: gray;
+}
+
+#cover {
+    border-radius: 30px;
+    border: 1px solid #eaeaea;
+    margin-right: 10px;
+}
+
+.track-container {
+    display: none;
+    justify-content: center; /* Center align horizontally */
+    align-items: center; /* Center align vertically */
+    padding: 5px; /* Added padding for mobile */
+    box-sizing: border-box; /* Ensure padding is included in the total width */
+}
+
+.track-info {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+    width: 400px;
+}
+
+a {
+    color: black;
+}
+
+body, h1, h2, h3, h4, h5, h6, p, a, button {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0; /* Remove default margin for mobile */
+    padding: 0; /* Remove default padding for mobile */
+    box-sizing: border-box; /* Ensure padding and margin are included in the total width and height */
+}
+

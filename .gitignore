@@ -15,6 +15,7 @@
 .vscode/
 __pycache__/
 build/
+build-*/
 
 # Unignore LICENSE
 !LICENSE
@@ -37,6 +38,12 @@ yarn.lock
 # TypeScript
 *.tsbuildinfo
 dist/
+
+# Python
+*.egg-info/
+.venv/
+venv/
+wheelhouse/
 
 # CLion
 .idea/
