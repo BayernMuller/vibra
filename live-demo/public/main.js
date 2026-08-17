@@ -50,194 +50,185 @@ async function getPcmSignature(rawpcm, pcm_size, sampleRate, sampleWidth, channe
 
   const uri = Module.ccall('GetFingerprint', 'string', ['number'], [signaturePtr]);
   const samplems = Module.ccall('GetSampleMs', 'number', ['number'], [signaturePtr]);
-
-  return {
-    uri: uri,
-    samplems: samplems
+  // older wasm builds don't export FreeFingerprint
+  if (typeof Module._FreeFingerprint === 'function') {
+    Module.ccall('FreeFingerprint', null, ['number'], [signaturePtr]);
   }
-}
 
-function recognizeSuccess(album, title, artist, cover) {
-  document.getElementById('album').textContent = album;
-  document.getElementById('title').textContent = title;
-  document.getElementById('artist').textContent = artist;
-  document.getElementById('cover').src = cover;
-
-  const trackContainer = document.getElementById('track-container');
-  trackContainer.style.display = 'flex';
-
-  const titleContent = document.getElementById('title-content');
-  titleContent.style.display = 'none';
-
-  const centerContent = document.getElementById('center-content');
-  centerContent.style.display = 'none';
-
-  const errorMessage = document.getElementById('error-message');
-  errorMessage.style.display = 'none';
-}
-
-function recognizeFailed(error) {
-  const errorMessage = document.getElementById('error-message');
-  errorMessage.textContent = error;
-  errorMessage.style.display = 'block';
+  return { uri, samplems };
 }
 
 (async () => {
-  const startBtn = document.getElementById('startBtn');
-  const stopBtn = document.getElementById('stopBtn');
-  let audioContext;
-  let recorderNode;
+  const PROXY_URL = 'https://vercel-proxy-rust-three.vercel.app/api/shazam';
+  // Recognition is attempted on the growing recording at these offsets,
+  // so a later attempt reuses everything captured so far.
+  const ATTEMPT_TIMES = [5000, 7000, 9000, 12000];
+
+  const listenBtn = document.getElementById('listenBtn');
+  const listenLabel = document.getElementById('listen-label');
+  const statusEl = document.getElementById('status');
+  const listenView = document.getElementById('listen-view');
+  const resultView = document.getElementById('result-view');
+  const againBtn = document.getElementById('againBtn');
+
+  let audioContext = null;
+  let recorderNode = null;
+  let stream = null;
   let recordedChunks = [];
-  const durations = [5000, 7000, 9000, 12000];
-  let currentDurationIndex = 0;
-  let recognitionTimeout;
-  let isRecording = false;
-  let stream;
+  let attemptIndex = 0;
+  let attemptTimer = null;
+  let listening = false;
+  let recordingStartedAt = 0;
 
-  stopBtn.disabled = true;
-  try {
-    await waitForVibraRuntime();
-    startBtn.disabled = false;
-  } catch (error) {
-    console.log(error);
-    recognizeFailed(error.message);
+  function setStatus(message, isError = false) {
+    statusEl.textContent = message || '';
+    statusEl.classList.toggle('error', isError);
   }
 
-  startBtn.onclick = async () => {
-    // Reset variables before starting a new recording session
-    currentDurationIndex = 0;
-    recordedChunks = [];
-    isRecording = false;
+  function showResult(track) {
+    const sections = track.sections || [];
+    const metadata = sections[0]?.metadata || [];
 
-    startBtn.disabled = true;
-    stopBtn.disabled = false;
-    console.log('Recording started...');
-
-    const errorMessage = document.getElementById('error-message');
-    errorMessage.style.display = 'none';
-
-    // Start the first recording with the initial duration
-    await startRecording();
-  };
-
-  stopBtn.onclick = async () => {
-    console.log('Recording stopped by user.');
-    await stopRecording();
-
-    // Reset the current duration index to stop any further recording attempts
-    currentDurationIndex = durations.length;
-
-    // Re-enable the start button and disable the stop button
-    startBtn.disabled = false;
-    stopBtn.disabled = true;
-
-    recognizeFailed("Recording stopped by user.");
-
-    // Clean up recorded chunks
-    recordedChunks = [];
-  };
-
-  async function startRecording() {
-    isRecording = true;
-    const duration = durations[currentDurationIndex];
-    console.log(`Recording for ${duration / 1000} seconds...`);
-
-    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    audioContext = new AudioContext();
-    const sourceNode = audioContext.createMediaStreamSource(stream);
-    await audioContext.audioWorklet.addModule('public/recorderProcessor.js');
-    recorderNode = new AudioWorkletNode(audioContext, 'recorder-processor');
-    recorderNode.port.onmessage = event => {
-      const audioChunk = event.data;
-      recordedChunks.push(audioChunk);
-    };
-    sourceNode.connect(recorderNode);
-
-    // Stop recording after the specified duration
-    recognitionTimeout = setTimeout(async () => {
-      await stopRecording();
-      const success = await recognizeCurrentRecording();
-      if (success) {
-        // Recognition successful, no need to proceed further
-        console.log('Recognition successful.');
-        // Disable the stop button
-        stopBtn.disabled = true;
-        startBtn.disabled = false;
-
-        // Reset variables after success
-        resetVariables();
-      } else {
-        // Recognition failed, proceed to the next duration
-        currentDurationIndex++;
-        if (currentDurationIndex < durations.length) {
-          // Reset recorded data and start recording for the next duration
-          recordedChunks = [];
-          await startRecording();
-        } else {
-          // All durations attempted, show error message
-          recognizeFailed("Please reduce the surrounding noise and try again");
-          startBtn.disabled = false;
-          stopBtn.disabled = true;
-
-          // Reset variables after failure
-          resetVariables();
-        }
-      }
-    }, duration);
-  }
-
-  async function stopRecording() {
-    if (isRecording) {
-      console.log('Stopping recording...');
-      recorderNode.disconnect();
-      audioContext.close();
-      stream.getTracks().forEach(track => track.stop());
-      clearTimeout(recognitionTimeout);
-      isRecording = false;
+    const cover = document.getElementById('cover');
+    const coverUrl = track.images?.coverart || track.images?.coverarthq;
+    cover.hidden = !coverUrl;
+    if (coverUrl) {
+      cover.onerror = () => {
+        cover.hidden = true;
+      };
+      cover.src = coverUrl;
+    } else {
+      cover.removeAttribute('src');
     }
+    document.getElementById('title').textContent = track.title;
+    document.getElementById('artist').textContent = track.subtitle || '';
+    document.getElementById('album').textContent = metadata[0]?.text || '';
+
+    listenView.hidden = true;
+    resultView.hidden = false;
   }
 
-  async function recognizeCurrentRecording() {
-    console.log(`Attempting recognition with ${durations[currentDurationIndex] / 1000} seconds of audio...`);
+  function showListenView() {
+    resultView.hidden = true;
+    listenView.hidden = false;
+    setStatus('');
+  }
 
-    let audioBuffer = mergeBuffers(recordedChunks);
-    const buffer_byte_length = audioBuffer.length * audioBuffer.BYTES_PER_ELEMENT;
+  function setListeningUi(active) {
+    listenBtn.classList.toggle('listening', active);
+    listenLabel.textContent = active ? 'Listening…' : 'Tap to identify';
+  }
+
+  async function startListening() {
+    recordedChunks = [];
+    attemptIndex = 0;
+    listening = true;
+    setListeningUi(true);
+    setStatus('');
 
     try {
-      let signature = await getPcmSignature(audioBuffer, buffer_byte_length, 44100, 32, 1);
-      let response = await fetch(`https://vercel-proxy-rust-three.vercel.app/api/shazam?uri=${signature.uri}&samplems=${signature.samplems}`);
-      let data = await response.json();
+      // The browser's default voice processing (echo cancellation, noise
+      // suppression, auto gain) mangles music, so turn it all off.
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false,
+        },
+      });
 
-      if (data.retryms) {
-        // Recognition failed
-        return false;
-      } else {
-        // Recognition successful
-        const track = data.track || {};
-        const sections = track.sections || [];
-        const metadata = sections[0]?.metadata || [];
-        const album = metadata[0]?.text;
-        const title = track.title;
-        const artist = track.subtitle;
-        const cover = track.images?.coverart;
+      audioContext = new AudioContext();
+      const sourceNode = audioContext.createMediaStreamSource(stream);
+      await audioContext.audioWorklet.addModule('public/recorderProcessor.js');
+      recorderNode = new AudioWorkletNode(audioContext, 'recorder-processor');
+      recorderNode.port.onmessage = event => {
+        recordedChunks.push(event.data);
+      };
+      sourceNode.connect(recorderNode);
 
-        if (album && title && artist && cover) {
-          recognizeSuccess(album, title, artist, cover);
-          return true;
-        } else {
-          return false;
-        }
-      }
+      recordingStartedAt = Date.now();
+      attemptTimer = setTimeout(runAttempt, ATTEMPT_TIMES[0]);
     } catch (error) {
-      console.log(error);
-      recognizeFailed(error.message);
-      return false;
+      console.error(error);
+      stopListening();
+      setStatus(
+          error.name === 'NotAllowedError'
+              ? 'Microphone access was denied. Please allow it and try again.'
+              : error.message,
+          true);
     }
   }
 
-  function mergeBuffers(buffers){
-    let length = buffers.reduce((total, buffer) => total + buffer.length, 0);
-    let result = new Float32Array(length);
+  function stopListening() {
+    listening = false;
+    clearTimeout(attemptTimer);
+    attemptTimer = null;
+    if (recorderNode) {
+      recorderNode.disconnect();
+      recorderNode = null;
+    }
+    if (audioContext) {
+      audioContext.close();
+    }
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      stream = null;
+    }
+    setListeningUi(false);
+  }
+
+  async function runAttempt() {
+    if (!listening) {
+      return;
+    }
+    setStatus(`Identifying… (attempt ${attemptIndex + 1} of ${ATTEMPT_TIMES.length})`);
+
+    // AudioContext keeps its own device-native rate (44.1k, 48k, ...);
+    // the fingerprinter must be told the real one.
+    const sampleRate = audioContext.sampleRate;
+    const pcm = mergeBuffers(recordedChunks);
+
+    let track = null;
+    try {
+      const signature = await getPcmSignature(pcm, pcm.byteLength, sampleRate, 32, 1);
+      const response = await fetch(
+          `${PROXY_URL}?uri=${signature.uri}&samplems=${signature.samplems}`);
+      const data = await response.json();
+      if (!data.retryms && data.track?.title) {
+        track = data.track;
+      }
+    } catch (error) {
+      console.error(error);
+      stopListening();
+      setStatus(error.message, true);
+      return;
+    }
+
+    if (!listening) {
+      return;  // cancelled while the request was in flight
+    }
+
+    if (track) {
+      stopListening();
+      showResult(track);
+      return;
+    }
+
+    attemptIndex++;
+    if (attemptIndex >= ATTEMPT_TIMES.length) {
+      stopListening();
+      setStatus('Couldn’t identify the song. Reduce background noise and try again.', true);
+      return;
+    }
+
+    const elapsed = Date.now() - recordingStartedAt;
+    setStatus('Listening for a bit longer…');
+    attemptTimer = setTimeout(runAttempt, Math.max(0, ATTEMPT_TIMES[attemptIndex] - elapsed));
+  }
+
+  function mergeBuffers(buffers) {
+    const length = buffers.reduce((total, buffer) => total + buffer.length, 0);
+    const result = new Float32Array(length);
     let offset = 0;
     buffers.forEach(buffer => {
       result.set(buffer, offset);
@@ -246,14 +237,26 @@ function recognizeFailed(error) {
     return new Uint8Array(result.buffer);
   }
 
-  function resetVariables() {
-    // Reset all variables to their initial state
-    audioContext = null;
-    recorderNode = null;
-    recordedChunks = [];
-    currentDurationIndex = 0;
-    recognitionTimeout = null;
-    isRecording = false;
-    stream = null;
+  listenBtn.onclick = () => {
+    if (listening) {
+      stopListening();
+      setStatus('');
+    } else {
+      startListening();
+    }
+  };
+
+  againBtn.onclick = () => {
+    showListenView();
+    startListening();
+  };
+
+  listenBtn.disabled = true;
+  try {
+    await waitForVibraRuntime();
+    listenBtn.disabled = false;
+  } catch (error) {
+    console.error(error);
+    setStatus(error.message, true);
   }
 })();
