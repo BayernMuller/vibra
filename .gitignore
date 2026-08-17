@@ -49,3 +49,7 @@ wheelhouse/
 .idea/
 cmake-build-debug/
 cmake-build-release/
+
+# live demo wasm artifacts (built by CI, fetched locally for testing)
+live-demo/public/vibra.js
+live-demo/public/vibra.wasm

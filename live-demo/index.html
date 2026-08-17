@@ -3,45 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>vibra-live-demo</title>
+    <title>vibra live demo</title>
     <link rel="stylesheet" href="public/styles.css">
-    <div class="profile-container">
-        <img src="https://github.com/bayernmuller.png" class="profile" width=50px/>
-        <div style="display: flex; flex-direction: column;">
-            <a href="https://github.com/bayernmuller">@BayernMuller</a>
-            <a href="https://github.com/bayernmuller" class="caption">https://github.com/bayernmuller</a>
-        </div>
-    </div>
 </head>
 <body>
-    <div class="container">
-        <a href="https://github.com/BayernMuller/vibra" class="center-content" id="center-content">
-            <img src="https://github.com/BayernMuller/vibra/raw/main/docs/project_vibra.png" width=400px class="logo">
-            <img src="https://github.com/BayernMuller/vibra/raw/main/docs/logo_license.svg" width=400px class="logo">
-        </a>
-        <div id="track-container" class="track-container">
-            <img id="cover" src="" width="200px">
-            <div class="track-info">
-                <h1 id="title"></h1>
-                <p id="artist"></p>
-                <p id="album" class="caption"></p>
+    <main class="app">
+        <header class="topbar">
+            <a class="brand" href="https://github.com/BayernMuller/vibra">vibra</a>
+            <a class="profile" href="https://github.com/bayernmuller">
+                <img src="https://github.com/bayernmuller.png" alt="BayernMuller" width="32" height="32">
+                <span>@BayernMuller</span>
+            </a>
+        </header>
+
+        <section class="stage">
+            <div id="listen-view" class="listen-view">
+                <h1>What&rsquo;s playing?</h1>
+                <p class="tagline">Play a song out loud, then tap the button &mdash; vibra will identify it right in your browser.</p>
+                <button id="listenBtn" class="listen-btn" disabled aria-label="Start listening">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="9" y="2.5" width="6" height="12" rx="3"/>
+                        <path d="M5 11.5a7 7 0 0 0 14 0"/>
+                        <line x1="12" y1="18.5" x2="12" y2="21.5"/>
+                    </svg>
+                </button>
+                <p id="listen-label" class="listen-label">Tap to identify</p>
+                <p id="status" class="status" role="status"></p>
             </div>
-        </div>
-        <div class="text-center" id="title-content">
-            <h1>vibra-live-demo</h1>
-        </div>
-        <div class="text-center">
-            <i>Play a song and press the Start Recording button, vibra will try to guess the song for you!</i><br><br>
-            <p class="caption">- Make sure to allow microphone access.</p>
-            <p class="caption">- Please visit <a href="https://github.com/BayernMuller/vibra">vibra repository</a> for more information!</p>
-        </div>
-        <div class="text-center">
-            <button id="startBtn" class="btn" disabled>Start Recording</button>
-            <button id="stopBtn" class="btn" disabled>Stop Recording</button>
-        </div>
-        <p id="error-message" class="error-message"></p>
-    </div>
+
+            <div id="result-view" class="result-view" hidden>
+                <img id="cover" class="cover" src="" alt="Album cover">
+                <h2 id="title"></h2>
+                <p id="artist" class="artist"></p>
+                <p id="album" class="album"></p>
+                <button id="againBtn" class="again-btn">Listen again</button>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>Fingerprinting runs locally via WebAssembly &middot;
+               <a href="https://github.com/BayernMuller/vibra">source on GitHub</a></p>
+        </footer>
+    </main>
+
+    <script src="public/vibra.js"></script>
+    <script src="public/main.js"></script>
 </body>
-<script src="public/vibra.js"></script>
-<script src="public/main.js"></script>
 </html>
