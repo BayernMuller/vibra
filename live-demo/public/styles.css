@@ -22,11 +22,8 @@
 
 html {
     min-height: 100%;
-    /* on <html> so it propagates to the canvas: one continuous gradient
-       across the whole screen, safe areas included, no seam */
-    background: radial-gradient(1200px 800px at 50% -10%, #1b2c5e 0%, transparent 60%),
-        linear-gradient(180deg, var(--bg-top), var(--bg-bottom)) var(--bg-top);
-    background-repeat: no-repeat;
+    /* only ever visible during overscroll bounce */
+    background-color: var(--bg-top);
 }
 
 body {
@@ -37,6 +34,18 @@ body {
     -webkit-font-smoothing: antialiased;
     /* keep Android pull-to-refresh from killing an active listen */
     overscroll-behavior-y: none;
+}
+
+/* gradient layer pinned to the visual viewport, so it always covers
+   exactly what's on screen — safe areas and collapsing toolbars included */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(1200px 800px at 50% -10%, #1b2c5e 0%, transparent 60%),
+        linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
 }
 
 button {
