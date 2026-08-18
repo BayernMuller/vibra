@@ -24,22 +24,54 @@ html, body {
     height: 100%;
 }
 
+html {
+    /* shows through overscroll bounce and behind the safe areas on iOS */
+    background-color: var(--bg-top);
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
         "Helvetica Neue", Arial, sans-serif;
     color: var(--text);
     background: radial-gradient(1200px 800px at 50% -10%, #1b2c5e 0%, transparent 60%),
-        linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+        linear-gradient(180deg, var(--bg-top), var(--bg-bottom)) var(--bg-top);
     -webkit-font-smoothing: antialiased;
+    /* keep Android pull-to-refresh from killing an active listen */
+    overscroll-behavior-y: none;
+}
+
+button {
+    font-family: inherit;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+button:focus-visible,
+a:focus-visible {
+    outline: 3px solid var(--accent-bright);
+    outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }
 
 .app {
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     max-width: 720px;
     margin: 0 auto;
-    padding: 20px 24px;
+    /* keep content clear of the notch and home indicator */
+    padding: calc(20px + env(safe-area-inset-top, 0px)) 24px
+        calc(20px + env(safe-area-inset-bottom, 0px));
 }
 
 /* ---------- header ---------- */

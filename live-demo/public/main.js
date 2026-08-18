@@ -138,6 +138,10 @@ async function getPcmSignature(rawpcm, pcm_size, sampleRate, sampleWidth, channe
       });
 
       audioContext = new AudioContext();
+      // Chrome can start the context suspended even inside a user gesture
+      if (audioContext.state === 'suspended') {
+        await audioContext.resume();
+      }
       const sourceNode = audioContext.createMediaStreamSource(stream);
       await audioContext.audioWorklet.addModule('public/recorderProcessor.js');
       recorderNode = new AudioWorkletNode(audioContext, 'recorder-processor');
