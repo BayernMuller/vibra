@@ -36,6 +36,30 @@ body {
     background: radial-gradient(1200px 800px at 50% -10%, #1b2c5e 0%, transparent 60%),
         linear-gradient(180deg, var(--bg-top), var(--bg-bottom)) var(--bg-top);
     -webkit-font-smoothing: antialiased;
+    /* keep Android pull-to-refresh from killing an active listen */
+    overscroll-behavior-y: none;
+}
+
+button {
+    font-family: inherit;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+button:focus-visible,
+a:focus-visible {
+    outline: 3px solid var(--accent-bright);
+    outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }
 
 .app {
