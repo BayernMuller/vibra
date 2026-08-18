@@ -20,21 +20,20 @@
     display: none !important;
 }
 
-html, body {
-    height: 100%;
-}
-
 html {
-    /* shows through overscroll bounce and behind the safe areas on iOS */
-    background-color: var(--bg-top);
+    min-height: 100%;
+    /* on <html> so it propagates to the canvas: one continuous gradient
+       across the whole screen, safe areas included, no seam */
+    background: radial-gradient(1200px 800px at 50% -10%, #1b2c5e 0%, transparent 60%),
+        linear-gradient(180deg, var(--bg-top), var(--bg-bottom)) var(--bg-top);
+    background-repeat: no-repeat;
 }
 
 body {
+    min-height: 100%;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
         "Helvetica Neue", Arial, sans-serif;
     color: var(--text);
-    background: radial-gradient(1200px 800px at 50% -10%, #1b2c5e 0%, transparent 60%),
-        linear-gradient(180deg, var(--bg-top), var(--bg-bottom)) var(--bg-top);
     -webkit-font-smoothing: antialiased;
     /* keep Android pull-to-refresh from killing an active listen */
     overscroll-behavior-y: none;
