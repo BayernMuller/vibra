@@ -20,6 +20,7 @@
 
 * **vibra** is a library and CLI tool for music recognition using the **unofficial** Shazam API.
 * It analyzes audio files, generates fingerprints, and queries Shazam's database for song identification.
+* The fingerprints vibra generates are **compatible with Apple's official [ShazamKit](https://developer.apple.com/shazamkit/)**: generate the signature anywhere (server, embedded device, browser) and match it through the official ShazamKit SDK on any platform ShazamKit supports (iOS, macOS, Android). See [Using vibra with the official ShazamKit](#using-vibra-with-the-official-shazamkit).
 * **Key features**:
     * Fast and lightweight, optimized for various platforms, including embedded devices.
     * Cross-platform support: Linux, Windows, macOS, **WebAssembly**, and **Python**.
@@ -180,6 +181,41 @@ vibra --recognize --file sample.mp3
 # You can use your own FFmpeg which is optimized for your system.
 ```
 * You can see the sample shazam result json file in [here](https://gist.github.com/BayernMuller/b92fd43eef4471b7016009196e62e4d2)
+
+### Using vibra with the official ShazamKit
+* vibra reproduces Shazam's signature format, so a fingerprint produced by vibra can be passed to the **official ShazamKit SDK** as a signature and matched through the public API instead of the unofficial web API.
+* This enables a split architecture: a device without ShazamKit support (Linux server, embedded board, WebAssembly) generates the fingerprint, and a ShazamKit-capable app (iOS, macOS, Android) performs the match through the public API.
+* **Verified**: a signature produced by `vibra --fingerprint` was loaded by ShazamKit **without any conversion** and matched successfully against the Shazam catalog (title, artist, ISRC and Shazam ID returned).
+* **Keep the signature between 3 and 12 seconds** — the Shazam catalog rejects longer signatures. File input is capped at 12 seconds automatically; when fingerprinting raw PCM, pass `--seconds 12` or shorter.
+
+```bash
+# 1. Generate the signature (a data URI) on any platform
+vibra --fingerprint --file sample.wav
+# data:audio/vnd.shazam.sig;base64,gJhwuB...
+```
+
+```swift
+// 2. Match it with the official ShazamKit (Swift shown; the Android SDK works the same way)
+import ShazamKit
+
+let uri = "data:audio/vnd.shazam.sig;base64,gJhwuB..."   // from vibra
+let base64 = uri.components(separatedBy: "base64,").last!
+let signature = try SHSignature(dataRepresentation: Data(base64Encoded: base64)!)
+
+let session = SHSession()
+session.delegate = self
+session.match(signature)
+
+// SHSessionDelegate
+func session(_ session: SHSession, didFind match: SHMatch) {
+    let item = match.mediaItems.first
+    print(item?.title, item?.artist, item?.isrc, item?.shazamID)
+}
+func session(_ session: SHSession, didNotFindMatchFor signature: SHSignature, error: Error?) {
+    print("no match", error ?? "")
+}
+```
+* The same `data:` URI is available through the C API (`vibra_get_uri_from_fingerprint()`), the Python package and the WebAssembly build.
 
 ### FFI Bindings
 * vibra provides FFI bindings, allowing other languages to leverage its music recognition functionality.
